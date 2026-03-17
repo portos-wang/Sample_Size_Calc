@@ -1,0 +1,18 @@
+设计类型,核心公式,关键参数,使用场景,主要文献
+twoMeans,n = 2 × [(Z_α/2 + Z_β) × σ / (μ₁ - μ₂)]²,mean1, mean2, sd,比较两组连续变量均值,Chow 2017
+pairedMeans,n = [(Z_α/2 + Z_β) × σd / μd]²,meanDiff, sdDiff,配对样本均值比较,Rosner 2015
+nonInferiorityMeans,n = 2[(Z_α + Z_β)σ/(μ₁-μ₂+Δ)]²,mean1, mean2, sd, margin,证明新药不比标准药差,Chow 2017
+superiorityMeans,n = 2[(Z_α + Z_β)σ/(μ₁-μ₂-Δ)]²,mean1, mean2, sd, margin,证明新药优于标准药,Chow 2017
+equivalenceMeans,n = 2[(Z_α + Z_β/2)σ/(Δ-|μ₁-μ₂|)]²,mean1, mean2, sd, margin,证明两药等效,Chow 2017
+twoProportions,n = [Z_α/2√(2p̄(1-p̄)) + Z_β√(p₁(1-p₁)+p₂(1-p₂))]²/(p₁-p₂)²,p1, p2,比较两组率,Fleiss 2003
+equivalenceProportions,n = (Z_α+Z_β/2)²[p₁(1-p₁)+p₂(1-p₂)]/(Δ-|p₁-p₂|)²,p1, p2, margin,证明两率等效,Chow 2017
+superiorityProportions,n = (Z_α+Z_β)²[p₁(1-p₁)+p₂(1-p₂)]/(p₁-p₂-Δ)²,p1, p2, margin,证明率优效,Chow 2017
+survival,E = (Z_α/2+Z_β)²/[p_E(1-p_E)ln²(HR)],hr, pE,生存分析事件数计算,Schoenfeld 1983
+diagnosticAccuracySingle,n_cases = Z_1-α/2²×p(1-p)/d²,prob, d, prevalence,估计灵敏度/特异度精度,Hajian-Tilaki 2014
+diagnosticSuperioritySingle,n = [Z_α√(p₀(1-p₀))+Z_β√(p(1-p))]²/(p-p₀)²,prob, p0, prevalence,诊断优效性检验,Hajian-Tilaki 2014
+diagnosticComparisonTwo-配对,n = [Z_α/2×ψ+Z_β√(ψ²-(p₁-p₂)²/4)]²/(p₁-p₂)²,p1, p2, psi, paired,两诊断方法比较(配对),Hajian-Tilaki 2014
+likelihoodRatioTest,n = max{Z²×Se(1-Se)/d², Z²×Sp(1-Sp)/d²×P/(1-P)},sens, spec, prevalence, precision,似然比估计,Hajian-Tilaki 2014
+auc_single,n_cases = (Z_1-α/2/d)²×V(AUC),auc, d, prevalence,AUC置信区间估计,Hajian-Tilaki 2014
+aucSuperiority,n_cases = [Z_α√(V₀)+Z_β√(V)]²/(AUC-AUC₀)²,auc, auc0, prevalence,AUC优效性检验,Hajian-Tilaki 2014
+aucComparison,n_cases = 2(Z_α/2+Z_β)²×V_avg×(1-r)/(AUC₁-AUC₂)²,auc1, auc2, r, prevalence,两AUC比较,Hajian-Tilaki 2014
+caseControl,n = [Z_α/2√((1+1/m)p̄(1-p̄))+Z_β√(p₁(1-p₁)+p₀(1-p₀)/m)]²/(p₁-p₀)²,p0, OR, m,病例对照研究(1:m匹配),Schlesselman 1982

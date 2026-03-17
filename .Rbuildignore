@@ -1,0 +1,5 @@
+^\.trae$
+^docs$
+^sampleSizeCalculator\.R$
+^sample_size_calculator_improved\.R$
+^LICENSE\.md$

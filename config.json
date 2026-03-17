@@ -1,0 +1,18 @@
+{
+  "id": "ws_3b55ad29",
+  "name": "1_sample_size_determination",
+  "slug": "1-sample-size-determination",
+  "defaults": {
+    "permissionMode": "safe",
+    "cyclablePermissionModes": [
+      "safe",
+      "allow-all"
+    ],
+    "enabledSourceSlugs": []
+  },
+  "localMcpServers": {
+    "enabled": true
+  },
+  "createdAt": 1773708341079,
+  "updatedAt": 1773708341085
+}

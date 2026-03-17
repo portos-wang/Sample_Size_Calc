@@ -1,0 +1,58 @@
+---
+title: "Quick Start with sampleSizeCalc"
+author: "AI Coding Assistant"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start with sampleSizeCalc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(sampleSizeCalc)
+```
+
+## Installation
+
+```{r install, eval = FALSE}
+# From a local source (e.g. this repo)
+devtools::install_local("path/to/1_sample_size_determination")
+```
+
+## Two independent means
+
+```{r two-means}
+res <- sample_size_calculator(
+  "twoMeans",
+  mean1 = 10,
+  mean2 = 12,
+  sd = 3,
+  alpha = 0.05,
+  power = 0.8
+)
+print(res)
+```
+
+## Survival (log-rank)
+
+```{r survival}
+res <- sample_size_calculator("survival", hr = 0.7, alpha = 0.05, power = 0.8)
+print(res)
+```
+
+## Two proportions
+
+```{r two-proportions}
+res <- sample_size_calculator("twoProportions", p1 = 0.3, p2 = 0.5)
+summary(res)
+```
+
+## Supported designs
+
+See `?sample_size_calculator` for all design types (e.g. `pairedMeans`, `caseControl`, `diagnosticAccuracySingle`, non-inferiority/superiority/equivalence, AUC comparisons).

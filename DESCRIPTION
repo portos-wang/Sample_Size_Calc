@@ -1,0 +1,34 @@
+Package: sampleSizeCalc
+Title: Sample Size Calculator for Clinical Research
+Version: 2.1.0
+Author: AI Coding Assistant [aut, cre]
+Maintainer: AI Coding Assistant <ai@example.com>
+Authors@R: person("AI Coding Assistant", email = "ai@example.com", role = c("aut", "cre"))
+Description: A comprehensive tool for calculating sample sizes across 
+    various clinical study designs. Supports continuous variables, proportions, 
+    survival analysis, diagnostic tests, case-control studies, and more. 
+    Built following Tidy R design principles with comprehensive parameter 
+    validation, structured error handling, and complete literature citations
+    including primary methodology papers.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.0.0)
+Imports:
+    rlang,
+    cli
+Suggests:
+    ggplot2,
+    scales,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    pkgdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+URL: https://github.com/portos-wang/sampleSizeCalc
+BugReports: https://github.com/portos-wang/sampleSizeCalc/issues
+Language: en-US
+ByteCompile: true
