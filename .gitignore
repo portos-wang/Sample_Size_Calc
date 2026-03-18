@@ -1,0 +1,34 @@
+# R build artifacts
+..Rcheck/
+*.tar.gz
+*.Rcheck/
+
+# External tool configurations
+events.jsonl
+views.json
+config.json
+.claude-plugin/
+labels/
+statuses/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# R package build artifacts
+*.o
+*.so
+*.dll
+.Rproj.user
+.Rhistory
+
+# Documentation build
+docs/
+*.html
+
+# Temporary files
+tmp/
+temp/
+*.tmp

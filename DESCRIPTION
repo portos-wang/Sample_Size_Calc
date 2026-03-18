@@ -32,3 +32,18 @@ URL: https://github.com/portos-wang/sampleSizeCalc
 BugReports: https://github.com/portos-wang/sampleSizeCalc/issues
 Language: en-US
 ByteCompile: true
+Collate:
+    'validate_parameters.R'
+    'validate_design_args.R'
+    'diagnostic_accuracy_single.R'
+    'auc_calculations.R'
+    'diagnostic_existing_designs.R'
+    'basic_designs.R'
+    'means_hypothesis_tests.R'
+    'proportions_hypothesis_tests.R'
+    'case_control.R'
+    'print_sample_size_result.R'
+    'summary_sample_size_result.R'
+    'plot_sample_size_result.R'
+    'sample_size_calculator.R'
+    'globals.R'

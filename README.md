@@ -36,6 +36,16 @@ devtools::install_local("1_sample_size_determination")
 - **Robust Validation**: Comprehensive parameter validation with clear error messages
 - **Modern Design**: Follows Tidy R principles with S3 classes and methods
 
+## Documentation
+
+Detailed documentation is available in the [docs/](docs/) directory:
+
+- **[Formula Summary](docs/FORMULA_SUMMARY.md)** - Quick reference for all 17 calculation methods
+- **[Formula Guide](docs/formula_reference_guide.md)** - Detailed reference manual with formulas and citations
+- **[Literature Verification](docs/literature_verification_report.md)** - Complete validation of all methods
+- **[CHANGELOG](docs/CHANGELOG.md)** - Version history and updates
+- **[CSV Reference](docs/formula_quick_reference.csv)** - Table-format quick reference
+
 ## Quick Start
 
 ### Basic Usage
