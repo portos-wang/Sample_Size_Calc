@@ -2,8 +2,10 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  sampleSizeCalc-guide-en: sampleSizeCalc-guide-en.html
+  sampleSizeCalc-guide-zh: sampleSizeCalc-guide-zh.html
   sampleSizeCalc: sampleSizeCalc.html
-last_built: 2026-11-02T03:42Z
+last_built: 2026-11-02T07:40Z
 urls:
   reference: https://portos-wang.github.io/Sample_Size_Calc/reference
   article: https://portos-wang.github.io/Sample_Size_Calc/articles

@@ -1,0 +1,12 @@
+# Cohort study: exposed vs unexposed cumulative incidence (1:m allocation)
+
+`n_exposed = [Z_(a/2) sqrt((1+1/m) pbar(1-pbar)) + Z_b sqrt(p1(1-p1) + p0(1-p0)/m)]^2 / (p1-p0)^2`
+where pbar = (p1 + m p0)/(1+m) and m is the unexposed:exposed allocation
+ratio. Anchor: Bhardwaj 2024 p.2559 (p0=0.20, p1=0.30, m=1 -\> 293; +10%
+non-response -\> 322/group, total 644).
+
+## Usage
+
+``` r
+calculate_cohort_proportion(p0, p1, ratio, alpha, power, dropout)
+```
