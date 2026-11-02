@@ -1,6 +1,6 @@
-# sampleSizeCalc 3.0.0
+# sampleSizeCalc 3.1.0
 
-## 3.1 (development)
+## 3.1 — new designs (mrmcPower, steppedWedge, kappa, Riley prediction models)
 
 - `predictiveModel` + task="plan" + outcome="binary": **Riley 2020 BMJ method**
   for prediction model development sample size (original paper obtained and
