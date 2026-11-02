@@ -1,4 +1,4 @@
-url: https://github.com/portos-wang/sampleSizeCalc
+url: https://portos-wang.github.io/Sample_Size_Calc/
 
 reference:
 - title: Unified entry point
@@ -20,3 +20,4 @@ reference:
   desc: Standalone planning utilities.
   contents:
   - screen_required
+  - mrmc_power
