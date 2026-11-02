@@ -360,7 +360,114 @@ calculate_predictive_epv <- function(n_parameters, epv, event_prevalence) {
   )
 }
 
-# ------------------------------------------------------------ ITS (experimental) ----
+# ------------------------------------------------------------ MRMC (power) ----
+
+#' MRMC study power (Obuchowski-Rockette mixed model, paired-patient
+#' paired-reader design)
+#'
+#' Computes the power of a multi-reader multi-case study to detect a given
+#' difference in accuracy (e.g. ROC area) with J readers, using the
+#' non-central F framework of Zhou et al. (2011) Eq 6.32 with the Table 6.4
+#' parameterisation for the paired-patient, paired-reader design
+#' (rho1 > rho2 > rho3 > 0, rho_b > 0).
+#'
+#' Anchor: Zhou 2011 pp. 225 (mammography example) — n=50 cases, 8 readers,
+#' delta=0.10, sigma_b2=0.00123, sigma_w2=0.00087, sigma_c2 ~= 0.05,
+#' rho1=0.25, rho2=0.2, rho3=0.1 -> power ~= 0.89 as reported in the book.
+#'
+#' @param n Cases per test (paired-patient design: total cases)
+#' @param J Number of readers per test
+#' @param delta Difference in accuracy to detect
+#' @param sigma_b2 Between-reader variance component
+#' @param sigma_w2 Within-reader (occasion) variance component
+#' @param sigma_c2 Patient-sampling variance component
+#' @param rho1 Correlation, same reader different tests
+#' @param rho2 Correlation, different readers same test
+#' @param rho3 Correlation, different readers different tests
+#' @param alpha Type I error (two-sided F test)
+#' @param n_repeats Reading occasions per reader-test (Q, usually 1)
+#' @return Numeric power (0-1), invisible
+#' @export
+mrmc_power <- function(n, J, delta, sigma_b2, sigma_w2, sigma_c2,
+                       rho1, rho2, rho3, alpha = 0.05, n_repeats = 1) {
+  if (!is.numeric(n) || n < 1) cli::cli_abort("{.arg n} must be >= 1.")
+  if (!is.numeric(J) || J < 2 || J != floor(J)) {
+    cli::cli_abort("{.arg J} must be an integer >= 2 (the F test needs J-1 df).")
+  }
+  if (!is.numeric(delta) || delta <= 0) {
+    cli::cli_abort("{.arg delta} must be a positive accuracy difference.")
+  }
+  for (v in c("sigma_b2", "sigma_w2", "sigma_c2")) {
+    val <- get(v)
+    if (!is.numeric(val) || length(val) != 1 || val < 0) {
+      cli::cli_abort("{.arg {v}} must be a non-negative variance component.")
+    }
+  }
+  for (v in c("rho1", "rho2", "rho3")) {
+    val <- get(v)
+    if (!is.numeric(val) || length(val) != 1 || val < 0 || val >= 1) {
+      cli::cli_abort("{.arg {v}} must be a correlation in [0, 1).")
+    }
+  }
+  if (!(rho1 > rho2 && rho2 > rho3)) {
+    cli::cli_warn(c(
+      "Paired-patient, paired-reader design expects rho1 > rho2 > rho3 > 0",
+      "(Zhou Table 6.4); got rho1 = {.val {rho1}}, rho2 = {.val {rho2}}, rho3 = {.val {rho3}}."
+    ))
+  }
+
+  denom <- 2 * (
+    sigma_b2 * (1 - rho1) +
+      sigma_w2 / n_repeats +
+      sigma_c2 * (1 - rho1) / n +
+      rho2 * sigma_b2 * ((1 - rho1) + (J - 1) * (rho2 - rho3))
+  )
+  lambda <- J * delta^2 / denom
+  crit <- stats::qf(1 - alpha, 1, J - 1)
+  power <- 1 - stats::pf(crit, 1, J - 1, ncp = lambda)
+
+  hints <- c(
+    "MRMC power depends on 6 variance/correlation components estimated from",
+    "pilot data or literature (Zhou Table 6.3); treat results as approximate.",
+    "For reader variability planning: sigma_b2 = (accuracy range / 4)^2 is a",
+    "common heuristic (Zhou p. 223, Beam 1996 mammography example)."
+  )
+
+  out <- structure(
+    list(
+      design_type = "MRMC (paired-patient, paired-reader, Obuchowski-Rockette)",
+      power = round(power, 3),
+      parameters = list(
+        n = n, J = J, delta = delta,
+        sigma_b2 = sigma_b2, sigma_w2 = sigma_w2, sigma_c2 = sigma_c2,
+        rho1 = rho1, rho2 = rho2, rho3 = rho3,
+        alpha = alpha, n_repeats = n_repeats,
+        noncentrality_lambda = round(lambda, 4)
+      ),
+      formula = "lambda = J*delta^2/(2*[sb2(1-r1) + sw2/Q + sc2(1-r1)/n + r2*sb2*((1-r1)+(J-1)(r2-r3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha})",
+      formula_latex = NULL,
+      reference = paste(
+        "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
+        "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
+        "Section 6.5, Eq 6.32, Tables 6.3-6.5, pp. 220-226 (mammography",
+        "worked example).\n\n",
+        "Model: Obuchowski, N. A., & Rockette, H. E. (1995). Hypothesis testing",
+        "of diagnostic accuracy for multiple readers, multiple tests. Communications",
+        "in Statistics - Simulation and Computation, 24, 285-308."
+      ),
+      roles = c(
+        "n = cases per test (paired-patient: total cases)",
+        "J = readers per test",
+        "delta = accuracy difference to detect",
+        "sigma_b2/sigma_w2/sigma_c2 = reader/occasion/case variance components",
+        "rho1/rho2/rho3 = correlations (same-reader-diff-test / diff-reader-same-test / diff-reader-diff-test)"
+      ),
+      hints = hints
+    ),
+    class = c("sample_size_result", "list")
+  )
+  invisible(out)
+}
 
 #' Interrupted time series: level-change power (AR(1)-adjusted, experimental)
 #'

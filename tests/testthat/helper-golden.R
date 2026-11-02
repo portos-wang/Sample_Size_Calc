@@ -1,4 +1,3 @@
-
 # Golden master data (shared by test-calculate.R); defined in a helper file so
 # shuffled test runs always have it available.
 golden_cases <- list(
@@ -84,4 +83,3 @@ golden_fields <- c(
   "total_subjects_to_screen", "cases_needed", "controls_needed",
   "formula", "formula_latex", "reference"
 )
-

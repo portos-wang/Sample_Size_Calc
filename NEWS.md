@@ -1,5 +1,17 @@
 # sampleSizeCalc 3.0.0
 
+## 3.1 (development)
+
+- `mrmc_power()`: power calculation for MRMC studies (paired-patient,
+  paired-reader) using the Obuchowski-Rockette mixed model / non-central F
+  framework (Zhou et al. 2011 Eq 6.32, Tables 6.3-6.4). Verified against the
+  book's mammography worked example (power ~= 0.89 at n=50, J=8, delta=0.10).
+- `steppedWedge` and `kappa` remain deferred: paper derivations against the
+  Machin worked examples did not converge (documented in
+  docs/NUMERIC_ANCHORS.md, sections "kappa 推导失败记录" and
+  "steppedWedge 推导失败记录"); implementation requires the print edition or
+  the original Cantor 1996 / Woertweck 2021 papers.
+
 ## Breaking / API
 
 - New unified three-axis entry point `calculate(design, task, outcome, ...)`.
