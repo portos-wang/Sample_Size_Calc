@@ -469,6 +469,114 @@ mrmc_power <- function(n, J, delta, sigma_b2, sigma_w2, sigma_c2,
   invisible(out)
 }
 
+# ------------------------------------------------------ kappa (Cantor 1996) ----
+
+# Cantor (1996) large-sample variance factor for kappa-hat, expressed via
+# (pi1., pi.1, kappa) through the Fleiss-Cohen-Everitt asymptotic variance.
+# Verified against the paper's own worked examples: Q(0.5,0.5,0.7) = 0.510
+# (exact) and the two-sample N = 214 example (exact).
+kappa_Q <- function(pi1, pi2, kappa) {
+  pi_21 <- 1 - pi1
+  pi_12 <- 1 - pi2
+  pe <- pi1 * pi_12 + pi_21 * pi2 # expected agreement
+  po <- kappa * (1 - pe) + pe # observed agreement
+  po * (1 - po) / (1 - pe)^2
+}
+
+#' Internal calculation: Cohen's kappa sample size (Cantor 1996)
+#'
+#' Two modes:
+#' * task = "estimate": precision of a single kappa —
+#'   `n = Q * (z_(1-a/2) / d)^2` with `Q = p_o(1-p_o)/(1-p_e)^2`.
+#'   Anchor: Cantor 1996 precision example (pi=0.3, kappa unspecified,
+#'   Q=1.0, d=0.1, 80% CI -> 165).
+#' * task = "test": two independent kappas H0: K1 = K2 —
+#'   `n = (z_a sqrt(2 Q1) + z_b sqrt(Q1 + Q2))^2 / (K1 - K2)^2`.
+#'   Anchor: Cantor 1996 two-questionnaire example (pi=0.5, K1=0.7,
+#'   K2=0.5, 95%/80% -> 214).
+#'
+#' @keywords internal
+calculate_kappa <- function(pi1, pi2, kappa1, kappa2, d, alpha, power, task) {
+  if (!is.numeric(pi1) || pi1 <= 0 || pi1 >= 1) cli::cli_abort("{.arg pi1} must be in (0, 1).")
+  if (!is.numeric(pi2) || pi2 <= 0 || pi2 >= 1) cli::cli_abort("{.arg pi2} must be in (0, 1).")
+  task <- rlang::arg_match(task, c("estimate", "test"))
+
+  if (task == "estimate") {
+    if (!is.numeric(kappa1) || length(kappa1) != 1 || kappa1 < 0 || kappa1 >= 1) {
+      cli::cli_abort("{.arg kappa1} (planning kappa) must be in [0, 1).")
+    }
+    if (!is.numeric(d) || d <= 0 || d >= 1) {
+      cli::cli_abort("{.arg d} (CI half-width) must be in (0, 1).")
+    }
+    q_val <- kappa_Q(pi1, pi2, kappa1)
+    z <- z_alpha(alpha, "two.sided")
+    n <- q_val * (z / d)^2
+    list(
+      design_type = "Cohen's kappa estimation (CI precision)",
+      n_required = as.integer(ceiling(n)),
+      parameters = list(
+        pi1 = pi1,
+        pi2 = pi2,
+        kappa = kappa1,
+        d = d,
+        alpha = alpha,
+        Q = round(q_val, 4)
+      ),
+      formula = "n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2",
+      formula_latex = "$$n = Q\\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2, \\quad Q = \\frac{p_o(1-p_o)}{(1-p_e)^2}$$",
+      reference = paste(
+        "Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's",
+        "kappa. Psychological Methods, 1(2), 150-153 (Fleiss-Cohen-Everitt",
+        "1969 asymptotic variance; worked examples N=165 and N=214)."
+      ),
+      roles = c(
+        "pi1/pi2 = expected Rating-1 proportions for rater 1 / rater 2",
+        "kappa1 = planning value of kappa",
+        "d = desired CI half-width"
+      )
+    )
+  } else {
+    if (!is.numeric(kappa1) || kappa1 <= 0 || kappa1 >= 1) {
+      cli::cli_abort("{.arg kappa1} (null kappa) must be in (0, 1).")
+    }
+    if (!is.numeric(kappa2) || kappa2 <= 0 || kappa2 >= 1 || kappa2 == kappa1) {
+      cli::cli_abort("{.arg kappa2} (alternative kappa) must differ from kappa1 and be in (0, 1).")
+    }
+    q1 <- kappa_Q(pi1, pi2, kappa1)
+    q2 <- kappa_Q(pi1, pi2, kappa2)
+    za <- z_alpha(alpha, "two.sided")
+    zb <- z_power(power)
+    n <- (za * sqrt(2 * q1) + zb * sqrt(q1 + q2))^2 / (kappa1 - kappa2)^2
+    list(
+      design_type = "Cohen's kappa test (two independent kappas)",
+      n_required = as.integer(ceiling(n)),
+      parameters = list(
+        pi1 = pi1,
+        pi2 = pi2,
+        kappa1 = kappa1,
+        kappa2 = kappa2,
+        alpha = alpha,
+        power = power,
+        Q_null = round(q1, 4),
+        Q_alt = round(q2, 4)
+      ),
+      formula = "n = (z_a*sqrt(2*Q1) + z_b*sqrt(Q1+Q2))^2/(K1-K2)^2",
+      formula_latex = "$$n = \\frac{\\left[z_{\\alpha}\\sqrt{2Q_1} + z_{\\beta}\\sqrt{Q_1+Q_2}\\right]^2}{(K_1-K_2)^2}$$",
+      reference = paste(
+        "Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's",
+        "kappa. Psychological Methods, 1(2), 150-153 (worked example: K1=0.7,",
+        "K2=0.5, pi=0.5 -> N=214)."
+      ),
+      roles = c(
+        "pi1/pi2 = expected Rating-1 proportions (both raters/groups)",
+        "kappa1 = kappa under the null (e.g. questionnaire 1)",
+        "kappa2 = kappa under the alternative (e.g. questionnaire 2)",
+        "n is per group (two independent kappa estimates)"
+      )
+    )
+  }
+}
+
 #' Interrupted time series: level-change power (AR(1)-adjusted, experimental)
 #'
 #' Transparent normal approximation with the AR(1) effective-sample-size

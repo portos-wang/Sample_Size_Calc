@@ -51,7 +51,9 @@ validate_design_args <- function(design, args) {
     nonInferiorityProportions = c("p1", "p2", "margin"),
     twoOrdinalWhitehead = c("or", "prop_bar"),
     predictiveEPV = c("n_parameters", "event_prevalence"),
-    itsLevel = c("effect_sd", "n_pre", "n_post", "rho")
+    itsLevel = c("effect_sd", "n_pre", "n_post", "rho"),
+    kappaEstimate = c("pi1", "pi2", "kappa", "d"),
+    kappaTest = c("pi1", "pi2", "kappa1", "kappa2")
   )
 
   required <- required_args[[design]]

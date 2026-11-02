@@ -176,6 +176,15 @@ ssr_combinations <- list(
   list(
     design = "its", task = "test", outcome = "rate",
     legacy = "itsLevel", default = TRUE
+  ),
+  # --- 3.1: observer agreement (Cantor 1996) ---
+  list(
+    design = "kappa", task = "estimate", outcome = "proportion",
+    legacy = "kappaEstimate", default = TRUE
+  ),
+  list(
+    design = "kappa", task = "test", outcome = "proportion",
+    legacy = "kappaTest"
   )
 )
 
@@ -535,6 +544,15 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
     "itsLevel" = calculate_its_level(
       effect_sd = args$effect_sd, n_pre = args$n_pre, n_post = args$n_post,
       rho = args$rho, alpha = alpha, power = power
+    ),
+    "kappaEstimate" = calculate_kappa(
+      pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa,
+      d = args$d, alpha = alpha, power = power, task = "estimate"
+    ),
+    "kappaTest" = calculate_kappa(
+      pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa1,
+      kappa2 = args$kappa2, d = NULL, alpha = alpha, power = power,
+      task = "test"
     ),
     cli::cli_abort("No calculation module for legacy keyword {.val {legacy_keyword}}.")
   )
