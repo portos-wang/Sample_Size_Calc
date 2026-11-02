@@ -7,13 +7,16 @@
 - `singleCorrelation`: Fixed implementation to strictly match Machin et
   al. (2018, Chapter 19, Equations 19.5-19.8). Now supports both
   `precision` (absolute CI half-width) and `epsilon` (relative
-  precision). Produces exact agreement with `presize::prec_cor` (e.g.,
-  r=0.5, conf.width=0.10 -\> 867; r=0.5, conf.width=0.20 -\> 219).
+  precision). Produces exact agreement with
+  [`presize::prec_cor`](https://ctu-bern.github.io/presize/reference/prec_cor.html)
+  (e.g., r=0.5, conf.width=0.10 -\> 867; r=0.5, conf.width=0.20 -\>
+  219).
 - `bioequivalence`: Upgraded 2x2 crossover TOST from crude normal
   approximation to exact noncentral t distribution (Phillips 1990;
   Julious 2004 Equation 13). Added support for `theta0` (expected
   geometric mean ratio, default 1.0) and custom equivalence bounds
-  (`margin_low`, `margin_high`). Results match `PowerTOST::sampleN.TOST`
+  (`margin_low`, `margin_high`). Results match
+  [`PowerTOST::sampleN.TOST`](https://rdrr.io/pkg/PowerTOST/man/sampleN.TOST.html)
   bit-for-bit (e.g., CV=0.25, theta0=1.0 -\> N=24, 12/sequence;
   theta0=0.95 -\> N=28, 14/sequence).
 - `diagAccuracy` (test): Added `method = c("asymptotic", "exact")`.

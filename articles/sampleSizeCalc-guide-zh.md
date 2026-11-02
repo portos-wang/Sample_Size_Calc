@@ -554,7 +554,9 @@ print(res_4_2)
 - **临床场景**：估计腰围与体脂率的 Pearson 相关系数，预期
   $`r = 0.50`$，希望 95% 置信区间半宽不超过 $`\pm 0.10`$。
 - **数学公式与出处**：Machin et al. (2018) Ch.19 Eqs 19.5-19.8
-  精修公式，与 `presize::prec_cor` 严格一致。
+  精修公式，与
+  [`presize::prec_cor`](https://ctu-bern.github.io/presize/reference/prec_cor.html)
+  严格一致。
 
 ``` r
 

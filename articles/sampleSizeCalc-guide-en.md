@@ -433,7 +433,8 @@ res_4_3 <- calculate("singleCorrelation", r = 0.50, precision = 0.10, alpha = 0.
 print(res_4_3)
 ```
 
-- **Output**: 219 participants (matches `presize::prec_cor`).
+- **Output**: 219 participants (matches
+  [`presize::prec_cor`](https://ctu-bern.github.io/presize/reference/prec_cor.html)).
 
 ------------------------------------------------------------------------
 

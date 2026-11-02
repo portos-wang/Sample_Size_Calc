@@ -2,7 +2,7 @@
 
 Evaluates the exact power of the two one-sided tests (TOST) procedure
 using the noncentral t distribution (Phillips 1990; Julious 2004 Eq 13).
-Matches PowerTOST::sampleN.TOST exactly.
+Matches sampleN.TOST in the PowerTOST package exactly.
 
 ## Usage
 
