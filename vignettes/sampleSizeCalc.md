@@ -1,6 +1,6 @@
 ---
 title: "Comprehensive Guide to sampleSizeCalc"
-author: "AI Coding Assistant"
+author: "Portos Wang (Yishan Wang), Bingxin Cai (Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital))"
 date: "2026-03-17"
 output: 
   rmarkdown::html_vignette:
@@ -561,9 +561,10 @@ If you use this package in your research, please cite:
 ```bibtex
 @software{sampleSizeCalc,
   title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
-  author = {AI Coding Assistant},
+  author = {Portos (Yishan) Wang and Bingxin Cai},
+  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
-  version = {2.1.0},
+  version = {3.1.0},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
@@ -572,5 +573,5 @@ If you use this package in your research, please cite:
 
 ---
 
-**Last Updated**: 2026-03-17  
-**Version**: 2.1.0
+**Last Updated**: 2026-11-02  
+**Version**: 3.1.0

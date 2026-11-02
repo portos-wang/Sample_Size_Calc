@@ -1,6 +1,6 @@
 ---
 title: "Comprehensive Guide to sampleSizeCalc"
-author: "AI Coding Assistant"
+author: "Portos Wang (Yishan Wang), Bingxin Cai (Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital))"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -28,9 +28,13 @@ library(ggplot2)
 
 ## Introduction
 
-The `sampleSizeCalc` package provides a comprehensive toolkit for sample size determination in clinical research. Version 3.0 introduces a **three-axis API** (`design` x `task` x `outcome`) covering 39 design combinations, while the legacy single-keyword API used in the examples below remains fully (silently) compatible.
+The `sampleSizeCalc` package provides a comprehensive, rigorous toolkit for sample size determination across **39+ study design combinations** in clinical and epidemiological research.
 
-## The three-axis API (v3.0)
+> **Looking for in-depth tutorials tailored for clinical researchers?**
+> - **📖 [中文完全使用指南：临床科研样本量计算从入门到精通 (Comprehensive Guide in Chinese)](sampleSizeCalc-guide-zh.html)**: 零基础入门，覆盖全部设计、参数白话解释、公式推导、生动临床案例、输出逐行精读与标书模板。
+> - **📘 [English Comprehensive Guide (Zero-to-Hero Tutorial)](sampleSizeCalc-guide-en.html)**: End-to-end walkthrough covering all 39+ designs, intuitive statistical analogies, primary mathematical formulas, worked clinical scenarios, and protocol boilerplates.
+
+## The Three-Axis API (v3.0+)
 
 ```{r three-axis, message = FALSE}
 calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
@@ -567,9 +571,10 @@ If you use this package in your research, please cite:
 ```bibtex
 @software{sampleSizeCalc,
   title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
-  author = {AI Coding Assistant},
+  author = {Portos (Yishan) Wang and Bingxin Cai},
+  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
-  version = {2.1.0},
+  version = {3.1.0},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
@@ -578,5 +583,5 @@ If you use this package in your research, please cite:
 
 ---
 
-**Last Updated**: 2026-03-17  
-**Version**: 2.1.0
+**Last Updated**: 2026-11-02  
+**Version**: 3.1.0

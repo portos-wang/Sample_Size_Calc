@@ -1,3 +1,33 @@
+# sampleSizeCalc 3.1.1 (Development)
+
+## Numerical Enhancements & Cross-Package Alignments
+
+- `singleCorrelation`: Fixed implementation to strictly match Machin et al.
+  (2018, Chapter 19, Equations 19.5-19.8). Now supports both `precision`
+  (absolute CI half-width) and `epsilon` (relative precision). Produces exact
+  agreement with `presize::prec_cor` (e.g., r=0.5, conf.width=0.10 -> 867;
+  r=0.5, conf.width=0.20 -> 219).
+- `bioequivalence`: Upgraded 2x2 crossover TOST from crude normal approximation
+  to exact noncentral t distribution (Phillips 1990; Julious 2004 Equation 13).
+  Added support for `theta0` (expected geometric mean ratio, default 1.0) and
+  custom equivalence bounds (`margin_low`, `margin_high`). Results match
+  `PowerTOST::sampleN.TOST` bit-for-bit (e.g., CV=0.25, theta0=1.0 -> N=24,
+  12/sequence; theta0=0.95 -> N=28, 14/sequence).
+- `diagAccuracy` (test): Added `method = c("asymptotic", "exact")`. Setting
+  `method = "exact"` executes an exact binomial search per A'Hern (2001),
+  returning critical successes `critical_successes` alongside sample size
+  (e.g., prob=0.85, p0=0.70 gives n=49, critical cutoff r=40).
+- Methodological hints and parameter role clarifications added:
+  - `steppedWedge`: Explicit warning regarding the absence of calendar-time
+    fixed effects in Hussey & Hughes (2007) Equation 8 and potential power loss.
+  - `singleArmPhaseII`: Documented that ties in minimax total N are broken by
+    minimizing Type I error alpha.
+  - `caseControlMatched`: Clarified that `psi` is the discordant pair
+    proportion (pi10 + pi01), not the discordant odds ratio.
+  - `cohortRate`: Clarified that required subjects = person-time / follow-up duration.
+  - `diagLR`: Clarified that sample size ensures the CI does not cross `target_lr`,
+    distinct from fixed-width CI estimation.
+
 # sampleSizeCalc 3.1.0
 
 ## 3.1 — new designs (mrmcPower, steppedWedge, kappa, Riley prediction models)

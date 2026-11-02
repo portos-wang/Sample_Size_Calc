@@ -2,6 +2,8 @@
 ..Rcheck/
 *.tar.gz
 *.Rcheck/
+Rplots.pdf
+tests/testthat/Rplots.pdf
 
 # External tool configurations
 events.jsonl
@@ -26,6 +28,8 @@ Thumbs.db
 
 # Documentation build
 docs/
+*_files/
+vignettes/*_files/
 *.html
 
 # Temporary files

@@ -122,9 +122,10 @@ with the package:
 ```bibtex
 @software{sampleSizeCalc,
   title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
-  author = {AI Coding Assistant},
-  year = {2025},
-  version = {3.0.0},
+  author = {Portos (Yishan) Wang and Bingxin Cai},
+  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
+  year = {2026},
+  version = {3.1.0},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```

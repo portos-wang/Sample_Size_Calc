@@ -389,7 +389,8 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       } else {
         calculate_diagnostic_superiority_single(
           prob = args$prob, p0 = args$p0, prevalence = args$prevalence,
-          alpha = alpha, power = power
+          alpha = alpha, power = power,
+          method = args$method %||% "asymptotic"
         )
       }
     },
@@ -533,7 +534,10 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       alpha = alpha, power = power
     ),
     "bioequivalence" = calculate_bioequivalence(
-      cv = args$cv, alpha = alpha, power = power
+      cv = args$cv, alpha = alpha, power = power,
+      theta0 = args$theta0 %||% 1.0,
+      margin_low = args$margin_low %||% 0.8,
+      margin_high = args$margin_high %||% 1.25
     ),
     "clusterMean" = calculate_cluster_mean(
       mean1 = args$mean1, mean2 = args$mean2, sd = args$sd,

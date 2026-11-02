@@ -106,38 +106,86 @@ calculate_single_mean <- function(sigma, precision, alpha) {
   )
 }
 
-#' Internal calculation: single correlation coefficient precision (Fisher z)
+#' Internal calculation: single correlation coefficient precision (Fisher z / Machin)
 #'
-#' n = ((1 + r^2) / (r * epsilon))^2 + 3 for relative precision epsilon
-#' (Machin 2018 Ch.19, Eq 19.2); a test-oriented variant uses
-#' n = (Z_a/2 + Z_b)^2 / (atanh(r1) - atanh(r0))^2 + 3.
+#' Sample size for estimating a Pearson correlation coefficient with pre-specified
+#' confidence interval width w = 2*d (Machin et al. 2018, Ch.19, Equations 19.5-19.8).
+#' Matches presize::prec_cor for identical parameters.
+#'
+#' @param r Anticipated correlation coefficient
+#' @param epsilon Relative precision (margin d = epsilon * r)
+#' @param precision Absolute margin of error d (half-width of CI)
+#' @param alpha Type I error (two-sided CI, default 0.05)
+#' @param power Ignored (estimation design)
+#' @return List consumed by as_sample_size_result()
 #' @keywords internal
-calculate_single_correlation <- function(r, epsilon, alpha, power) {
+calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
+                                         alpha = 0.05, power = NULL) {
   if (!is.numeric(r) || length(r) != 1 || r <= 0 || r >= 1) {
     cli::cli_abort(c(
       "{.arg r} must be a single correlation in (0, 1).",
       "x" = "You provided {.val {r}}."
     ))
   }
-  if (!is.numeric(epsilon) || length(epsilon) != 1 || epsilon <= 0) {
-    cli::cli_abort(c(
-      "{.arg epsilon} must be a single positive relative precision.",
-      "x" = "You provided {.val {epsilon}}."
-    ))
+  if (is.null(epsilon) && is.null(precision)) {
+    cli::cli_abort("Either {.arg epsilon} (relative precision) or {.arg precision} (CI half-width) must be provided.")
   }
 
-  n <- ((1 + r^2) / (r * epsilon))^2 + 3
+  if (!is.null(epsilon)) {
+    if (!is.numeric(epsilon) || length(epsilon) != 1 || epsilon <= 0) {
+      cli::cli_abort(c(
+        "{.arg epsilon} must be a single positive relative precision.",
+        "x" = "You provided {.val {epsilon}}."
+      ))
+    }
+    d_val <- epsilon * r
+    prec_type <- "relative"
+  } else {
+    if (!is.numeric(precision) || length(precision) != 1 || precision <= 0 || precision >= 1) {
+      cli::cli_abort(c(
+        "{.arg precision} must be a single positive CI half-width in (0, 1).",
+        "x" = "You provided {.val {precision}}."
+      ))
+    }
+    d_val <- precision
+    prec_type <- "absolute"
+  }
+
+  w <- 2 * d_val
+  z <- z_alpha(alpha, "two.sided")
+
+  # Machin 2018 Chapter 19, Equation 19.5 (initial estimate N_P0)
+  n_p0 <- 4 * (z^2) * ((1 - r^2)^2) / (w^2) + 3
+
+  # Machin 2018 Equations 19.6 - 19.8 (refined estimate N_Pfinal)
+  u_val <- atanh(r) + z / sqrt(n_p0 - 3)
+  l_val <- atanh(r) - z / sqrt(n_p0 - 3)
+  w0 <- tanh(u_val) - tanh(l_val)
+  n_final <- (n_p0 - 3) * (w0 / w)^2 + 3
 
   list(
     design_type = "Single correlation estimation (Fisher z precision)",
-    n_required = as.integer(ceiling(n)),
-    parameters = list(r = r, epsilon = epsilon, alpha = alpha),
-    formula = "n = ((1 + r^2)/(r * epsilon))^2 + 3",
-    formula_latex = "$$n = \\left(\\frac{1 + r^2}{r \\cdot \\epsilon}\\right)^2 + 3$$",
-    reference = "Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 19 (The Correlation Coefficient).",
+    n_required = as.integer(ceiling(n_final)),
+    parameters = list(
+      r = r,
+      precision = d_val,
+      precision_type = prec_type,
+      epsilon = epsilon,
+      alpha = alpha
+    ),
+    formula = "Machin 19.5-19.8: N_P0 = 4*z^2*(1-r^2)^2/w^2 + 3, refined via Fisher z bounds",
+    formula_latex = "$$N_{P0} = \\frac{4 z_{1-\\alpha/2}^2 (1-r^2)^2}{w^2} + 3, \\quad N_{Final} = (N_{P0}-3)\\left(\\frac{w_0}{w}\\right)^2 + 3$$",
+    reference = paste(
+      "Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018).",
+      "Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.).",
+      "Wiley. Chapter 19 (The Correlation Coefficient), Equations 19.5-19.8, pp. 307-308.\n\n",
+      "Also: Fisher, R. A. (1921). On the 'probable error' of a coefficient of",
+      "correlation deduced from a small sample. Metron, 1, 3-32."
+    ),
     roles = c(
       "r = anticipated correlation coefficient",
-      "epsilon = relative precision (fraction of r)"
+      if (prec_type == "relative") "epsilon = relative precision (margin d = epsilon * r)" else "precision = margin of error d (CI half-width, w = 2*d)",
+      sprintf("confidence level = %d%%", round(100 * (1 - alpha)))
     )
   )
 }
@@ -176,6 +224,7 @@ dispatch_estimation <- function(internal_keyword, args, alpha, power) {
     "singleCorrelation" = calculate_single_correlation(
       r = args$r,
       epsilon = args$epsilon,
+      precision = args$precision,
       alpha = alpha,
       power = power
     ),

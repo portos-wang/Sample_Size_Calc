@@ -1,0 +1,22 @@
+bibentry(
+  bibtype = "Manual",
+  title = "sampleSizeCalc: Sample Size Calculator for Clinical Research",
+  author = c(
+    person(
+      given = "Portos (Yishan)",
+      family = "Wang",
+      email = "portos.wang@gmail.com",
+      role = c("aut", "cre"),
+      comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)")
+    ),
+    person(
+      given = "Bingxin",
+      family = "Cai",
+      role = "aut",
+      comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)")
+    )
+  ),
+  year = "2026",
+  note = "R package version 3.1.0",
+  url = "https://github.com/portos-wang/sampleSizeCalc"
+)

@@ -1,23 +1,134 @@
 url: https://portos-wang.github.io/Sample_Size_Calc/
 
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [github]
+  components:
+    articles:
+      text: Guides / 完整指南
+      menu:
+        - text: "📖 中文完全使用指南 (零基础临床科研必读)"
+          href: articles/sampleSizeCalc-guide-zh.html
+        - text: "📘 English Comprehensive Guide (Zero-to-Hero)"
+          href: articles/sampleSizeCalc-guide-en.html
+        - text: "-----------------"
+        - text: "🚀 Quick Start & Package Overview"
+          href: articles/sampleSizeCalc.html
+
 reference:
-- title: Unified entry point
-  desc: >
-    Three-axis API (design x task x outcome) and the silently-compatible
-    legacy single-keyword entry point. See docs/DESIGN_MATRIX.md for the
-    full combination table.
-  contents:
-  - calculate
-  - sample_size_calculator
-  - sampleSizeCalculator
-- title: Result object
-  desc: S3 print/summary/plot methods for sample_size_result objects.
-  contents:
-  - print.sample_size_result
-  - summary.sample_size_result
-  - plot.sample_size_result
-- title: Utilities
-  desc: Standalone planning utilities.
-  contents:
-  - screen_required
-  - mrmc_power
+  - title: "Unified Three-Axis API / 统一三轴入口"
+    desc: >
+      Primary entry points supporting 39+ study design combinations
+      (design x task x outcome) and legacy single-keyword compatibility.
+    contents:
+      - calculate
+      - sample_size_calculator
+
+  - title: "Results Display & Visualisation / 结果输出与绘图"
+    desc: >
+      S3 print, summary, and ggplot2 visual diagnostic methods for sample_size_result objects.
+    contents:
+      - print.sample_size_result
+      - summary.sample_size_result
+      - plot.sample_size_result
+      - plot_power_curve
+      - plot_sample_size_comparison
+
+  - title: "Clinical Trials (RCTs) / 随机对照试验"
+    desc: >
+      Calculations for parallel-group randomised controlled trials across continuous,
+      binary, and time-to-event outcomes, covering superiority, non-inferiority, and equivalence.
+    contents:
+      - calculate_two_means
+      - calculate_two_proportions
+      - calculate_survival
+      - calculate_superiority_means
+      - calculate_superiority_proportions
+      - calculate_non_inferiority_means
+      - calculate_non_inferiority_proportions
+      - calculate_equivalence_means
+      - calculate_equivalence_proportions
+
+  - title: "Paired, Single-Arm & Crossover Designs / 配对、单臂与交叉设计"
+    desc: >
+      Within-subject paired comparisons, single-arm trials against historical benchmarks,
+      Simon two-stage designs, A'Hern single-stage, and 2x2 bioequivalence crossover trials.
+    contents:
+      - calculate_paired_means
+      - calculate_paired_proportions
+      - calculate_single_arm_mean
+      - calculate_single_arm_proportion
+      - calculate_simon_two_stage
+      - calculate_ahern
+      - calculate_crossover_mean
+      - calculate_bioequivalence
+
+  - title: "Observational & Epidemiological Studies / 观察性流行病学研究"
+    desc: >
+      Sample size calculations for prospective cohort studies (cumulative incidence and person-time rate),
+      unmatched/matched case-control studies, and cross-sectional prevalence surveys.
+    contents:
+      - calculate_cohort_proportion
+      - calculate_cohort_rate
+      - calculate_case_control
+      - calculate_case_control_matched
+      - calculate_crosstab_association
+
+  - title: "Single-Sample Precision Estimation / 单组参数置信区间估计"
+    desc: >
+      Determination of sample sizes required to estimate a population proportion (prevalence),
+      continuous mean, or Pearson correlation coefficient with a target margin of error.
+    contents:
+      - calculate_single_proportion
+      - calculate_single_mean
+      - calculate_single_correlation
+
+  - title: "Diagnostic Accuracy Studies / 诊断试验准确性研究"
+    desc: >
+      End-to-end sample size determination for diagnostic accuracy studies: sensitivity/specificity estimation,
+      single/dual-endpoint hypothesis testing, paired/unpaired comparisons, ROC-AUC (estimation, testing, margins),
+      and likelihood ratios.
+    contents:
+      - calculate_diagnostic_accuracy_v2
+      - calculate_diagnostic_superiority_single
+      - calculate_diagnostic_comparison_two
+      - calculate_diag_compare_margin_prop
+      - calculate_auc_single_v2
+      - calculate_auc_superiority
+      - calculate_auc_comparison
+      - calculate_diag_auc_compare_margin
+      - calculate_likelihood_ratio_v2
+      - screen_required
+      - mrmc_power
+
+  - title: "Complex & Modern Clinical Designs / 复杂与现代临床研究设计"
+    desc: >
+      Methodologies for cluster randomised trials (design effects), stepped-wedge cluster trials,
+      ordered categorical outcomes, clinical prediction model sample size, and interrupted time series.
+    contents:
+      - calculate_cluster_mean
+      - calculate_cluster_proportion
+      - apply_cluster_design
+      - calculate_stepped_wedge
+      - calculate_two_ordinal
+      - calculate_predictive_riley_binary
+      - calculate_predictive_timetoevent
+      - calculate_predictive_epv
+      - calculate_its_level
+      - calculate_kappa
+
+  - title: "Internal Validation & Utilities / 内部校验与辅助工具"
+    desc: >
+      Lower-level argument validation, standard normal quantiles, and assertion utilities.
+    contents:
+      - validate_sample_size_result
+      - assert_sample_size_result
+      - validate_design_args
+      - validate_alpha
+      - validate_power
+      - new_sample_size_result

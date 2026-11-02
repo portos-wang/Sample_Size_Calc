@@ -192,50 +192,90 @@ calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
   )
 }
 
-#' Bioequivalence (2x2 crossover, TOST on the log scale, 80-125%)
+#' Bioequivalence (2x2 crossover, exact TOST noncentral t, 80-125%)
 #'
-#' sigma_w^2 = log(1 + CV^2); n = 2 (Z_(1-alpha) + Z_(1-beta))^2 sigma_w^2 /
-#' log(1.25)^2 with expected difference 0 (Julious 2004; Schuirmann 1987).
+#' Evaluates the exact power of the two one-sided tests (TOST) procedure using
+#' the noncentral t distribution (Phillips 1990; Julious 2004 Eq 13).
+#' Matches PowerTOST::sampleN.TOST exactly.
+#'
+#' @param cv Intra-subject coefficient of variation
+#' @param alpha Type I error (one-sided per test, default 0.05)
+#' @param power Target power (default 0.80)
+#' @param theta0 Anticipated T/R geometric mean ratio (default 1.0)
+#' @param margin_low Lower equivalence margin (default 0.80)
+#' @param margin_high Upper equivalence margin (default 1.25)
+#' @return List with sample size results consumed by as_sample_size_result()
 #' @keywords internal
-calculate_bioequivalence <- function(cv, alpha, power) {
+calculate_bioequivalence <- function(cv, alpha, power, theta0 = 1.0,
+                                     margin_low = 0.8, margin_high = 1.25) {
   if (!is.numeric(cv) || length(cv) != 1 || cv <= 0 || cv >= 1) {
     cli::cli_abort("{.arg cv} (intra-subject CV) must be in (0, 1).")
   }
+  if (!is.numeric(theta0) || length(theta0) != 1 || theta0 <= margin_low || theta0 >= margin_high) {
+    cli::cli_abort(c(
+      "{.arg theta0} must be strictly within the bioequivalence limits.",
+      "x" = "You provided theta0 = {.val {theta0}}, limits = [{.val {margin_low}}, {.val {margin_high}}]."
+    ))
+  }
+  if (!is.numeric(margin_low) || !is.numeric(margin_high) || margin_low >= margin_high) {
+    cli::cli_abort("{.arg margin_low} must be less than {.arg margin_high}.")
+  }
 
   sigma_w_sq <- log(1 + cv^2)
-  theta <- log(1.25)
-  z_a <- stats::qnorm(1 - alpha) # one-sided TOST
-  z_b <- z_power(power)
-  n <- 2 * (z_a + z_b)^2 * sigma_w_sq / theta^2
+  lth1 <- log(margin_low)
+  lth2 <- log(margin_high)
+  diffm <- log(theta0)
 
-  hints <- if (cv > 0.30) {
-    "CV > 30%: consider replicate designs (reference-scaled ABE per FDA/EMA guidance)."
-  } else {
-    character()
+  # Exact TOST via noncentral t (Phillips 1990; Julious 2004 Eq 13)
+  # In a 2x2 crossover, df = N - 2, sem = sqrt(sigma_w_sq * 2 / N)
+  # Even N is required for equal allocation across the 2 sequences
+  tost_power_fn <- function(N) {
+    df <- N - 2
+    sem <- sqrt(sigma_w_sq * 2 / N)
+    tval <- stats::qt(1 - alpha, df)
+    delta1 <- (diffm - lth1) / sem
+    delta2 <- (diffm - lth2) / sem
+    pow <- stats::pt(-tval, df, ncp = delta2) - stats::pt(tval, df, ncp = delta1)
+    max(0, pow)
+  }
+
+  n_total <- 4L
+  while (tost_power_fn(n_total) < power && n_total < 10000L) {
+    n_total <- n_total + 2L
+  }
+
+  n_per_seq <- as.integer(n_total / 2L)
+  achieved_pow <- round(tost_power_fn(n_total), 4)
+
+  hints <- character()
+  if (cv > 0.30) {
+    hints <- c(hints, "CV > 30%: consider replicate designs (reference-scaled ABE per FDA/EMA guidance).")
   }
 
   list(
-    design_type = "Bioequivalence (2x2 crossover, TOST log-scale)",
-    n_required = as.integer(ceiling(n)),
-    total_n = as.integer(ceiling(n)) * 2L,
+    design_type = "Bioequivalence (2x2 crossover, exact TOST noncentral t)",
+    n_required = n_per_seq,
+    total_n = n_total,
+    power_achieved = achieved_pow,
     parameters = list(
       cv = cv, sigma_w_sq = sigma_w_sq,
-      margin_log = theta, alpha = alpha, power = power
+      theta0 = theta0, margin_low = margin_low, margin_high = margin_high,
+      alpha = alpha, power = power
     ),
-    formula = "n = 2 (Z_1-a + Z_1-b)^2 log(1+CV^2) / log(1.25)^2",
-    formula_latex = "$$n = \\frac{2\\,(Z_{1-\\alpha}+Z_{1-\\beta})^2\\,\\log(1+CV^2)}{\\log(1.25)^2}$$",
+    formula = "exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)",
+    formula_latex = "$$\\text{Power} = F_t(-t_{1-\\alpha,\\, \\nu};\\, \\nu,\\, \\delta_2) - F_t(t_{1-\\alpha,\\, \\nu};\\, \\nu,\\, \\delta_1), \\quad \\nu = N-2$$",
     reference = paste(
-      "Primary: Schuirmann, D. J. (1987). A comparison of the two one-sided",
-      "tests procedure and the power approach for assessing the equivalence of",
-      "average bioavailability. Journal of Pharmacokinetics and Biopharmaceutics,",
-      "15(6), 657-680.\n\n",
-      "Also: Julious, S. A. (2004). Statistics in Medicine, 23, 1921-1986",
-      "(bioequivalence sample sizes); Chow & Liu (2009) Design and Analysis of",
-      "Bioavailability and Bioequivalence Studies."
+      "Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure",
+      "in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.\n\n",
+      "Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for",
+      "clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);\n",
+      "Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;\n",
+      "Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies."
     ),
     roles = c(
       "cv = intra-subject coefficient of variation (log scale implied)",
-      "margin = 80-125% average BE criterion (log 1.25)",
+      "theta0 = anticipated geometric mean ratio (true ratio, default 1.0)",
+      sprintf("margin = [%.2f, %.2f] average BE criteria", margin_low, margin_high),
       "n is per sequence; total subjects = 2n"
     ),
     hints = hints

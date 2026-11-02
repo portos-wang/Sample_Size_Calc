@@ -4,7 +4,14 @@
 \alias{calculate_diagnostic_superiority_single}
 \title{Diagnostic superiority (single test) calculation}
 \usage{
-calculate_diagnostic_superiority_single(prob, p0, prevalence, alpha, power)
+calculate_diagnostic_superiority_single(
+  prob,
+  p0,
+  prevalence,
+  alpha,
+  power,
+  method = c("asymptotic", "exact")
+)
 }
 \arguments{
 \item{prob}{Expected accuracy}
@@ -16,6 +23,8 @@ calculate_diagnostic_superiority_single(prob, p0, prevalence, alpha, power)
 \item{alpha}{Type I error}
 
 \item{power}{Statistical power}
+
+\item{method}{Calculation method: "asymptotic" (Hajian-Tilaki 2014 Eq 6.8) or "exact" (A'Hern 2001 exact binomial)}
 }
 \value{
 List with calculation results

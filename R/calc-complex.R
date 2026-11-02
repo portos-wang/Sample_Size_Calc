@@ -181,7 +181,15 @@ calculate_simon_two_stage <- function(p0, p1, alpha, power, optimizer) {
       "p1 = desirable response rate (alternative)",
       "stage 1: stop for futility if responses <= r_stage_1 of n_stage_1",
       "overall: declare effective if responses > r_total of n_total"
-    )
+    ),
+    hints = if (optimizer == "minimax") {
+      c(
+        "Multiple designs may achieve the minimum total sample size N;",
+        "this implementation selects the design minimizing Type I error (alpha) among ties."
+      )
+    } else {
+      character()
+    }
   )
 }
 
@@ -677,6 +685,11 @@ calculate_stepped_wedge <- function(theta, tau2, sigma2_ind, m, n_clusters,
       "sigma2_ind = individual-level variance (binary: p(1-p))",
       "m = individuals sampled per cluster per time point",
       "clusters_per_step = clusters randomized at each step (full design)"
+    ),
+    hints = c(
+      "Hussey & Hughes (2007) Eq 8 assumes no underlying calendar time trends.",
+      "If secular time trends are present, statistical power may be lower;",
+      "consider incorporating time fixed effects via simulation or swCRTdesign."
     )
   )
 }

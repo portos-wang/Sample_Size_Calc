@@ -1,7 +1,19 @@
 Package: sampleSizeCalc
 Title: Sample Size Calculator for Clinical Research
-Version: 3.1.0
-Authors@R: person("Qoder", "AI Coding Assistant", email = "qoder@example.com", role = c("aut", "cre"))
+Version: 3.1.1
+Authors@R: c(
+    person(given = "Portos (Yishan)",
+           family = "Wang",
+           email = "portos.wang@gmail.com",
+           role = c("aut", "cre"),
+           comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)")),
+    person(given = "Bingxin",
+           family = "Cai",
+           role = "aut",
+           comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)"))
+  )
+Author: Portos (Yishan) Wang [aut, cre], Bingxin Cai [aut]
+Maintainer: Portos (Yishan) Wang <portos.wang@gmail.com>
 Description: A comprehensive tool for calculating sample sizes across
     various clinical study designs. Provides a three-axis application
     programming interface (design, statistical task, and outcome type)

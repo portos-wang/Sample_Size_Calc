@@ -101,12 +101,23 @@ test_that("crossoverMean uses 2*sigma_w^2 parameterization", {
   expect_identical(res$total_n, 72L) # per sequence x2
 })
 
-test_that("bioequivalence CV=25% gives 16 per sequence (transparent formula)", {
-  # sigma_w^2 = log(1.0625) = 0.060625
-  # n = 2*(1.6449+0.8416)^2*0.060625/0.22314^2 = 15.06 -> 16
+test_that("bioequivalence CV=25% matches exact TOST (Phillips 1990) and PowerTOST", {
+  # CV = 0.25, theta0 = 1.0, 80% power -> n = 12 per sequence, total N = 24
   res <- calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
-  expect_identical(res$n_required, 16L)
-  expect_identical(res$total_n, 32L)
+  expect_identical(res$n_required, 12L)
+  expect_identical(res$total_n, 24L)
+
+  # Check with theta0 = 0.95 -> n = 14 per sequence, total N = 28
+  res_095 <- calculate("bioequivalence", "equivalence", "mean", cv = 0.25, theta0 = 0.95)
+  expect_identical(res_095$n_required, 14L)
+  expect_identical(res_095$total_n, 28L)
+
+  if (requireNamespace("PowerTOST", quietly = TRUE)) {
+    pt_ref <- PowerTOST::sampleN.TOST(CV = 0.25, theta0 = 1.0, targetpower = 0.8, print = FALSE)
+    expect_identical(res$total_n, as.integer(pt_ref[1, "Sample size"]))
+    pt_ref_095 <- PowerTOST::sampleN.TOST(CV = 0.25, theta0 = 0.95, targetpower = 0.8, print = FALSE)
+    expect_identical(res_095$total_n, as.integer(pt_ref_095[1, "Sample size"]))
+  }
 })
 
 test_that("bioequivalence warns for high CV (replicate design hint)", {
@@ -137,4 +148,18 @@ test_that("dual endpoint takes the max of Se and Sp requirements at dual_power",
 test_that("dual endpoint default is off (golden master untouched)", {
   res <- calculate("diagAccuracy", "test", "proportion", prob = 0.9, p0 = 0.8)
   expect_null(res$parameters$dual)
+})
+
+test_that("diagAccuracy test supports method='exact' (A'Hern exact binomial)", {
+  # prob = 0.85, p0 = 0.70, alpha = 0.05, power = 0.80
+  # Asymptotic formula gives 50 cases
+  res_asym <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70)
+  expect_identical(res_asym$target_state_cases_needed, 50L)
+
+  # Exact method gives 49 cases, critical successes r = 40
+  res_exact <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, method = "exact")
+  expect_identical(res_exact$target_state_cases_needed, 49L)
+  expect_identical(res_exact$critical_successes, 40L)
+  expect_true(res_exact$actual_alpha <= 0.05)
+  expect_true(res_exact$actual_power >= 0.80)
 })

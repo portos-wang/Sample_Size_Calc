@@ -225,6 +225,10 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
       "sens/spec = expected sensitivity/specificity (determine the observed LR)",
       "target_lr = LR boundary the CI must not cross (precision target)",
       "n is computed per group (equal cases and controls)"
+    ),
+    hints = c(
+      "Calculates sample size ensuring the log-scale CI does not cross target_lr (threshold precision),",
+      "distinct from fixed-width CI approaches (e.g. presize::prec_lr)."
     )
   )
 }

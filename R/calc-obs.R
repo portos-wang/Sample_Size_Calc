@@ -120,7 +120,8 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
       "rate0 = unexposed-group incidence rate (events per person-time)",
       "rate1 = exposed-group incidence rate",
       "ratio = unexposed:exposed person-time ratio",
-      "effect measure: incidence rate ratio IRR"
+      "effect measure: incidence rate ratio IRR",
+      "person-time = total follow-up time; for fixed duration FT, subjects needed = person-time / FT"
     )
   )
 }
@@ -184,8 +185,8 @@ calculate_case_control_matched <- function(p0, OR, alpha, power) {
     roles = c(
       "p0 = control-group exposure rate",
       "OR = odds ratio to detect (p1 derived from p0 and OR)",
-      "psi = expected discordant-pair proportion (pi10 + pi01)",
-      "note = individually matched designs require the matched-pair formula"
+      "psi = expected discordant-pair proportion (pi10 + pi01 = p1*(1-p0) + p0*(1-p1))",
+      "note = individually matched designs require discordant-pair proportions (psi), NOT the discordant odds ratio"
     )
   )
 }

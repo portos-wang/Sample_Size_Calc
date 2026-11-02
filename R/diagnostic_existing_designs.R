@@ -5,27 +5,89 @@
 #' @param prevalence Disease prevalence
 #' @param alpha Type I error
 #' @param power Statistical power
+#' @param method Calculation method: "asymptotic" (Hajian-Tilaki 2014 Eq 6.8) or "exact" (A'Hern 2001 exact binomial)
 #' @return List with calculation results
 #' @name calculate_diagnostic_superiority_single
 #' @keywords internal
-calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha, power) {
+calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha, power,
+                                                   method = c("asymptotic", "exact")) {
   p_val <- prob
   p0_val <- p0
   prev_val <- if (is.null(prevalence)) 1 else prevalence
+  method <- rlang::arg_match(method, c("asymptotic", "exact"))
+
+  if (method == "exact") {
+    # Exact binomial single-stage design (A'Hern 2001)
+    # Find smallest n and cutoff r such that P(X >= r | p0) <= alpha and P(X >= r | prob) >= power
+    n_found <- NULL
+    r_found <- NULL
+    for (n in seq_len(2000)) {
+      # Critical value r: smallest integer such that P(X >= r | p0) <= alpha
+      # i.e., P(X <= r - 1 | p0) >= 1 - alpha
+      r <- stats::qbinom(1 - alpha, size = n, prob = p0_val) + 1L
+      if (r <= n) {
+        # Check power at alternative prob
+        pwr <- stats::pbinom(r - 1L, size = n, prob = p_val, lower.tail = FALSE)
+        if (pwr >= power) {
+          n_found <- n
+          r_found <- r
+          break
+        }
+      }
+    }
+    if (is.null(n_found)) {
+      cli::cli_abort("No feasible exact design found within n = 2000.")
+    }
+
+    actual_alpha <- stats::pbinom(r_found - 1L, size = n_found, prob = p0_val, lower.tail = FALSE)
+    actual_power <- stats::pbinom(r_found - 1L, size = n_found, prob = p_val, lower.tail = FALSE)
+
+    return(list(
+      design_type = "Diagnostic superiority (single test, exact binomial)",
+      target_state_cases_needed = as.integer(n_found),
+      total_subjects_to_screen = as.integer(ceiling(n_found / prev_val)),
+      critical_successes = as.integer(r_found),
+      actual_alpha = round(actual_alpha, 4),
+      actual_power = round(actual_power, 4),
+      parameters = list(
+        prob = p_val,
+        p0 = p0_val,
+        prevalence = prev_val,
+        alpha = alpha,
+        power = power,
+        method = "exact"
+      ),
+      formula = "exact binomial: P(X >= r | p0) <= alpha and P(X >= r | prob) >= power",
+      formula_latex = "$$P(X \\ge r \\mid p_0) \\le \\alpha \\quad \\text{and} \\quad P(X \\ge r \\mid p) \\ge 1-\\beta$$",
+      reference = paste(
+        "Primary (exact binomial): A'Hern, R. P. (2001). Single stage and double",
+        "sampling phase II trials. British Journal of Cancer, 85(2), 223-226.\n\n",
+        "Also: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic",
+        "test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204."
+      ),
+      roles = c(
+        "prob = expected diagnostic sensitivity/specificity",
+        "p0 = unacceptable/null sensitivity or specificity threshold",
+        sprintf("critical_successes = declare superior if correct cases >= %d of %d", r_found, n_found)
+      )
+    ))
+  }
+
   zAlpha <- qnorm(1 - alpha)
   zBeta <- qnorm(power)
   nTargetCases <- ((zAlpha * sqrt(p0_val * (1 - p0_val)) + zBeta * sqrt(p_val * (1 - p_val))) / (p_val - p0_val))^2
 
   list(
     design_type = "Diagnostic superiority (single)",
-    target_state_cases_needed = ceiling(nTargetCases),
-    total_subjects_to_screen = ceiling(nTargetCases / prev_val),
+    target_state_cases_needed = as.integer(ceiling(nTargetCases)),
+    total_subjects_to_screen = as.integer(ceiling(nTargetCases / prev_val)),
     parameters = list(
       prob = p_val,
       p0 = p0_val,
       prevalence = prev_val,
       alpha = alpha,
-      power = power
+      power = power,
+      method = "asymptotic"
     ),
     formula = "N_cases = [Za*sqrt(P0*Q0) + Zb*sqrt(P*Q)]^2 / (P-P0)^2",
     formula_latex = "$$n = \\frac{\\left[Z_{\\alpha}\\sqrt{p_0(1-p_0)} + Z_{\\beta}\\sqrt{p(1-p)}\\right]^2}{(p - p_0)^2}$$",

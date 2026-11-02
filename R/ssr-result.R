@@ -101,7 +101,10 @@ new_sample_size_result <- function(design,
       cases_needed = legacy$cases_needed,
       controls_needed = legacy$controls_needed,
       total_subjects = legacy$total_subjects,
-      recommended_cases = legacy$recommended_cases
+      recommended_cases = legacy$recommended_cases,
+      critical_successes = legacy$critical_successes,
+      actual_alpha = legacy$actual_alpha,
+      actual_power = legacy$actual_power
     ),
     class = c("sample_size_result", "list")
   )

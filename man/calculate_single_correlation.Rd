@@ -2,13 +2,33 @@
 % Please edit documentation in R/calc-estimation.R
 \name{calculate_single_correlation}
 \alias{calculate_single_correlation}
-\title{Internal calculation: single correlation coefficient precision (Fisher z)}
+\title{Internal calculation: single correlation coefficient precision (Fisher z / Machin)}
 \usage{
-calculate_single_correlation(r, epsilon, alpha, power)
+calculate_single_correlation(
+  r,
+  epsilon = NULL,
+  precision = NULL,
+  alpha = 0.05,
+  power = NULL
+)
+}
+\arguments{
+\item{r}{Anticipated correlation coefficient}
+
+\item{epsilon}{Relative precision (margin d = epsilon * r)}
+
+\item{precision}{Absolute margin of error d (half-width of CI)}
+
+\item{alpha}{Type I error (two-sided CI, default 0.05)}
+
+\item{power}{Ignored (estimation design)}
+}
+\value{
+List consumed by as_sample_size_result()
 }
 \description{
-n = ((1 + r^2) / (r * epsilon))^2 + 3 for relative precision epsilon
-(Machin 2018 Ch.19, Eq 19.2); a test-oriented variant uses
-n = (Z_a/2 + Z_b)^2 / (atanh(r1) - atanh(r0))^2 + 3.
+Sample size for estimating a Pearson correlation coefficient with pre-specified
+confidence interval width w = 2*d (Machin et al. 2018, Ch.19, Equations 19.5-19.8).
+Matches presize::prec_cor for identical parameters.
 }
 \keyword{internal}

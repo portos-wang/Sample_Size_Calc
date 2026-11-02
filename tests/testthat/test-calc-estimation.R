@@ -37,10 +37,22 @@ test_that("singleMean computes Z^2*sigma^2/d^2", {
   expect_identical(res$n_required, 97L)
 })
 
-test_that("singleCorrelation matches the Machin Ch.19 formula", {
-  # r = 0.5, epsilon = 0.10: ((1+0.25)/(0.5*0.1))^2 + 3 = 25^2+3 = 628
+test_that("singleCorrelation matches Machin 2018 Ch.19 Eqs 19.5-19.8 and presize::prec_cor", {
+  # r = 0.5, epsilon = 0.10 (d = 0.05, 95% CI width w = 0.10) -> 867 (matches presize exactly)
   res <- calculate("singleCorrelation", r = 0.5, epsilon = 0.10)
-  expect_identical(res$n_required, 628L)
+  expect_identical(res$n_required, 867L)
+  if (requireNamespace("presize", quietly = TRUE)) {
+    ref1 <- presize::prec_cor(r = 0.5, conf.width = 0.10, method = "pearson")
+    expect_identical(res$n_required, as.integer(ref1$n))
+  }
+
+  # r = 0.5, precision = 0.10 (95% CI width w = 0.20) -> matches presize exactly: 219
+  res2 <- calculate("singleCorrelation", r = 0.5, precision = 0.10)
+  expect_identical(res2$n_required, 219L)
+  if (requireNamespace("presize", quietly = TRUE)) {
+    ref2 <- presize::prec_cor(r = 0.5, conf.width = 0.20, method = "pearson")
+    expect_identical(res2$n_required, as.integer(ref2$n))
+  }
 })
 
 test_that("estimation designs carry roles and axis metadata", {

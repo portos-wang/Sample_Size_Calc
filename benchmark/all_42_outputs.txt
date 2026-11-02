@@ -1,0 +1,609 @@
+
+======================================================================
+【场景】 1.1 双臂平行RCT - 两独立样本均数检验 
+【代码】
+ calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2 
+公式 (LaTeX): $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 1.2 双臂平行RCT - 两独立样本比例检验 
+【代码】
+ calculate("rct", "test", "proportion", p1 = 0.85, p2 = 0.70, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Z_a/2 * sqrt(2*p_bar*(1-p_bar)) + Z_b * sqrt(p1*(1-p1)+p2*(1-p2)))^2 / (p1-p2)^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$ 
+文献出处:
+ Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.
+
+With continuity correction: Casagrande, J. T., Pike, M. C., & Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.
+
+Book: Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley. 
+
+======================================================================
+【场景】 1.3 双臂平行RCT - 生存分析(Log-rank事件数) 
+【代码】
+ calculate("rct", "test", "survival", hr = 0.70, pE = 0.50, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): E = (Z_a/2 + Z_b)^2 / (pE*(1-pE)*log(HR)^2) 
+公式 (LaTeX): $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$ 
+文献出处:
+ Primary: Schoenfeld, D. A. (1983). Sample-size formula for the proportional-hazards regression model. Biometrics, 39(2), 499-503.
+
+Extensions:
+- Hsieh, F. Y., & Lavori, P. W. (2000). Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates. Controlled Clinical Trials, 21(6), 552-560.
+- Rubinstein, L. V., Gail, M. H., & Santner, T. J. (1981). Planning the duration of a comparative clinical trial with loss to follow-up and a period of continued observation. Journal of Chronic Diseases, 34(9-10), 469-479. 
+
+======================================================================
+【场景】 1.4 双臂平行RCT - 均数非劣效性检验 
+【代码】
+ calculate("rct", "noninferiority", "mean", mean1 = 10, mean2 = 9.5, sd = 3, margin = 1, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2*(Z_a+Z_b)^2*sd^2/(mean1-mean2+margin)^2 
+公式 (LaTeX): $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 + \Delta}\right)^2$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 1.5 双臂平行RCT - 比例非劣效性检验 
+【代码】
+ calculate("rct", "noninferiority", "proportion", p1 = 0.85, p2 = 0.85, margin = 0.05, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Za+Zb)^2 * (p1q1+p2q2) / (p1-p2+margin)^2 
+公式 (LaTeX): $$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}$$ 
+文献出处:
+ Primary: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press; Machin et al. (2018) Chapter 11 (Non-inferiority and Equivalence). 
+
+======================================================================
+【场景】 1.6 双臂平行RCT - 均数优效性检验 
+【代码】
+ calculate("rct", "superiority", "mean", mean1 = 12, mean2 = 10, sd = 3, margin = 1, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 - \Delta}\right)^2$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 1.7 双臂平行RCT - 比例优效性检验 
+【代码】
+ calculate("rct", "superiority", "proportion", p1 = 0.30, p2 = 0.20, margin = 0.05, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n = \frac{(Z_{\alpha} + Z_{\beta})^2[p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 - \Delta)^2}$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 1.8 双臂平行RCT - 均数等效性检验 
+【代码】
+ calculate("rct", "equivalence", "mean", mean1 = 10, mean2 = 10.2, sd = 3, margin = 1, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 - \mu_2|}\right)^2$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 1.9 双臂平行RCT - 比例等效性检验 
+【代码】
+ calculate("rct", "equivalence", "proportion", p1 = 0.50, p2 = 0.52, margin = 0.10, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n = \frac{(Z_{\alpha} + Z_{\beta/2})^2[p_1(1-p_1) + p_2(1-p_2)]}{(\Delta - |p_1-p_2|)^2}$$ 
+文献出处:
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 2.1 配对试验 - 配对均数比较 
+【代码】
+ calculate("paired", "test", "mean", meanDiff = 2, sdDiff = 3, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = ((Z_a/2 + Z_b) * sd_diff / mean_diff)^2 
+公式 (LaTeX): $$n = \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma_d}{\mu_d}\right)^2$$ 
+文献出处:
+ Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning. 
+
+======================================================================
+【场景】 2.2 配对试验 - 配对比例比较(McNemar/Connor) 
+【代码】
+ calculate("paired", "test", "proportion", p1 = 0.80, p2 = 0.60, psi = 0.25, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}$$ 
+文献出处:
+ Primary: Connor, R. J. (1987). Sample size for testing differences in proportions for the paired-sample design. Biometrics, 43(1), 207-211.
+
+ Also: Akoglu, H. (2022). Turkish Journal of Emergency Medicine, 22(4), Table 2 Eq 3b + Tables 6A/6B (uncorrected and Yates-corrected values). 
+
+======================================================================
+【场景】 2.3 单臂试验 - 均数对比已知标准值 
+【代码】
+ calculate("rctSingleArm", "test", "mean", mu0 = 10, mu1 = 12, sigma = 3, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Za/2 + Zb)^2 * sigma^2 / (mu1-mu0)^2 
+公式 (LaTeX): $$n = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 5 (Continuous Outcomes, single-sample comparison). 
+
+======================================================================
+【场景】 2.4 单臂试验 - 比例对比历史对照率 
+【代码】
+ calculate("rctSingleArm", "test", "proportion", p0 = 0.70, p1 = 0.80, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = [Za*sqrt(p0q0) + Zb*sqrt(p1q1)]^2/(p1-p0)^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p_1(1-p_1)}\right]^2}{(p_1 - p_0)^2}$$ 
+文献出处:
+ Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 6.8; worked example 0.70 vs 0.80 -> n=153).
+
+ Also: Akoglu, H. (2022). Table 2, Equation 2; Machin et al. (2018) Ch.3. 
+
+======================================================================
+【场景】 2.5 单臂肿瘤II期 - Simon两阶段最优设计(Optimal) 
+【代码】
+ calculate("singleArmPhaseII", "test", "proportion", p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8, optimizer = "optimal") 
+【真实运行输出】
+公式 (ASCII): exact binomial: P(effective|p0) <= alpha and P(effective|p1) >= power 
+文献出处:
+ Primary: Simon, R. (1989). Optimal two-stage designs for phase II clinical trials. Controlled Clinical Trials, 10(1), 1-10.
+
+ Also: Machin et al. (2018) Chapter 17 (Therapeutic Exploratory Trials). 
+
+======================================================================
+【场景】 2.6 单臂肿瘤II期 - Simon两阶段极小极大设计(Minimax) 
+【代码】
+ calculate("singleArmPhaseII", "test", "proportion", p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8, optimizer = "minimax") 
+【真实运行输出】
+公式 (ASCII): exact binomial: P(effective|p0) <= alpha and P(effective|p1) >= power 
+文献出处:
+ Primary: Simon, R. (1989). Optimal two-stage designs for phase II clinical trials. Controlled Clinical Trials, 10(1), 1-10.
+
+ Also: Machin et al. (2018) Chapter 17 (Therapeutic Exploratory Trials). 
+
+======================================================================
+【场景】 2.7 单臂肿瘤II期 - A'Hern单阶段精确二项设计 
+【代码】
+ sampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+$design_type
+[1] "Single-arm phase II (A'Hern single-stage)"
+
+$n_required
+[1] 25
+
+$r_total
+[1] 5
+
+$parameters
+$parameters$p0
+[1] 0.1
+
+$parameters$p1
+[1] 0.3
+
+$parameters$alpha
+[1] 0.05
+
+$parameters$power
+[1] 0.8
+
+
+$formula
+[1] "P(X > r | p0) <= alpha and P(X > r | p1) >= power"
+
+$formula_latex
+NULL
+
+$reference
+[1] "Primary: A'Hern, R. P. (2001). Single stage and double sampling phase II trials. British Journal of Cancer, 85(2), 223-226."
+
+$roles
+[1] "p0 = unacceptable response rate"                       
+[2] "p1 = desirable response rate"                          
+[3] "declare effective if responses > r_total of n_required"
+
+公式 (ASCII): P(X > r | p0) <= alpha and P(X > r | p1) >= power 
+文献出处:
+ Primary: A'Hern, R. P. (2001). Single stage and double sampling phase II trials. British Journal of Cancer, 85(2), 223-226. 
+
+======================================================================
+【场景】 2.8 交叉设计 - 2x2交叉试验均数比较 
+【代码】
+ calculate("crossover", "test", "mean", delta = 2, sigma_within = 3, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 (per sequence) 
+公式 (LaTeX): $$n = \frac{2(Z_{\alpha/2}+Z_{\beta})^2\sigma_w^2}{\delta^2}$$ 
+文献出处:
+ Primary: Senn, S. (2002). Cross-over Trials in Clinical Research (2nd ed.). Wiley.
+
+ Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (crossover section). 
+
+======================================================================
+【场景】 2.9 生物等效性(BE) - 2x2交叉精确TOST非中心t检验 
+【代码】
+ calculate("bioequivalence", cv = 0.25, theta0 = 1.0, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1) 
+公式 (LaTeX): $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$ 
+文献出处:
+ Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
+
+ Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);
+ Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;
+ Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies. 
+
+======================================================================
+【场景】 3.1 前瞻性队列研究 - 累积发病率与相对危险度(RR) 
+【代码】
+ calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, ratio = 1, dropout = 0.10, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n1 = [Za*sqrt((1+1/m)*pbar*(1-pbar)) + Zb*sqrt(p1q1+p0q0/m)]^2/(p1-p0)^2 
+公式 (LaTeX): $$n_{1} = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+\frac{p_0(1-p_0)}{m}}\right]^2}{(p_1-p_0)^2}$$ 
+文献出处:
+ Primary: Bhardwaj et al. (2024). Journal of Family Medicine and Primary Care, 13(7), 2559 (worked example: p0=0.20, p1=0.30, m=1 -> 293/group).
+
+ Also: Schlesselman, J. J. (1982). Case-Control Studies. Oxford University Press (cohort/case-control shared formula, roles swapped); Machin et al. (2018) Ch.3. 
+
+======================================================================
+【场景】 3.2 队列研究 - 人时发病率比(IRR) 
+【代码】
+ calculate("cohort", "test", "rate", rate0 = 0.10, rate1 = 0.20, ratio = 1, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): T0 = (Za/2+Zb)^2 * (l1/r + l0) / (l1-l0)^2 ; T1 = r*T0 
+公式 (LaTeX): $$T_{0} = \frac{(Z_{\alpha/2}+Z_{\beta})^2(\lambda_1/r+\lambda_0)}{(\lambda_1-\lambda_0)^2}, \quad T_1 = r \cdot T_0$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 6 (Rate Outcomes).
+
+ Also: Breslow, N. E., & Day, N. E. (1987). Statistical Methods in Cancer Research Vol. II. IARC (person-time rate comparison). 
+
+======================================================================
+【场景】 3.3 病例对照研究 - 频数匹配与优势比(OR) 
+【代码】
+ calculate("caseControl", p0 = 0.30, OR = 2.0, m = 1, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n_{cases} = \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}$$ 
+文献出处:
+ Primary: Schlesselman, J. J. (1982). Case-control studies: Design, conduct, analysis. Oxford University Press.
+
+IARC classic: Breslow, N. E., & Day, N. E. (1980). Statistical methods in cancer research: Volume I - The analysis of case-control studies. IARC Scientific Publications No. 32.
+
+For individually matched designs (not the formula implemented here): Dupont, W. D. (1988). Power calculations for matched case-control studies. Biometrics, 44(4), 1157-1168; see the caseControlMatched design. 
+
+======================================================================
+【场景】 3.4 病例对照研究 - 1:1个体配对 
+【代码】
+ calculate("caseControlMatched", p0 = 0.30, OR = 2.0, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2 
+公式 (LaTeX): $$n_{pairs} = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}$$ 
+文献出处:
+ Primary: Dupont, W. D. (1988). Power calculations for matched case-control studies. Biometrics, 44(4), 1157-1168.
+
+ Also: Schlesselman, J. J. (1982). Case-Control Studies, Oxford University Press (matched-pair approximation, p.174); Connor, R. J. (1987). Biometrics, 43(1), 207-211. 
+
+======================================================================
+【场景】 3.5 现况研究/横断面调查 - 患病率关联性分析 
+【代码】
+ calculate("crosstab", p0 = 0.20, p1 = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n1 = [Za*sqrt((1+1/m)*pbar*(1-pbar)) + Zb*sqrt(p1q1+p0q0/m)]^2/(p1-p0)^2 
+公式 (LaTeX): $$n_{1} = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+\frac{p_0(1-p_0)}{m}}\right]^2}{(p_1-p_0)^2}$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 3 (Binary Outcomes).
+
+ Also: Bhardwaj et al. (2024), p. 2558-2559. 
+
+======================================================================
+【场景】 4.1 总体比例估计 - 患病率抽样调查 
+【代码】
+ calculate("singleProportion", p = 0.10, precision = 0.02, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): n = Z^2 * p(1-p) / d^2 
+公式 (LaTeX): $$n = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$ 
+文献出处:
+ Bhardwaj et al. (2024). Determination of sample size for various study designs in medical research: A practical primer. Journal of Family Medicine and Primary Care, 13(7), 2555-2561 (p. 2558).
+
+Also: Lwanga, S. K., & Lemeshow, S. (1991). Sample size determination in health studies: A practical manual. World Health Organization. 
+
+======================================================================
+【场景】 4.2 总体均数估计 - 常模均值抽样调查 
+【代码】
+ calculate("singleMean", sigma = 10, precision = 2, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): n = (Z * sigma / d)^2 
+公式 (LaTeX): $$n = \left(\frac{Z_{1-\alpha/2} \cdot \sigma}{d}\right)^2$$ 
+文献出处:
+ Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 9.
+
+Also: Bhardwaj et al. (2024), p. 2558 (continuous outcome precision). 
+
+======================================================================
+【场景】 4.3 相关系数估计 - Pearson相关系数Fisher-z精确置信区间 
+【代码】
+ calculate("singleCorrelation", r = 0.50, precision = 0.10, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): Machin 19.5-19.8: N_P0 = 4*z^2*(1-r^2)^2/w^2 + 3, refined via Fisher z bounds 
+公式 (LaTeX): $$N_{P0} = \frac{4 z_{1-\alpha/2}^2 (1-r^2)^2}{w^2} + 3, \quad N_{Final} = (N_{P0}-3)\left(\frac{w_0}{w}\right)^2 + 3$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 19 (The Correlation Coefficient), Equations 19.5-19.8, pp. 307-308.
+
+ Also: Fisher, R. A. (1921). On the 'probable error' of a coefficient of correlation deduced from a small sample. Metron, 1, 3-32. 
+
+======================================================================
+【场景】 5.1 诊断准确性 - 敏感度/特异度置信区间估计与筛查人数转化 
+【代码】
+ calculate("diagAccuracy", "estimate", "proportion", prob = 0.85, d = 0.05, prevalence = 0.20, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2 
+公式 (LaTeX): $$n_{{{cases}}} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$ 
+文献出处:
+ Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+
+Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. 
+
+======================================================================
+【场景】 5.2 诊断准确性 - 单端点优效性检验(渐近正态法) 
+【代码】
+ calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): N_cases = [Za*sqrt(P0*Q0) + Zb*sqrt(P*Q)]^2 / (P-P0)^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}$$ 
+文献出处:
+ Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013 
+
+======================================================================
+【场景】 5.3 诊断准确性 - 单端点优效性检验(A'Hern精确二项法) 
+【代码】
+ calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, method = "exact", alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): exact binomial: P(X >= r | p0) <= alpha and P(X >= r | prob) >= power 
+公式 (LaTeX): $$P(X \ge r \mid p_0) \le \alpha \quad \text{and} \quad P(X \ge r \mid p) \ge 1-\beta$$ 
+文献出处:
+ Primary (exact binomial): A'Hern, R. P. (2001). Single stage and double sampling phase II trials. British Journal of Cancer, 85(2), 223-226.
+
+ Also: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. 
+
+======================================================================
+【场景】 5.4 诊断准确性 - 双端点(敏感度+特异度同时满足80%把握度)协同设计 
+【代码】
+ calculate("diagAccuracy", "test", "proportion", prob = 0.90, p0 = 0.80, prob_spec = 0.85, p0_spec = 0.75, prevalence = 0.40, dual = TRUE) 
+【真实运行输出】
+公式 (ASCII): n = [Za*sqrt(p0q0) + Zb*sqrt(pq)]^2/(p-p0)^2, each at dual_power; take max 
+公式 (LaTeX): $$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$ 
+文献出处:
+ Strategy: Akoglu, H. (2022). User's guide to sample size estimation in diagnostic accuracy studies. Turkish Journal of Emergency Medicine, 22(4), 177-185 (p. 184: each endpoint at 90% power -> ~80% overall). 
+
+======================================================================
+【场景】 5.5 诊断方法比较 - 非配对两法敏感度比较 
+【代码】
+ calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = FALSE, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sigma_{paired} + Z_{\beta}\sqrt{\sigma_{paired}^2 - (p_1-p_2)^2/4}\right]^2}{(p_1-p_2)^2}$$ 
+文献出处:
+ Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+
+Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. 
+
+======================================================================
+【场景】 5.6 诊断方法比较 - 配对两法敏感度比较(Connor核) 
+【代码】
+ calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = TRUE, psi = 0.10, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}$$ 
+文献出处:
+ Primary: Connor, R. J. (1987). Biometrics, 43(1), 207-211.
+
+ Also: Akoglu, H. (2022). Turkish Journal of Emergency Medicine, 22(4), Table 2 Eq 3b + Tables 6A/6B; Zhou et al. (2011) Section 6.2.2. 
+
+======================================================================
+【场景】 5.7 诊断方法比较 - 诊断准确度非劣效性检验 
+【代码】
+ calculate("diagAccuracyCompare", "noninferiority", "proportion", p1 = 0.90, p2 = 0.88, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Za+Zb)^2 * (p1q1+p2q2) / (p1-p2+margin)^2 
+公式 (LaTeX): $$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}$$ 
+文献出处:
+ Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press (margin designs); Machin et al. (2018) Ch.11.
+
+ Diagnostic application: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Section 6.3 (non-inferiority/equivalency of two tests), pp. 214-218. 
+
+======================================================================
+【场景】 5.8 诊断方法比较 - 诊断准确度等效性检验 
+【代码】
+ calculate("diagAccuracyCompare", "equivalence", "proportion", p1 = 0.90, p2 = 0.89, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Za+Zb/2)^2 * (p1q1+p2q2) / (margin-|p1-p2|)^2 
+公式 (LaTeX): $$n = \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}$$ 
+文献出处:
+ Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press (margin designs); Machin et al. (2018) Ch.11.
+
+ Diagnostic application: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Section 6.3 (non-inferiority/equivalency of two tests), pp. 214-218. 
+
+======================================================================
+【场景】 5.9 ROC曲线下面积(AUC) - 置信区间精度估计(双正态模型) 
+【代码】
+ calculate("diagAUC", "estimate", "auc", auc = 0.80, d = 0.10, ratio = 1, var_method = "binormal", alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): N_cases = (Z_1-a/2 / d)^2 * V(AUC) 
+公式 (LaTeX): $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$ 
+文献出处:
+ Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
+
+ Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
+ Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162. 
+
+======================================================================
+【场景】 5.10 ROC曲线下面积(AUC) - 单法优效性检验 
+【代码】
+ calculate("diagAUC", "test", "auc", auc = 0.80, auc0 = 0.70, prevalence = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n_{cases} = \frac{\left(Z_{\alpha}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$ 
+文献出处:
+ Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+
+Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. 
+
+======================================================================
+【场景】 5.11 ROC曲线下面积(AUC) - 两法AUC比较 
+【代码】
+ calculate("diagAUCCompare", "test", "auc", auc1 = 0.80, auc2 = 0.70, r = 0.50, prevalence = 0.30, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (LaTeX): $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$ 
+文献出处:
+ Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013 
+
+======================================================================
+【场景】 5.12 ROC曲线下面积(AUC) - 两法AUC非劣效性检验 
+【代码】
+ calculate("diagAUCCompare", "noninferiority", "auc", auc1 = 0.85, auc2 = 0.82, r = 0.50, margin = 0.05, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2(Za+Zb)^2 * V * (1-r) / (auc1-auc2+margin)^2 
+公式 (LaTeX): $$n = \frac{2(Z_{\alpha}+Z_{\beta})^2 V(1-r)}{(AUC_1-AUC_2+\Delta)^2}$$ 
+文献出处:
+ Framework: margin designs per Chow et al. (2017); Machin et al. (2018) Ch.11. AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
+
+ Diagnostic application: Zhou et al. (2011) Section 6.3, pp. 214-218. 
+
+======================================================================
+【场景】 5.13 ROC曲线下面积(AUC) - 两法AUC等效性检验 
+【代码】
+ calculate("diagAUCCompare", "equivalence", "auc", auc1 = 0.85, auc2 = 0.84, r = 0.50, margin = 0.05, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2(Za+Zb/2)^2 * V * (1-r) / (margin-|auc1-auc2|)^2 
+公式 (LaTeX): $$n = \frac{2(Z_{\alpha}+Z_{\beta/2})^2 V(1-r)}{(\Delta-|AUC_1-AUC_2|)^2}$$ 
+文献出处:
+ Framework: margin designs per Chow et al. (2017); Machin et al. (2018) Ch.11. AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
+
+ Diagnostic application: Zhou et al. (2011) Section 6.3, pp. 214-218. 
+
+======================================================================
+【场景】 5.14 似然比(Likelihood Ratio) - 阴性似然比对数置信区间阈值法 
+【代码】
+ calculate("diagLR", "estimate", "lr", sens = 0.90, spec = 0.50, target_lr = 0.40, lr_type = "negative", alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): log(LR) +- Z * sqrt((1-Se)/(n*Se) + (1-Sp)/(n*Sp)) 
+公式 (LaTeX): $$\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n \cdot Se} + \frac{1-Sp}{n \cdot Sp}}$$ 
+文献出处:
+ Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.13/6.14; worked example n=80 per group).
+
+ CI method: Simel, D. L., Samsa, G. P., & Matchar, D. B. (1991). Likelihood ratios with confidence: sample size estimation for accuracy of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130. 
+
+======================================================================
+【场景】 5.15 全人群筛查二项概率安全保障人数(screen_required)
+【代码】 screen_required(n = 196, prevalence = 0.20, beta = 0.10)
+【真实运行输出】
+所需总筛查人数 N = 1061 (普通除法 196/0.2 = 980，为保证90%概率抓够额外储备: 81 人)
+
+======================================================================
+【场景】 5.16 多阅片者多病例(MRMC) - Obuchowski-Rockette混合模型效能分析
+【代码】 mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
+【真实运行输出】
+
+======================================================================
+【场景】 6.1 群随机试验(Cluster RCT) - 连续型结局(均数) 
+【代码】
+ calculate("clusterRCT", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2 
+公式 (LaTeX): $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs); Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
+
+ Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+
+======================================================================
+【场景】 6.2 群随机试验(Cluster RCT) - 二分类结局(比例) 
+【代码】
+ calculate("clusterRCT", "test", "proportion", p1 = 0.30, p2 = 0.20, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (Z_a/2 * sqrt(2*p_bar*(1-p_bar)) + Z_b * sqrt(p1*(1-p1)+p2*(1-p2)))^2 / (p1-p2)^2 
+公式 (LaTeX): $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$ 
+文献出处:
+ Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs); Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
+
+ Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.
+
+With continuity correction: Casagrande, J. T., Pike, M. C., & Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.
+
+Book: Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley. 
+
+======================================================================
+【场景】 6.3 阶梯楔形整群试验(Stepped-Wedge CRT) - Hussey-Hughes式8 
+【代码】
+ calculate("steppedWedge", "test", "mean", theta = -0.016, tau2 = 2.25e-4, sigma2_ind = 0.0475, m = 100, n_clusters = 24, clusters_per_step = 6, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): Var = I*t2*(t2+T*s2)/((I*U-W)*t2 + (U^2+I*T*U-T*W-I*V)*s2); power = Phi(|theta|/se - z) 
+文献出处:
+ Primary: Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped wedge cluster randomized trials. Contemporary Clinical Trials, 28(2), 182-191 (Eq 8; EPT worked example I=24, T=5). 
+
+======================================================================
+【场景】 6.4 有序多分类结局 - Whitehead比例优势比模型 
+【代码】
+ calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2, 0.5, 0.3), alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): N = 3(Za/2+Zb)^2 / ((log OR)^2 * (1 - sum(p_bar^3))) 
+公式 (LaTeX): $$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$ 
+文献出处:
+ Primary: Whitehead, J. (1993). Sample size calculations for ordered categorical data. Statistics in Medicine, 12(24), 2257-2271.
+
+ Also: Machin et al. (2018) Chapter 4 (Ordered Categorical Outcomes). 
+
+======================================================================
+【场景】 6.5 临床预测模型开发 - Riley 2020 BMJ最新准则(二分类结局) 
+【代码】
+ calculate("predictiveModel", "plan", "binary", prev = 0.30, n_parameters = 10, r2_cs = 0.10, shrinkage = 0.90, precision_delta = 0.05, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): B1: n=(z/d)^2*p(1-p); B3: n=P/((S-1)*ln(1-R2cs/S)); n = max(B1, B3) 
+文献出处:
+ Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020). Calculating the sample size required for developing a clinical prediction model. BMJ, 368, m441 (Box 1, Figures 1-5).
+
+ B2 formula: van Smeden, M., et al. (2019). Stat Methods Med Res, 28, 2455-74. B3 derivation: Riley et al. (2019). Stat Med, 38, 1276-96 (PART II). Software: pmsampsize (Stata/R). 
+
+======================================================================
+【场景】 6.6 临床预测模型开发 - Riley 2020 时间-事件结局人年估算 
+【代码】
+ calculate("predictiveModel", "plan", "rate", rate = 0.10, timepoint = 10, precision_delta = 0.05, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): F(t) = 1-exp(-rate*t); CI: 1-exp(-(rate +- z*sqrt(rate/T))*t); find T with margins <= delta 
+文献出处:
+ Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020). Calculating the sample size required for developing a clinical prediction model. BMJ, 368, m441 (Figure 1, time-to-event panel; criterion T1; worked example: rate=0.10/year, t=10y, delta=0.05 -> 2366 person-years). 
+
+======================================================================
+【场景】 6.7 临床预测模型开发 - 经典每变量事件数(EPV)经验法则 
+【代码】
+ calculate("predictiveModel", "plan", "events", n_parameters = 10, epv = 10, event_prevalence = 0.30) 
+【真实运行输出】
+公式 (ASCII): n_events = EPV * k ; n_subjects = n_events / prevalence 
+公式 (LaTeX): $$n_{events} = EPV \times k, \quad n_{subjects} = n_{events} / \pi$$ 
+文献出处:
+ Primary: Peduzzi, P., Concato, J., Kemper, E., Holford, T. R., & Feinstein, A. R. (1996). A simulation study of the number of events per variable in logistic regression analysis. Journal of Clinical Epidemiology, 49(12), 1373-1379. 
+
+======================================================================
+【场景】 6.8 评分者一致性 - Cohen's Kappa置信区间精度估计(Cantor 1996) 
+【代码】
+ calculate("kappa", "estimate", "proportion", pi1 = 0.30, pi2 = 0.30, kappa = 0.70, d = 0.10, alpha = 0.05) 
+【真实运行输出】
+公式 (ASCII): n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2 
+公式 (LaTeX): $$n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q = \frac{p_o(1-p_o)}{(1-p_e)^2}$$ 
+文献出处:
+ Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's kappa. Psychological Methods, 1(2), 150-153 (Fleiss-Cohen-Everitt 1969 asymptotic variance; worked examples N=165 and N=214). 
+
+======================================================================
+【场景】 6.9 评分者一致性 - 两独立Kappa系数差异检验(Cantor 1996) 
+【代码】
+ calculate("kappa", "test", "proportion", pi1 = 0.50, pi2 = 0.50, kappa1 = 0.70, kappa2 = 0.50, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): n = (z_a*sqrt(2*Q1) + z_b*sqrt(Q1+Q2))^2/(K1-K2)^2 
+公式 (LaTeX): $$n = \frac{\left[z_{\alpha}\sqrt{2Q_1} + z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}$$ 
+文献出处:
+ Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's kappa. Psychological Methods, 1(2), 150-153 (worked example: K1=0.7, K2=0.5, pi=0.5 -> N=214). 
+
+======================================================================
+【场景】 6.10 中断时间序列(ITS) - AR(1)自相关调整水平变化(实验性) 
+【代码】
+ calculate("its", "test", "rate", effect_sd = 2, n_pre = 12, n_post = 12, rho = 0.3, alpha = 0.05, power = 0.8) 
+【真实运行输出】
+公式 (ASCII): power = Phi(effect/SE - z); SE = sqrt(1/n_eff_pre + 1/n_eff_post); n_eff = n(1-rho)/(1+rho) 
+公式 (LaTeX): $$\text{power} = \Phi\left(\frac{\delta}{SE} - z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} + \tfrac{1}{n_{eff}^{post}}}$$ 
+文献出处:
+ Framework: Bernal, J. L., Cummins, S., & Gasparrini, A. (2017). Interrupted time series regression for the evaluation of public health interventions: a tutorial. International Journal of Epidemiology, 46(1), 348-355. Sample-size content is a transparent approximation, not from a validated source. 

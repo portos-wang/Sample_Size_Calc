@@ -65,6 +65,18 @@ validate_design_args <- function(design, args) {
     return(args)
   }
 
+  # Special case: singleCorrelation accepts either epsilon or precision
+  if (design == "singleCorrelation") {
+    if (!"r" %in% names(args) || (!"epsilon" %in% names(args) && !"precision" %in% names(args))) {
+      cli::cli_abort(c(
+        "{.fn sample_size_calculator} with design {.val {design}} requires missing arguments:",
+        "x" = "{.arg r} and either {.arg epsilon} (relative precision) or {.arg precision} (CI half-width).",
+        "i" = "See {.fn ?sample_size_calculator} for required arguments."
+      ))
+    }
+    return(args)
+  }
+
   missing <- setdiff(required, names(args))
   if (length(missing) > 0) {
     cli::cli_abort(c(
