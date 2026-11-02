@@ -33,7 +33,7 @@ Suggests:
     pkgdown
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/portos-wang/sampleSizeCalc
+URL: https://portos-wang.github.io/Sample_Size_Calc/, https://github.com/portos-wang/sampleSizeCalc
 BugReports: https://github.com/portos-wang/sampleSizeCalc/issues
 Language: en-US
 ByteCompile: true
