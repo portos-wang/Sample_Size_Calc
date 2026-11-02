@@ -7,7 +7,8 @@
 \method{plot}{sample_size_result}(x, type = c("power", "sample_size"), ...)
 }
 \arguments{
-\item{x}{Object of class \code{sample_size_result} from \code{\link{sample_size_calculator}}.}
+\item{x}{Object of class \code{sample_size_result} from \code{\link{calculate}}
+or \code{\link{sample_size_calculator}}.}
 
 \item{type}{\code{"power"} for sample size vs power; \code{"sample_size"} for
 sample size vs effect size ratio (supported for twoMeans and twoProportions).}

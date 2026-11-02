@@ -1,5 +1,14 @@
 ^\.trae$
+^\.agents$
 ^docs$
+^plans$
+^references$
+^figure$
+^\.\.Rcheck$
 ^sampleSizeCalculator\.R$
 ^sample_size_calculator_improved\.R$
+^simple_test\.R$
+^PROGRESS_REPORT\.md$
+^PHASE2_COMPLETION_REPORT\.md$
+^RESTRUCTURING_PLAN\.md$
 ^LICENSE\.md$

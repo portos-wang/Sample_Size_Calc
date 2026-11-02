@@ -3,8 +3,12 @@
 S3method(plot,sample_size_result)
 S3method(print,sample_size_result)
 S3method(summary,sample_size_result)
+export(calculate)
 export(sampleSizeCalculator)
 export(sample_size_calculator)
-importFrom(stats,power.prop.test)
-importFrom(stats,power.t.test)
-importFrom(stats,qnorm)
+export(screen_required)
+importFrom(stats,
+  power.prop.test,
+  power.t.test,
+  qnorm
+)

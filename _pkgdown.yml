@@ -1,0 +1,22 @@
+url: https://github.com/portos-wang/sampleSizeCalc
+
+reference:
+- title: Unified entry point
+  desc: >
+    Three-axis API (design x task x outcome) and the silently-compatible
+    legacy single-keyword entry point. See docs/DESIGN_MATRIX.md for the
+    full combination table.
+  contents:
+  - calculate
+  - sample_size_calculator
+  - sampleSizeCalculator
+- title: Result object
+  desc: S3 print/summary/plot methods for sample_size_result objects.
+  contents:
+  - print.sample_size_result
+  - summary.sample_size_result
+  - plot.sample_size_result
+- title: Utilities
+  desc: Standalone planning utilities.
+  contents:
+  - screen_required

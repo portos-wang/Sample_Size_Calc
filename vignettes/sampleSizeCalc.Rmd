@@ -28,6 +28,23 @@ library(ggplot2)
 
 ## Introduction
 
+The `sampleSizeCalc` package provides a comprehensive toolkit for sample size determination in clinical research. Version 3.0 introduces a **three-axis API** (`design` x `task` x `outcome`) covering 39 design combinations, while the legacy single-keyword API used in the examples below remains fully (silently) compatible.
+
+## The three-axis API (v3.0)
+
+```{r three-axis, message = FALSE}
+calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, dropout = 0.10)
+calculate("diagAUC", "estimate", "auc",
+  auc = 0.80, d = 0.10,
+  ratio = 1, var_method = "binormal"
+)
+```
+
+Every result prints the role of each parameter under the chosen design (e.g. `p0` is the unexposed incidence in a cohort but the control-group exposure rate in a case-control study), plus methodological hints where relevant. See `docs/DESIGN_MATRIX.md` for the full combination table and `docs/NUMERIC_ANCHORS.md` for the published worked examples used as automated test benchmarks.
+
+## Introduction (legacy examples)
+
 The `sampleSizeCalc` package provides a comprehensive toolkit for sample size determination in clinical research. It supports **17 different study designs** across continuous outcomes, categorical outcomes, survival analysis, diagnostic accuracy, case-control studies, and AUC comparisons.
 
 ### Key Features
@@ -59,11 +76,11 @@ devtools::install_local("path/to/1_sample_size_determination")
 ```{r two-means-example}
 result <- sample_size_calculator(
   design = "twoMeans",
-  mean1 = 10,      # Control group mean (mmHg reduction)
-  mean2 = 12,      # Treatment group mean (mmHg reduction)
-  sd = 3,          # Common standard deviation
-  alpha = 0.05,    # Significance level
-  power = 0.8      # Target power (80%)
+  mean1 = 10, # Control group mean (mmHg reduction)
+  mean2 = 12, # Treatment group mean (mmHg reduction)
+  sd = 3, # Common standard deviation
+  alpha = 0.05, # Significance level
+  power = 0.8 # Target power (80%)
 )
 
 print(result)
@@ -90,8 +107,8 @@ $$n = 2\\left(\\frac{(Z_{\\alpha/2} + Z_{\\beta}) \\cdot \\sigma}{\\mu_1 - \\mu_
 ```{r paired-means-example}
 result <- sample_size_calculator(
   design = "pairedMeans",
-  meanDiff = 2.5,   # Mean difference (post-pre)
-  sdDiff = 4.0,     # SD of differences
+  meanDiff = 2.5, # Mean difference (post-pre)
+  sdDiff = 4.0, # SD of differences
   alpha = 0.05,
   power = 0.9
 )
@@ -118,8 +135,8 @@ print(result)
 ```{r two-proportions-example}
 result <- sample_size_calculator(
   design = "twoProportions",
-  p1 = 0.30,       # Control response rate
-  p2 = 0.45,       # Treatment response rate
+  p1 = 0.30, # Control response rate
+  p2 = 0.45, # Treatment response rate
   alpha = 0.05,
   power = 0.8
 )
@@ -147,8 +164,8 @@ print(result)
 ```{r survival-example}
 result <- sample_size_calculator(
   design = "survival",
-  hr = 0.70,        # Hazard ratio (treatment vs. control)
-  pE = 0.50,        # Proportion in experimental group (1:1 randomization)
+  hr = 0.70, # Hazard ratio (treatment vs. control)
+  pE = 0.50, # Proportion in experimental group (1:1 randomization)
   alpha = 0.05,
   power = 0.8
 )
@@ -179,11 +196,11 @@ $$E = \\frac{(Z_{\\alpha/2} + Z_{\\beta})^2}{p_E(1-p_E)[\\ln(HR)]^2}$$
 ```{r non-inferiority-means-example}
 result <- sample_size_calculator(
   design = "nonInferiorityMeans",
-  mean1 = 8.0,     # New treatment mean
-  mean2 = 8.5,     # Standard treatment mean
-  sd = 2.0,        # Common SD
-  margin = 1.0,    # Non-inferiority margin (Δ)
-  alpha = 0.025,   # One-sided test
+  mean1 = 8.0, # New treatment mean
+  mean2 = 8.5, # Standard treatment mean
+  sd = 2.0, # Common SD
+  margin = 1.0, # Non-inferiority margin (Δ)
+  alpha = 0.025, # One-sided test
   power = 0.9
 )
 
@@ -208,11 +225,11 @@ print(result)
 ```{r superiority-means-example}
 result <- sample_size_calculator(
   design = "superiorityMeans",
-  mean1 = 12.0,    # New treatment mean (better)
-  mean2 = 10.0,    # Standard treatment mean
-  sd = 2.5,       # Common SD
-  margin = 0.5,    # Minimal clinically important difference
-  alpha = 0.025,   # One-sided test
+  mean1 = 12.0, # New treatment mean (better)
+  mean2 = 10.0, # Standard treatment mean
+  sd = 2.5, # Common SD
+  margin = 0.5, # Minimal clinically important difference
+  alpha = 0.025, # One-sided test
   power = 0.85
 )
 
@@ -235,10 +252,10 @@ print(result)
 ```{r equivalence-means-example}
 result <- sample_size_calculator(
   design = "equivalenceMeans",
-  mean1 = 100,     # Test mean
-  mean2 = 102,     # Reference mean
-  sd = 5,         # Common SD
-  margin = 5,      # Equivalence margin (±5 units)
+  mean1 = 100, # Test mean
+  mean2 = 102, # Reference mean
+  sd = 5, # Common SD
+  margin = 5, # Equivalence margin (±5 units)
   alpha = 0.05,
   power = 0.8
 )
@@ -264,9 +281,9 @@ print(result)
 ```{r diagnostic-accuracy-example}
 result <- sample_size_calculator(
   design = "diagnosticAccuracySingle",
-  prob = 0.85,     # Expected sensitivity
-  d = 0.05,        # Desired precision (±5%)
-  prevalence = 0.20,  # Disease prevalence
+  prob = 0.85, # Expected sensitivity
+  d = 0.05, # Desired precision (±5%)
+  prevalence = 0.20, # Disease prevalence
   alpha = 0.05
 )
 
@@ -294,8 +311,8 @@ $$n_{cases} = \\frac{Z_{1-\\alpha/2}^2 \\cdot p(1-p)}{d^2}$$
 ```{r auc-single-example}
 result <- sample_size_calculator(
   design = "auc_single",
-  auc = 0.80,      # Expected AUC
-  d = 0.05,        # Half-width of CI (±0.10 total)
+  auc = 0.80, # Expected AUC
+  d = 0.05, # Half-width of CI (±0.10 total)
   prevalence = 0.30,
   alpha = 0.05
 )
@@ -321,9 +338,9 @@ print(result)
 ```{r auc-comparison-example}
 result <- sample_size_calculator(
   design = "aucComparison",
-  auc1 = 0.85,     # Test 1 AUC
-  auc2 = 0.80,     # Test 2 AUC
-  r = 0.6,         # Correlation between AUCs
+  auc1 = 0.85, # Test 1 AUC
+  auc2 = 0.80, # Test 2 AUC
+  r = 0.6, # Correlation between AUCs
   prevalence = 0.25,
   alpha = 0.05,
   power = 0.8
@@ -350,9 +367,9 @@ print(result)
 ```{r case-control-example}
 result <- sample_size_calculator(
   design = "caseControl",
-  p0 = 0.30,       # Exposure rate in controls
-  OR = 2.5,        # Target odds ratio
-  m = 1,           # Controls per case (1:1 matching)
+  p0 = 0.30, # Exposure rate in controls
+  OR = 2.5, # Target odds ratio
+  m = 1, # Controls per case (1:1 matching)
   alpha = 0.05,
   power = 0.8
 )
@@ -430,7 +447,7 @@ sample_size_calculator("twoMeans", mean1 = 10, mean2 = 15, sd = 3)
 # From meta-analysis: standardized mean difference = 0.5
 smd <- 0.5
 sd <- 3
-mean_diff <- smd * sd  # 1.5
+mean_diff <- smd * sd # 1.5
 sample_size_calculator("twoMeans", mean1 = 10, mean2 = 10 + mean_diff, sd = sd)
 ```
 
@@ -484,7 +501,7 @@ result <- sample_size_calculator("survival", hr = 0.7, power = 0.8)
 events_needed <- result$target_events_needed
 
 # Convert to sample size based on event rate
-event_rate <- 0.50  # 50% of subjects experience event
+event_rate <- 0.50 # 50% of subjects experience event
 total_sample <- ceiling(events_needed / event_rate)
 ```
 
@@ -492,12 +509,16 @@ total_sample <- ceiling(events_needed / event_rate)
 
 ```{r pitfall-3, eval = FALSE}
 # WRONG: Using two-sided α for non-inferiority
-sample_size_calculator("nonInferiorityMeans", mean1 = 8, mean2 = 8.5, 
-                       sd = 2, margin = 1, alpha = 0.05)
+sample_size_calculator("nonInferiorityMeans",
+  mean1 = 8, mean2 = 8.5,
+  sd = 2, margin = 1, alpha = 0.05
+)
 
 # CORRECT: Using one-sided α
-sample_size_calculator("nonInferiorityMeans", mean1 = 8, mean2 = 8.5, 
-                       sd = 2, margin = 1, alpha = 0.025)
+sample_size_calculator("nonInferiorityMeans",
+  mean1 = 8, mean2 = 8.5,
+  sd = 2, margin = 1, alpha = 0.025
+)
 ```
 
 ### ❌ **Common Mistake 4**: Not Adjusting for Multiple Comparisons

@@ -16,9 +16,11 @@ test_backward_compatibility <- function() {
     total_n = result$total_n,
     passed = !is.null(result$n_per_group) && result$n_per_group > 0
   )
-  cat(sprintf("  n_per_group: %d, total_n: %d - %s\n",
-              result$n_per_group, result$total_n,
-              ifelse(test_results$twoMeans$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  n_per_group: %d, total_n: %d - %s\n",
+    result$n_per_group, result$total_n,
+    ifelse(test_results$twoMeans$passed, "PASS", "FAIL")
+  ))
 
   # Test 2: twoProportions
   cat("Testing twoProportions...\n")
@@ -28,9 +30,11 @@ test_backward_compatibility <- function() {
     total_n = result$total_n,
     passed = !is.null(result$n_per_group) && result$n_per_group > 0
   )
-  cat(sprintf("  n_per_group: %d, total_n: %d - %s\n",
-              result$n_per_group, result$total_n,
-              ifelse(test_results$twoProportions$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  n_per_group: %d, total_n: %d - %s\n",
+    result$n_per_group, result$total_n,
+    ifelse(test_results$twoProportions$passed, "PASS", "FAIL")
+  ))
 
   # Test 3: pairedMeans
   cat("Testing pairedMeans...\n")
@@ -39,9 +43,11 @@ test_backward_compatibility <- function() {
     pairs_count = result$pairs_count,
     passed = !is.null(result$pairs_count) && result$pairs_count > 0
   )
-  cat(sprintf("  pairs_count: %d - %s\n",
-              result$pairs_count,
-              ifelse(test_results$pairedMeans$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  pairs_count: %d - %s\n",
+    result$pairs_count,
+    ifelse(test_results$pairedMeans$passed, "PASS", "FAIL")
+  ))
 
   # Test 4: survival
   cat("Testing survival...\n")
@@ -50,9 +56,11 @@ test_backward_compatibility <- function() {
     events_needed = result$target_events_needed,
     passed = !is.null(result$target_events_needed) && result$target_events_needed > 0
   )
-  cat(sprintf("  events_needed: %d - %s\n",
-              result$target_events_needed,
-              ifelse(test_results$survival$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  events_needed: %d - %s\n",
+    result$target_events_needed,
+    ifelse(test_results$survival$passed, "PASS", "FAIL")
+  ))
 
   # Test 5: diagnosticAccuracySingle (precision-based)
   cat("Testing diagnosticAccuracySingle...\n")
@@ -62,9 +70,11 @@ test_backward_compatibility <- function() {
     total_subjects = result$total_subjects_to_screen,
     passed = !is.null(result$target_state_cases_needed) && result$target_state_cases_needed > 0
   )
-  cat(sprintf("  target_cases: %d, total_subjects: %d - %s\n",
-              result$target_state_cases_needed, result$total_subjects_to_screen,
-              ifelse(test_results$diagnosticAccuracySingle$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  target_cases: %d, total_subjects: %d - %s\n",
+    result$target_state_cases_needed, result$total_subjects_to_screen,
+    ifelse(test_results$diagnosticAccuracySingle$passed, "PASS", "FAIL")
+  ))
 
   # Test 6: auc_single (precision-based)
   cat("Testing auc_single...\n")
@@ -74,9 +84,11 @@ test_backward_compatibility <- function() {
     total_subjects = result$total_subjects_to_screen,
     passed = !is.null(result$target_state_cases_needed) && result$target_state_cases_needed > 0
   )
-  cat(sprintf("  target_cases: %d, total_subjects: %d - %s\n",
-              result$target_state_cases_needed, result$total_subjects_to_screen,
-              ifelse(test_results$auc_single$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  target_cases: %d, total_subjects: %d - %s\n",
+    result$target_state_cases_needed, result$total_subjects_to_screen,
+    ifelse(test_results$auc_single$passed, "PASS", "FAIL")
+  ))
 
   # Test 7: caseControl
   cat("Testing caseControl...\n")
@@ -86,9 +98,11 @@ test_backward_compatibility <- function() {
     controls_needed = result$controls_needed,
     passed = !is.null(result$cases_needed) && result$cases_needed > 0
   )
-  cat(sprintf("  cases_needed: %d, controls_needed: %d - %s\n",
-              result$cases_needed, result$controls_needed,
-              ifelse(test_results$caseControl$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  cases_needed: %d, controls_needed: %d - %s\n",
+    result$cases_needed, result$controls_needed,
+    ifelse(test_results$caseControl$passed, "PASS", "FAIL")
+  ))
 
   # Test 8: nonInferiorityMeans
   cat("Testing nonInferiorityMeans...\n")
@@ -98,9 +112,11 @@ test_backward_compatibility <- function() {
     total_n = result$total_n,
     passed = !is.null(result$n_per_group) && result$n_per_group > 0
   )
-  cat(sprintf("  n_per_group: %d, total_n: %d - %s\n",
-              result$n_per_group, result$total_n,
-              ifelse(test_results$nonInferiorityMeans$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  n_per_group: %d, total_n: %d - %s\n",
+    result$n_per_group, result$total_n,
+    ifelse(test_results$nonInferiorityMeans$passed, "PASS", "FAIL")
+  ))
 
   # Test 9: superiorityMeans
   cat("Testing superiorityMeans...\n")
@@ -110,9 +126,11 @@ test_backward_compatibility <- function() {
     total_n = result$total_n,
     passed = !is.null(result$n_per_group) && result$n_per_group > 0
   )
-  cat(sprintf("  n_per_group: %d, total_n: %d - %s\n",
-              result$n_per_group, result$total_n,
-              ifelse(test_results$superiorityMeans$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  n_per_group: %d, total_n: %d - %s\n",
+    result$n_per_group, result$total_n,
+    ifelse(test_results$superiorityMeans$passed, "PASS", "FAIL")
+  ))
 
   # Test 10: equivalenceMeans
   cat("Testing equivalenceMeans...\n")
@@ -122,9 +140,11 @@ test_backward_compatibility <- function() {
     total_n = result$total_n,
     passed = !is.null(result$n_per_group) && result$n_per_group > 0
   )
-  cat(sprintf("  n_per_group: %d, total_n: %d - %s\n",
-              result$n_per_group, result$total_n,
-              ifelse(test_results$equivalenceMeans$passed, "PASS", "FAIL")))
+  cat(sprintf(
+    "  n_per_group: %d, total_n: %d - %s\n",
+    result$n_per_group, result$total_n,
+    ifelse(test_results$equivalenceMeans$passed, "PASS", "FAIL")
+  ))
 
   # Summary
   cat("\n=== BACKWARD COMPATIBILITY TEST SUMMARY ===\n")

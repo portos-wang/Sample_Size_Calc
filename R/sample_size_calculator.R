@@ -1,12 +1,19 @@
-# Sample Size Calculator for Clinical Research (sampleSizeCalc)
-# Main entry point with backward compatibility
+# Legacy entry point: silently compatible shim over calculate().
+# The 17 keywords map to the three-axis API as documented in
+# docs/DESIGN_MATRIX.md; dispatch_calculation() shares one code path so
+# legacy and new calls produce identical results (golden master tests).
 
-#' Sample size calculator for clinical study designs
+#' Sample size calculator for clinical study designs (legacy API)
 #'
 #' Computes sample size (or events) for two-group or single-group designs:
 #' continuous outcomes, proportions, survival (log-rank), diagnostic accuracy,
 #' case-control, AUC comparisons, non-inferiority/superiority/equivalence.
 #' Uses parameter validation and unified S3 result objects.
+#'
+#' `sample_size_calculator()` is the legacy single-keyword API retained for
+#' backward compatibility. New code should prefer the three-axis
+#' [calculate()] entry point; see docs/DESIGN_MATRIX.md for the keyword
+#' mapping. Results are identical between the two entry points.
 #'
 #' @param design Study design type (see list in usage).
 #' @param alpha Type I error (default 0.05).
@@ -22,168 +29,26 @@
 #' sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
 #' sample_size_calculator("survival", hr = 0.7, alpha = 0.05, power = 0.8)
 sample_size_calculator <- function(
-    design = c("twoMeans", "twoProportions", "pairedMeans",
-               "survival", "nonInferiorityMeans", "superiorityMeans",
-               "equivalenceMeans", "diagnosticAccuracySingle",
-               "caseControl", "superiorityProportions",
-               "diagnosticSuperioritySingle", "diagnosticComparisonTwo",
-               "likelihoodRatioTest", "auc_single", "aucSuperiority",
-               "aucComparison", "equivalenceProportions"),
-    alpha = 0.05,
-    power = 0.8,
-    ...
+  design = c(
+    "twoMeans", "twoProportions", "pairedMeans",
+    "survival", "nonInferiorityMeans", "superiorityMeans",
+    "equivalenceMeans", "diagnosticAccuracySingle",
+    "caseControl", "superiorityProportions",
+    "diagnosticSuperioritySingle", "diagnosticComparisonTwo",
+    "likelihoodRatioTest", "auc_single", "aucSuperiority",
+    "aucComparison", "equivalenceProportions"
+  ),
+  alpha = 0.05,
+  power = 0.8,
+  ...
 ) {
   design <- rlang::arg_match(design)
   alpha <- validate_alpha(alpha)
   power <- validate_power(power)
 
-  args <- list(...)
-  args <- validate_design_args(design, args)
-
-  # Route to appropriate modular calculation function
-  calcResult <- switch(design,
-    # Drug trial designs - Basic
-    "twoMeans" = calculate_two_means(
-      mean1 = args$mean1,
-      mean2 = args$mean2,
-      sd = args$sd,
-      alpha = alpha,
-      power = power
-    ),
-
-    "twoProportions" = calculate_two_proportions(
-      p1 = args$p1,
-      p2 = args$p2,
-      alpha = alpha,
-      power = power
-    ),
-
-    "pairedMeans" = calculate_paired_means(
-      meanDiff = args$meanDiff,
-      sdDiff = args$sdDiff,
-      alpha = alpha,
-      power = power
-    ),
-
-    "survival" = calculate_survival(
-      hr = args$hr,
-      pE = args$pE,
-      alpha = alpha,
-      power = power
-    ),
-
-    # Drug trial designs - Hypothesis tests (means)
-    "nonInferiorityMeans" = calculate_non_inferiority_means(
-      mean1 = args$mean1,
-      mean2 = args$mean2,
-      sd = args$sd,
-      margin = args$margin,
-      alpha = alpha,
-      power = power
-    ),
-
-    "superiorityMeans" = calculate_superiority_means(
-      mean1 = args$mean1,
-      mean2 = args$mean2,
-      sd = args$sd,
-      margin = args$margin,
-      alpha = alpha,
-      power = power
-    ),
-
-    "equivalenceMeans" = calculate_equivalence_means(
-      mean1 = args$mean1,
-      mean2 = args$mean2,
-      sd = args$sd,
-      margin = args$margin,
-      alpha = alpha,
-      power = power
-    ),
-
-    # Drug trial designs - Hypothesis tests (proportions)
-    "superiorityProportions" = calculate_superiority_proportions(
-      p1 = args$p1,
-      p2 = args$p2,
-      margin = args$margin,
-      alpha = alpha,
-      power = power
-    ),
-
-    "equivalenceProportions" = calculate_equivalence_proportions(
-      p1 = args$p1,
-      p2 = args$p2,
-      margin = args$margin,
-      alpha = alpha,
-      power = power
-    ),
-
-    # Case-control
-    "caseControl" = calculate_case_control(
-      p0 = args$p0,
-      OR = args$OR,
-      m = args$m,
-      alpha = alpha,
-      power = power
-    ),
-
-    # Diagnostic designs
-    "diagnosticAccuracySingle" = calculate_diagnostic_accuracy_single(
-      prob = args$prob,
-      d = args$d,
-      prevalence = args$prevalence,
-      alpha = alpha
-    ),
-
-    "diagnosticSuperioritySingle" = calculate_diagnostic_superiority_single(
-      prob = args$prob,
-      p0 = args$p0,
-      prevalence = args$prevalence,
-      alpha = alpha,
-      power = power
-    ),
-
-    "diagnosticComparisonTwo" = calculate_diagnostic_comparison_two(
-      p1 = args$p1,
-      p2 = args$p2,
-      prevalence = args$prevalence,
-      paired = args$paired,
-      psi = args$psi,
-      alpha = alpha,
-      power = power
-    ),
-
-    "likelihoodRatioTest" = calculate_likelihood_ratio_test(
-      sens = args$sens,
-      spec = args$spec,
-      prevalence = args$prevalence,
-      precision = args$precision,
-      alpha = alpha
-    ),
-
-    "auc_single" = calculate_auc_single(
-      auc = args$auc,
-      d = args$d,
-      prevalence = args$prevalence,
-      alpha = alpha
-    ),
-
-    "aucSuperiority" = calculate_auc_superiority(
-      auc = args$auc,
-      auc0 = args$auc0,
-      prevalence = args$prevalence,
-      alpha = alpha,
-      power = power
-    ),
-
-    "aucComparison" = calculate_auc_comparison(
-      auc1 = args$auc1,
-      auc2 = args$auc2,
-      r = args$r,
-      prevalence = args$prevalence,
-      alpha = alpha,
-      power = power
-    )
-  )
+  args <- validate_design_args(design, list(...))
+  calcResult <- dispatch_calculation(design, args, alpha, power, path = "legacy")
+  calcResult$replay_args <- args
 
   calcResult$design <- design
   structure(calcResult, class = c("sample_size_result", "list"))

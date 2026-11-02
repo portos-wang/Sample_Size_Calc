@@ -1,19 +1,24 @@
 Package: sampleSizeCalc
 Title: Sample Size Calculator for Clinical Research
-Version: 2.1.0
-Author: AI Coding Assistant [aut, cre]
-Maintainer: AI Coding Assistant <ai@example.com>
-Authors@R: person("AI Coding Assistant", email = "ai@example.com", role = c("aut", "cre"))
-Description: A comprehensive tool for calculating sample sizes across 
-    various clinical study designs. Supports continuous variables, proportions, 
-    survival analysis, diagnostic tests, case-control studies, and more. 
-    Built following Tidy R design principles with comprehensive parameter 
-    validation, structured error handling, and complete literature citations
-    including primary methodology papers.
+Version: 3.0.0
+Authors@R: person("Qoder", "AI Coding Assistant", email = "qoder@example.com", role = c("aut", "cre"))
+Description: A comprehensive tool for calculating sample sizes across
+    various clinical study designs. Provides a three-axis application
+    programming interface (design, statistical task, and outcome type)
+    covering experimental trials (superiority, non-inferiority,
+    equivalence), observational studies (cohort, case-control,
+    cross-sectional), diagnostic accuracy studies (sensitivity and
+    specificity estimation and comparison, area under the receiver
+    operating characteristic curve, likelihood ratios), and complex
+    designs (cluster randomised trials, two-stage phase II designs,
+    bioequivalence, ordered categorical outcomes). Each calculation
+    returns the formula, parameter-role documentation, and precise
+    literature citations with section-level detail. Built following
+    tidy design principles with comprehensive parameter validation and
+    structured error handling.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.0.0)
 Imports:
@@ -33,8 +38,16 @@ BugReports: https://github.com/portos-wang/sampleSizeCalc/issues
 Language: en-US
 ByteCompile: true
 Collate:
+    'utils-z.R'
+    'ssr-result.R'
     'validate_parameters.R'
     'validate_design_args.R'
+    'calc-estimation.R'
+    'calc-diagnostic-estimation.R'
+    'calc-obs.R'
+    'calc-paired-single.R'
+    'calc-margins-be.R'
+    'calc-complex.R'
     'diagnostic_accuracy_single.R'
     'auc_calculations.R'
     'diagnostic_existing_designs.R'
@@ -42,8 +55,9 @@ Collate:
     'means_hypothesis_tests.R'
     'proportions_hypothesis_tests.R'
     'case_control.R'
-    'print_sample_size_result.R'
-    'summary_sample_size_result.R'
+    'print_summary_result.R'
     'plot_sample_size_result.R'
+    'calculate.R'
     'sample_size_calculator.R'
     'globals.R'
+Config/roxygen2/version: 8.1.0

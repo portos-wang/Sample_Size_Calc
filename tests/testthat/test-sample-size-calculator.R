@@ -62,11 +62,11 @@ test_that("print and summary run without error", {
 test_that("plot_power_curve runs without error", {
   res <- sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
   expect_error(plot_power_curve(res), NA)
-  
+
   # Test with survival design
   res_survival <- sample_size_calculator("survival", hr = 0.7, alpha = 0.05, power = 0.8)
   expect_error(plot_power_curve(res_survival), NA)
-  
+
   # Test with twoProportions design
   res_proportions <- sample_size_calculator("twoProportions", p1 = 0.3, p2 = 0.5, alpha = 0.05, power = 0.8)
   expect_error(plot_power_curve(res_proportions), NA)

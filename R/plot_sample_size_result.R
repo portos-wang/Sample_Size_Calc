@@ -5,7 +5,8 @@
 #' Draw power curve (sample size vs power) or sample size vs effect size ratio.
 #' Requires packages \pkg{ggplot2} and \pkg{scales}.
 #'
-#' @param x Object of class \code{sample_size_result} from \code{\link{sample_size_calculator}}.
+#' @param x Object of class \code{sample_size_result} from \code{\link{calculate}}
+#'   or \code{\link{sample_size_calculator}}.
 #' @param type \code{"power"} for sample size vs power; \code{"sample_size"} for
 #'   sample size vs effect size ratio (supported for twoMeans and twoProportions).
 #' @param ... Passed to downstream methods (currently unused).
@@ -42,12 +43,56 @@ plot.sample_size_result <- function(x, type = c("power", "sample_size"), ...) {
   }
 }
 
+# Re-run the calculation at an arbitrary power value, preserving the entry
+# point and axes of the original result.
+ssr_replay_at_power <- function(x, p) {
+  replay_args <- x$replay_args %||% {
+    va <- x$parameters
+    va$alpha <- NULL
+    va$power <- NULL
+    va
+  }
+  if (!is.null(x$design_canonical)) {
+    do.call(
+      calculate,
+      c(
+        list(
+          design = x$design_canonical,
+          task = x$task,
+          outcome = x$outcome,
+          power = p
+        ),
+        replay_args
+      )
+    )
+  } else {
+    do.call(
+      sample_size_calculator,
+      c(list(design = x$design, power = p), replay_args)
+    )
+  }
+}
+
+# Designs for which a power curve is unavailable or would re-run an expensive
+# exact search at every grid point.
+ssr_no_power_curve <- c("singleArmPhaseII", "predictiveModel", "its")
+
 #' Plot power curve
 #'
 #' @param result A sample_size_result object
 #' @return Invisibly returns the result object
 #' @keywords internal
 plot_power_curve <- function(result) {
+  if (!is.null(result$design_canonical) &&
+    result$design_canonical %in% ssr_no_power_curve) {
+    cli::cli_warn(c(
+      "Power curve not available for design {.val {result$design_canonical}}.",
+      "i" = "This design does not take power as a continuous input (or the",
+      "i" = "calculation is an exact search too expensive to replay)."
+    ))
+    return(invisible(result))
+  }
+
   params <- result$parameters
 
   if (is.null(params$alpha)) {
@@ -58,21 +103,36 @@ plot_power_curve <- function(result) {
   alpha <- params$alpha
   power_range <- seq(0.5, 0.99, by = 0.01)
 
-  varying_args <- params
-  varying_args$alpha <- NULL
-  varying_args$power <- NULL
-
   sample_sizes <- vapply(power_range, function(p) {
-    call_args <- c(list(design = result$design, alpha = alpha, power = p), varying_args)
-    res <- tryCatch(do.call(sample_size_calculator, call_args), error = function(e) NULL)
-    if (is.null(res)) return(NA_real_)
-    if (!is.null(res$n_per_group)) return(as.numeric(res$n_per_group))
-    if (!is.null(res$pairs_count)) return(as.numeric(res$pairs_count))
-    if (!is.null(res$target_events_needed)) return(as.numeric(res$target_events_needed))
-    if (!is.null(res$target_state_cases_needed)) return(as.numeric(res$target_state_cases_needed))
-    if (!is.null(res$cases_needed)) return(as.numeric(res$cases_needed))
+    res <- tryCatch(ssr_replay_at_power(result, p), error = function(e) NULL)
+    if (is.null(res)) {
+      return(NA_real_)
+    }
+    if (!is.null(res$n_per_group)) {
+      return(as.numeric(res$n_per_group))
+    }
+    if (!is.null(res$pairs_count)) {
+      return(as.numeric(res$pairs_count))
+    }
+    if (!is.null(res$target_events_needed)) {
+      return(as.numeric(res$target_events_needed))
+    }
+    if (!is.null(res$target_state_cases_needed)) {
+      return(as.numeric(res$target_state_cases_needed))
+    }
+    if (!is.null(res$cases_needed)) {
+      return(as.numeric(res$cases_needed))
+    }
     NA_real_
   }, numeric(1))
+
+  if (all(is.na(sample_sizes))) {
+    cli::cli_warn(c(
+      "No plottable sample-size metric found for this design.",
+      "i" = "Power curves require n_per_group / pairs / events / cases outputs."
+    ))
+    return(invisible(result))
+  }
 
   df <- data.frame(power = power_range, sample_size = sample_sizes)
   df <- df[!is.na(df$sample_size), , drop = FALSE]
@@ -135,7 +195,9 @@ plot_sample_size_comparison <- function(result) {
         alpha = alpha,
         power = current_power
       ), error = function(e) NULL)
-      if (is.null(res) || is.null(res$n_per_group)) return(NA_real_)
+      if (is.null(res) || is.null(res$n_per_group)) {
+        return(NA_real_)
+      }
       as.numeric(res$n_per_group)
     }, numeric(1))
     effect_sizes <- effect_ratios
@@ -148,7 +210,9 @@ plot_sample_size_comparison <- function(result) {
     sample_sizes <- vapply(effect_ratios, function(ratio) {
       new_diff <- baseline_diff * ratio
       new_p2 <- p1 + new_diff * sign(p2 - p1)
-      if (new_p2 <= 0 || new_p2 >= 1) return(NA_real_)
+      if (new_p2 <= 0 || new_p2 >= 1) {
+        return(NA_real_)
+      }
       res <- tryCatch(sample_size_calculator(
         design = "twoProportions",
         p1 = p1,
@@ -156,7 +220,9 @@ plot_sample_size_comparison <- function(result) {
         alpha = alpha,
         power = current_power
       ), error = function(e) NULL)
-      if (is.null(res) || is.null(res$n_per_group)) return(NA_real_)
+      if (is.null(res) || is.null(res$n_per_group)) {
+        return(NA_real_)
+      }
       as.numeric(res$n_per_group)
     }, numeric(1))
     effect_sizes <- effect_ratios

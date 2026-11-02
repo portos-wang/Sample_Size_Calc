@@ -30,6 +30,6 @@ calculate_case_control <- function(p0, OR, m, alpha, power) {
       power = power
     ),
     formula_latex = "$$n_{cases} = \\frac{\\left[Z_{\\alpha/2}\\sqrt{(1+1/m)\\bar{p}(1-\\bar{p})} + Z_{\\beta}\\sqrt{p_1(1-p_1) + p_0(1-p_0)/m}\\right]^2}{(p_1-p_0)^2}$$",
-    reference = "Primary: Schlesselman, J. J. (1982). Case-control studies: Design, conduct, analysis. Oxford University Press.\n\nIARC Classic: Breslow, N. E., & Day, N. E. (1980). Statistical methods in cancer research: Volume 1 - The analysis of case-control studies. IARC Scientific Publications No. 32.\n\nAlternative: Dupont, W. D. (1988). Power calculations for matched case-control studies. Biometrics, 44(4), 1157-1168."
+    reference = "Primary: Schlesselman, J. J. (1982). Case-control studies: Design, conduct, analysis. Oxford University Press.\n\nIARC classic: Breslow, N. E., & Day, N. E. (1980). Statistical methods in cancer research: Volume I - The analysis of case-control studies. IARC Scientific Publications No. 32.\n\nFor individually matched designs (not the formula implemented here): Dupont, W. D. (1988). Power calculations for matched case-control studies. Biometrics, 44(4), 1157-1168; see the caseControlMatched design."
   )
 }

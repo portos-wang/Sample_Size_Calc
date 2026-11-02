@@ -27,11 +27,37 @@ validate_design_args <- function(design, args) {
     aucSuperiority = c("auc", "auc0"),
     aucComparison = c("auc1", "auc2", "r"),
     # Case-control
-    caseControl = c("p0", "OR")
+    caseControl = c("p0", "OR"),
+    # Phase 2-3 additions
+    singleProportion = c("p", "precision"),
+    singleMean = c("sigma", "precision"),
+    singleCorrelation = c("r", "epsilon"),
+    cohortProportion = c("p0", "p1"),
+    cohortRate = c("rate0", "rate1"),
+    caseControlMatched = c("p0", "OR"),
+    crosstab = c("p0", "p1"),
+    pairedProportions = c("p1", "p2", "psi"),
+    singleArmMean = c("mu0", "mu1", "sigma"),
+    singleArmProportion = c("p0", "p1"),
+    diagCompareNI = c("p1", "p2", "margin"),
+    diagCompareEquiv = c("p1", "p2", "margin"),
+    diagAUCCompareNI = c("auc1", "auc2", "margin"),
+    diagAUCCompareEquiv = c("auc1", "auc2", "margin"),
+    crossoverMean = c("delta", "sigma_within"),
+    bioequivalence = c("cv"),
+    clusterMean = c("mean1", "mean2", "sd", "icc", "cluster_size"),
+    clusterProportion = c("p1", "p2", "icc", "cluster_size"),
+    simonTwoStage = c("p0", "p1"),
+    nonInferiorityProportions = c("p1", "p2", "margin"),
+    twoOrdinalWhitehead = c("or", "prop_bar"),
+    predictiveEPV = c("n_parameters", "event_prevalence"),
+    itsLevel = c("effect_sd", "n_pre", "n_post", "rho")
   )
 
   required <- required_args[[design]]
-  if (is.null(required)) return(args)
+  if (is.null(required)) {
+    return(args)
+  }
 
   missing <- setdiff(required, names(args))
   if (length(missing) > 0) {

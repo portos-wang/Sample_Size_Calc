@@ -2,164 +2,133 @@
 
 > Sample Size Calculator for Clinical Research
 
-A comprehensive R package for calculating sample sizes across various clinical study designs. Built following Tidy R design principles with comprehensive parameter validation and structured error handling. **Now with enhanced literature support including primary methodology citations.**
+A comprehensive R package for sample size determination across **39 design
+combinations**: experimental trials (superiority / non-inferiority /
+equivalence), observational studies (cohort, case-control, cross-sectional),
+diagnostic accuracy studies (estimation, testing, comparison, AUC), and
+complex designs (cluster RCT, Simon two-stage, bioequivalence, ordered
+outcomes, prediction models, interrupted time series).
+
+Every result carries: the formula (plain text + LaTeX), precise literature
+references (section/page level), parameter-role documentation, and
+methodological hints.
 
 ## Installation
 
 ```r
-# Install from GitHub
 devtools::install_github("portos-wang/sampleSizeCalc")
-
-# Or install local version
-devtools::install_local("1_sample_size_determination")
+# or from a local source
+devtools::install_local("path/to/Sample_Size_Calc")
 ```
 
-## Features
-
-- **17 Study Design Types**: 
-  - Two independent means
-  - Paired means
-  - Two proportions
-  - Survival analysis (Log-rank test)
-  - Non-inferiority, superiority, and equivalence tests
-  - Diagnostic test accuracy
-  - Case-control studies
-  - AUC comparisons
-  - And more...
-
-- **Comprehensive Literature Support**:
-  - Primary methodology citations for all methods
-  - Includes landmark papers (Hanley & McNeil 1982, Schoenfeld 1983, etc.)
-  - Review articles for additional context
-  - Multiple references for major methods
-
-- **Robust Validation**: Comprehensive parameter validation with clear error messages
-- **Modern Design**: Follows Tidy R principles with S3 classes and methods
-
-## Documentation
-
-Detailed documentation is available in the [docs/](docs/) directory:
-
-- **[Formula Summary](docs/FORMULA_SUMMARY.md)** - Quick reference for all 17 calculation methods
-- **[Formula Guide](docs/formula_reference_guide.md)** - Detailed reference manual with formulas and citations
-- **[Literature Verification](docs/literature_verification_report.md)** - Complete validation of all methods
-- **[CHANGELOG](docs/CHANGELOG.md)** - Version history and updates
-- **[CSV Reference](docs/formula_quick_reference.csv)** - Table-format quick reference
-
-## Quick Start
-
-### Basic Usage
+## Quick start: the three-axis API
 
 ```r
 library(sampleSizeCalc)
 
-# Two independent means comparison
-result <- sample_size_calculator(
-  design = "twoMeans",
-  mean1 = 10,
-  mean2 = 12,
-  sd = 3,
-  alpha = 0.05,
-  power = 0.8
+# design x task x outcome
+calculate("rct", "test", "mean",
+  mean1 = 10, mean2 = 12, sd = 3
 )
-
-# View results
-print(result)
-summary(result)
+calculate("rct", "noninferiority", "proportion",
+  p1 = 0.90, p2 = 0.85, margin = 0.05
+)
+calculate("cohort", "test", "proportion",
+  p0 = 0.20, p1 = 0.30, ratio = 2, dropout = 0.10
+)
+calculate("caseControl", "test", "proportion", p0 = 0.3, OR = 2.0)
+calculate("diagAccuracy", "estimate", "proportion",
+  prob = 0.85, d = 0.05, prevalence = 0.2
+)
+calculate("diagAUC", "estimate", "auc",
+  auc = 0.80, d = 0.10, ratio = 1, var_method = "binormal"
+)
+calculate("singleArmPhaseII", "test", "proportion",
+  p0 = 0.1, p1 = 0.3, optimizer = "optimal"
+)
+calculate("clusterRCT", "test", "mean",
+  mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20
+)
+calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
 ```
 
-### Survival Analysis
+Unambiguous designs allow omitting `task`/`outcome`:
 
 ```r
-result <- sample_size_calculator(
-  design = "survival",
-  hr = 0.7,
-  alpha = 0.05,
-  power = 0.8
-)
+calculate("diagAUC", auc = 0.80, d = 0.05)
+calculate("singleProportion", p = 0.30, precision = 0.05)   # -> 323
 ```
 
-### Diagnostic Test
+Illegal combinations error with the list of legal ones. The full
+design x task x outcome table, formulas, and sources live in
+[docs/DESIGN_MATRIX.md](docs/DESIGN_MATRIX.md); published worked examples
+used as numeric test anchors are catalogued in
+[docs/NUMERIC_ANCHORS.md](docs/NUMERIC_ANCHORS.md).
+
+## Legacy API (silently compatible)
+
+All 17 pre-3.0 keywords keep working with identical results:
 
 ```r
-result <- sample_size_calculator(
-  design = "diagnosticAccuracySingle",
-  prob = 0.85,
-  d = 0.05,
-  prevalence = 0.2,
-  alpha = 0.05
-)
+sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)  # 37/group
+sample_size_calculator("survival", hr = 0.7)                        # 65 events
 ```
 
-## Study Designs
+## Result object
 
-The package supports the following study designs:
+`calculate()` returns a `sample_size_result` S3 object with `print()`,
+`summary()` and `plot()` methods. `print()` shows the metrics, the role of
+each parameter under the chosen design, and any methodological hints;
+`summary()` adds the formula, LaTeX, precise references and the adjustment
+audit trail.
 
-| Design Type | Description | Key Parameters |
-|-------------|-------------|----------------|
-| `twoMeans` | Two independent sample means | `mean1`, `mean2`, `sd` |
-| `twoProportions` | Two independent proportions | `p1`, `p2` |
-| `pairedMeans` | Paired sample means | `meanDiff`, `sdDiff` |
-| `survival` | Survival analysis (Log-rank) | `hr` |
-| `nonInferiorityMeans` | Non-inferiority test (means) | `mean1`, `mean2`, `sd`, `margin` |
-| `superiorityMeans` | Superiority test (means) | `mean1`, `mean2`, `sd`, `margin` |
-| `equivalenceMeans` | Equivalence test (means) | `mean1`, `mean2`, `sd`, `margin` |
-| `diagnosticAccuracySingle` | Diagnostic test accuracy | `prob`, `d`, `prevalence` |
-| `caseControl` | Case-control study | `p0`, `OR`, `m` |
-| `likelihoodRatioTest` | Likelihood ratio estimation | `sens`, `spec`, `prevalence` |
+## Study designs (family overview)
 
-See the documentation for complete details on all supported designs.
+| Family | Designs |
+|---|---|
+| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/rate/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A'Hern) |
+| Observational | `cohort` (proportion/rate), `caseControl`, `caseControlMatched`, `crosstab` |
+| Diagnostic | `diagAccuracy` (estimate/test/dual-endpoint), `diagAccuracyCompare` (test/NI/equivalence), `diagAUC`, `diagAUCCompare` (test/NI/equivalence), `diagLR` |
+| Estimation | `singleProportion`, `singleMean`, `singleCorrelation` |
+| Complex | `clusterRCT`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
+| Deferred | `kappa`, `steppedWedge` (formula sources under verification) |
 
-## Output
+## Literature
 
-The function returns an S3 object of class `sample_size_result` with methods:
+Methods are anchored to primary sources, with worked examples from the
+reference literature used as automated numeric test benchmarks:
 
-- `print()`: Brief summary
-- `summary()`: Detailed results with formulas and **complete literature references**
-- `plot()`: Power curves and sample size comparisons (requires ggplot2)
-
-### Literature References
-
-All methods include proper literature citations. Use `summary()` to view references for each method.
-
-```r
-result <- sample_size_calculator("auc_single", auc = 0.80, d = 0.05)
-summary(result)  # Shows formula and complete references
-```
-
-**Important**: When using specific methods in your research, please cite the original methodology papers. The summary output provides all necessary citation information.
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md).
-
-## License
-
-MIT © 2026 AI Coding Assistant
+- Zhou, Obuchowski & McClish (2011). *Statistical Methods in Diagnostic
+  Medicine* (2nd ed.), Wiley - diagnostic module.
+- Machin, Campbell, Tan & Tan (2018). *Sample Sizes for Clinical, Laboratory
+  and Epidemiology Studies* (4th ed.), Wiley - trial/complex designs.
+- Hajian-Tilaki (2014). *J Biomed Informatics* 48:193-204 - diagnostic
+  formulas.
+- Akoglu (2022). *Turkish J Emergency Medicine* 22(4):177-185 - diagnostic
+  comparisons and dual-endpoint strategy.
+- Bhardwaj et al. (2024). *J Family Med Prim Care* 13(7):2555-2561 -
+  prevalence studies and dropout adjustment.
+- Plus the original methods: Schoenfeld (1983), Fleiss et al. (1980),
+  Casagrande et al. (1978), Schlesselman (1982), Dupont (1988), Connor
+  (1987), Hanley & McNeil (1982/1983), Buderer (1996), Simon (1989),
+  A'Hern (2001), Whitehead (1993), Peduzzi et al. (1996), Schuirmann (1987).
 
 ## Citation
 
-If you use this package in your research, please cite:
+If you use the package in research, please cite the original methodology
+papers for each design (listed in every result's `reference` field) along
+with the package:
 
 ```bibtex
 @software{sampleSizeCalc,
   title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
   author = {AI Coding Assistant},
-  year = {2026},
-  version = {2.1.0},
+  year = {2025},
+  version = {3.0.0},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
 
-### Method-Specific Citations
+## License
 
-**When using specific methods, please also cite the original methodology papers**:
-
-| Method | Primary Citation | Year |
-|--------|-----------------|------|
-| AUC methods | Hanley & McNeil (Radiology) | 1982 |
-| Survival analysis | Schoenfeld (Biometrics) | 1983 |
-| Proportions | Fleiss et al. (Wiley) | 2003 |
-| Case-control | Schlesselman (Oxford) | 1982 |
-
-See `summary()` output for complete reference lists.
+MIT (see [LICENSE](LICENSE)).

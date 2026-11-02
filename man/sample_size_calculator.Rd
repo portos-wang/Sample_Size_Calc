@@ -3,7 +3,7 @@
 \name{sample_size_calculator}
 \alias{sample_size_calculator}
 \alias{sampleSizeCalculator}
-\title{Sample size calculator for clinical study designs}
+\title{Sample size calculator for clinical study designs (legacy API)}
 \usage{
 sample_size_calculator(
   design = c("twoMeans", "twoProportions", "pairedMeans", "survival",
@@ -35,6 +35,12 @@ Computes sample size (or events) for two-group or single-group designs:
 continuous outcomes, proportions, survival (log-rank), diagnostic accuracy,
 case-control, AUC comparisons, non-inferiority/superiority/equivalence.
 Uses parameter validation and unified S3 result objects.
+}
+\details{
+\code{sample_size_calculator()} is the legacy single-keyword API retained for
+backward compatibility. New code should prefer the three-axis
+\code{\link[=calculate]{calculate()}} entry point; see docs/DESIGN_MATRIX.md for the keyword
+mapping. Results are identical between the two entry points.
 }
 \section{Functions}{
 \itemize{

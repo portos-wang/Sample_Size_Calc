@@ -30,6 +30,6 @@ calculate_diagnostic_accuracy_single <- function(prob, d, prevalence, alpha) {
     ),
     formula = "N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2",
     formula_latex = "$$n_{{{cases}}} = \\frac{Z_{1-\\alpha/2}^2 \\cdot p(1-p)}{d^2}$$",
-    reference = "Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.\n\nReview: Hajian-Tilaki, K. (2014). Sample size determination in diagnostic test studies of biomedical informatics: Literature review. Journal of Biomedical Informatics, 48, 193-204."
+    reference = "Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.\n\nReview: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204."
   )
 }
