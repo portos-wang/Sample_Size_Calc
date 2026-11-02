@@ -185,6 +185,15 @@ ssr_combinations <- list(
   list(
     design = "kappa", task = "test", outcome = "proportion",
     legacy = "kappaTest"
+  ),
+  # --- 3.1: stepped wedge (Hussey & Hughes 2007, Eq 8) ---
+  list(
+    design = "steppedWedge", task = "test", outcome = "mean",
+    legacy = "steppedWedgeMean", default = TRUE
+  ),
+  list(
+    design = "steppedWedge", task = "test", outcome = "proportion",
+    legacy = "steppedWedgeProportion"
   )
 )
 
@@ -553,6 +562,18 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa1,
       kappa2 = args$kappa2, d = NULL, alpha = alpha, power = power,
       task = "test"
+    ),
+    "steppedWedgeMean" = calculate_stepped_wedge(
+      theta = args$theta, tau2 = args$tau2, sigma2_ind = args$sigma2_ind,
+      m = args$m, n_clusters = args$n_clusters,
+      clusters_per_step = args$clusters_per_step, alpha = alpha,
+      outcome = "mean"
+    ),
+    "steppedWedgeProportion" = calculate_stepped_wedge(
+      theta = args$theta, tau2 = args$tau2, sigma2_ind = args$sigma2_ind,
+      m = args$m, n_clusters = args$n_clusters,
+      clusters_per_step = args$clusters_per_step, alpha = alpha,
+      outcome = "proportion"
     ),
     cli::cli_abort("No calculation module for legacy keyword {.val {legacy_keyword}}.")
   )

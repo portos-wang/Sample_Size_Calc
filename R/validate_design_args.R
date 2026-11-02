@@ -53,7 +53,9 @@ validate_design_args <- function(design, args) {
     predictiveEPV = c("n_parameters", "event_prevalence"),
     itsLevel = c("effect_sd", "n_pre", "n_post", "rho"),
     kappaEstimate = c("pi1", "pi2", "kappa", "d"),
-    kappaTest = c("pi1", "pi2", "kappa1", "kappa2")
+    kappaTest = c("pi1", "pi2", "kappa1", "kappa2"),
+    steppedWedgeMean = c("theta", "tau2", "sigma2_ind", "m", "n_clusters", "clusters_per_step"),
+    steppedWedgeProportion = c("theta", "tau2", "sigma2_ind", "m", "n_clusters", "clusters_per_step")
   )
 
   required <- required_args[[design]]

@@ -5,7 +5,7 @@
     Condition
       Error in `ssr_resolve()`:
       ! Unknown design "rctMean".
-      i Valid designs: "rct", "paired", "caseControl", "diagAccuracy", "diagAccuracyCompare", "diagLR", "diagAUC", "diagAUCCompare", "singleProportion", "singleMean", "singleCorrelation", "cohort", "caseControlMatched", "crosstab", "rctSingleArm", "crossover", "bioequivalence", "clusterRCT", ..., "its", and "kappa"
+      i Valid designs: "rct", "paired", "caseControl", "diagAccuracy", "diagAccuracyCompare", "diagLR", "diagAUC", "diagAUCCompare", "singleProportion", "singleMean", "singleCorrelation", "cohort", "caseControlMatched", "crosstab", "rctSingleArm", "crossover", "bioequivalence", "clusterRCT", ..., "kappa", and "steppedWedge"
       i See docs/DESIGN_MATRIX.md for the full combination table.
 
 # cohort outcome=mean is an illegal combination (rate/proportion only)

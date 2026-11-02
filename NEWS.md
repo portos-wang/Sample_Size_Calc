@@ -6,11 +6,18 @@
   paired-reader) using the Obuchowski-Rockette mixed model / non-central F
   framework (Zhou et al. 2011 Eq 6.32, Tables 6.3-6.4). Verified against the
   book's mammography worked example (power ~= 0.89 at n=50, J=8, delta=0.10).
-- `steppedWedge` and `kappa` remain deferred: paper derivations against the
-  Machin worked examples did not converge (documented in
-  docs/NUMERIC_ANCHORS.md, sections "kappa 推导失败记录" and
-  "steppedWedge 推导失败记录"); implementation requires the print edition or
-  the original Cantor 1996 / Woertweck 2021 papers.
+- `steppedWedge` + task="test": Hussey-Hughes Eq 8 WLS Wald power for full
+  stepped wedge designs (original paper obtained and Eq 8 implemented
+  directly; the EPT figure-read anchor discrepancy is documented — Eq 8 gives
+  power 0.959 at RR=0.64 and the 80% crossing at RR=0.73).
+- `kappa` + task="estimate"/"test": Cohen's kappa sample size per Cantor
+  (1996), using the Fleiss-Cohen-Everitt variance factor
+  Q = po(1-po)/(1-pe)^2. Anchors exact: Q(0.5,0.5,0.7) = 0.510 and the
+  two-questionnaire test N = 214. (Table 1/2 QMAX values require the full FCE
+  lambda1 term; estimate mode is conditional on the planning kappa.)
+- Riley 2019/2020 (prediction-model precision method) remains deferred: the
+  BMJ paper is not in the references/ library; will be implemented when
+  obtained.
 
 ## Breaking / API
 

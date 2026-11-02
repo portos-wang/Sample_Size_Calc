@@ -577,6 +577,110 @@ calculate_kappa <- function(pi1, pi2, kappa1, kappa2, d, alpha, power, task) {
   }
 }
 
+# ------------------------------------------ stepped wedge (H&H 2007) ----
+
+# Internal: X matrix for a full SWD (Hussey-Hughes design)
+# I clusters; T time points (t=1 baseline, all control); clusters switch in
+# groups of n_per_step at times 2..T.
+swd_design_matrix <- function(I, T, n_per_step) {
+  X <- matrix(0, nrow = I, ncol = T)
+  idx <- 1
+  for (t in 2:T) {
+    X[idx:(idx + n_per_step - 1), t:T] <- 1
+    idx <- idx + n_per_step
+  }
+  X
+}
+
+#' Internal calculation: stepped wedge power (Hussey & Hughes 2007 Eq 8)
+#'
+#' WLS-based Wald power for the treatment effect in a full CS stepped wedge
+#' design. Requires (I, T, cluster_size m, tau2, sigma2_ind) — the variance
+#' of the treatment effect estimate is computed from the design matrix
+#' quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2)).
+#'
+#' Anchor: H&H EPT example — I=24 counties, T=5 (baseline + 4 steps of 6),
+#' m=100, binary outcome p=0.05 (sigma2_ind = p(1-p) = 0.0475),
+#' CV=0.3 -> tau2 = (0.3*0.05)^2 = 2.25e-4. This implementation returns
+#' power = 0.959 at RR=0.64 and 0.870 at RR=0.70 (transparent Eq-8
+#' computation; the paper's Fig 2 "about 80% at RR~0.64" is a figure
+#' reading and corresponds to RR ~ 0.73 under Eq 8 at 80% — discrepancy
+#' documented in NUMERIC_ANCHORS.md).
+#' @keywords internal
+calculate_stepped_wedge <- function(theta, tau2, sigma2_ind, m, n_clusters,
+                                    clusters_per_step, alpha, outcome = "mean") {
+  if (!is.numeric(theta) || theta == 0) {
+    cli::cli_abort("{.arg theta} must be a non-zero treatment effect on the additive scale.")
+  }
+  if (!is.numeric(tau2) || tau2 <= 0) cli::cli_abort("{.arg tau2} must be > 0.")
+  if (!is.numeric(sigma2_ind) || sigma2_ind <= 0) {
+    cli::cli_abort("{.arg sigma2_ind} must be > 0 (individual-level variance).")
+  }
+  if (!is.numeric(m) || m < 1) cli::cli_abort("{.arg m} (subjects per cluster per period) must be >= 1.")
+  if (!is.numeric(clusters_per_step) || clusters_per_step < 1 ||
+    clusters_per_step != floor(clusters_per_step)) {
+    cli::cli_abort("{.arg clusters_per_step} must be a positive integer.")
+  }
+
+  # H&H EPT structure: steps = I / clusters_per_step (baseline at t=1);
+  # I and clusters_per_step are the user-facing design quantities.
+  if (!is.numeric(n_clusters) || n_clusters < 2 || n_clusters != floor(n_clusters)) {
+    cli::cli_abort("{.arg n_clusters} must be a positive integer >= 2.")
+  }
+  n_steps <- n_clusters / clusters_per_step
+  if (n_steps != floor(n_steps) || n_steps < 1) {
+    cli::cli_abort(c(
+      "{.arg n_clusters} must be a multiple of {.arg clusters_per_step}.",
+      "x" = "n_clusters = {.val {n_clusters}}, clusters_per_step = {.val {clusters_per_step}}"
+    ))
+  }
+  T <- n_steps + 1
+  I <- as.integer(n_clusters)
+  sigma2 <- sigma2_ind / m
+  X <- swd_design_matrix(I, T, clusters_per_step)
+  U <- sum(X)
+  W <- sum(colSums(X)^2)
+  V <- sum(rowSums(X)^2)
+
+  var_theta <- I * tau2 * (tau2 + T * sigma2) /
+    ((I * U - W) * tau2 + (U^2 + I * T * U - T * W - I * V) * sigma2)
+  se <- sqrt(var_theta)
+  achieved_power <- stats::pnorm(abs(theta) / se - z_alpha(alpha, "two.sided"))
+
+  list(
+    design_type = sprintf(
+      "Stepped wedge cluster trial (Hussey-Hughes, %s outcome)", outcome
+    ),
+    power_achieved = round(achieved_power, 3),
+    n_clusters = as.integer(I),
+    n_time_points = as.integer(T),
+    se_theta = signif(se, 4),
+    parameters = list(
+      theta = theta,
+      tau2 = tau2,
+      sigma2_ind = sigma2_ind,
+      m = m,
+      n_clusters = I,
+      clusters_per_step = clusters_per_step,
+      alpha = alpha
+    ),
+    formula = "Var = I*t2*(t2+T*s2)/((I*U-W)*t2 + (U^2+I*T*U-T*W-I*V)*s2); power = Phi(|theta|/se - z)",
+    formula_latex = NULL,
+    reference = paste(
+      "Primary: Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of",
+      "stepped wedge cluster randomized trials. Contemporary Clinical Trials,",
+      "28(2), 182-191 (Eq 8; EPT worked example I=24, T=5)."
+    ),
+    roles = c(
+      "theta = treatment effect (additive scale; e.g. risk difference)",
+      "tau2 = between-cluster variance (e.g. (CV*mean)^2)",
+      "sigma2_ind = individual-level variance (binary: p(1-p))",
+      "m = individuals sampled per cluster per time point",
+      "clusters_per_step = clusters randomized at each step (full design)"
+    )
+  )
+}
+
 #' Interrupted time series: level-change power (AR(1)-adjusted, experimental)
 #'
 #' Transparent normal approximation with the AR(1) effective-sample-size
