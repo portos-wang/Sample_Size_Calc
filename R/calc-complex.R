@@ -681,6 +681,168 @@ calculate_stepped_wedge <- function(theta, tau2, sigma2_ind, m, n_clusters,
   )
 }
 
+# ------------------------------------------------ predictive (Riley 2020) ----
+
+# Max Cox-Snell R2 for a binary outcome with proportion prev (entropy form,
+# Riley 2020 Fig 4 / supplementary S5): max_R2cs = 1 - exp(-2*H(φ))
+# Anchor: prev=0.05 -> 0.3277 ≈ 0.33 (paper example 1).
+max_r2cs_binary <- function(prev) {
+  phi <- min(prev, 1 - prev) # symmetric handling
+  1 - exp(2 * (phi * log(phi) + (1 - phi) * log(1 - phi)))
+}
+
+#' Internal calculation: prediction model development (Riley 2020 BMJ method)
+#'
+#' Binary outcome: criteria B1 (overall proportion precision), B3 (shrinkage
+#' target S), with B2 (mean absolute prediction error, van Smeden formula)
+#' reported for P <= 30. Sample size = max(B1, B3).
+#' Anchors (exact): B1 φ=0.5,δ=0.05 -> 385; B3 P=30,R2cs=0.05,S=0.9 -> 5249;
+#' B2 MAPE=0.05,φ=0.3,P=10 -> 461.
+#' @keywords internal
+calculate_predictive_riley_binary <- function(prev, n_parameters, r2_cs,
+                                              shrinkage, mape, precision_delta,
+                                              alpha) {
+  if (!is.numeric(prev) || prev <= 0 || prev >= 1) {
+    cli::cli_abort("{.arg prev} (anticipated outcome proportion) must be in (0, 1).")
+  }
+  if (!is.numeric(n_parameters) || n_parameters < 1 || n_parameters != floor(n_parameters)) {
+    cli::cli_abort("{.arg n_parameters} (candidate predictor parameters) must be a positive integer.")
+  }
+  phi <- min(prev, 1 - prev)
+  max_r2cs <- max_r2cs_binary(prev)
+  if (!is.numeric(r2_cs) || r2_cs <= 0 || r2_cs >= max_r2cs) {
+    cli::cli_abort(c(
+      "{.arg r2_cs} must be in (0, max R2cs = {.val {round(max_r2cs, 4)}})",
+      "i" = "For prev = {.val {prev}}, max R2cs = 1 - exp(-2H(phi)) = {.val {round(max_r2cs, 4)}}."
+    ))
+  }
+  shrinkage <- shrinkage %||% 0.9
+  mape <- mape %||% 0.05
+  precision_delta <- precision_delta %||% 0.05
+
+  # B1: outcome proportion precision (Fig 1)
+  z <- z_alpha(alpha, "two.sided")
+  n_b1 <- (z / precision_delta)^2 * prev * (1 - prev)
+
+  # B3: shrinkage target (Fig 3)
+  n_b3 <- n_parameters / ((shrinkage - 1) * log(1 - r2_cs / shrinkage))
+
+  # B2: MAPE / van Smeden formula (Fig 2), P <= 30 only
+  n_b2 <- NULL
+  if (n_parameters <= 30) {
+    n_b2 <- exp((-0.508 + 0.259 * log(phi) + 0.504 * log(n_parameters) -
+      log(mape)) / 0.544)
+  }
+
+  n_final <- ceiling(max(n_b1, n_b3))
+  events <- ceiling(n_final * prev)
+
+  hints <- c(
+    sprintf("B1 (proportion precision, delta=%.3f): n = %d", precision_delta, ceiling(n_b1)),
+    sprintf("B3 (shrinkage S=%.2f, R2cs=%.4f): n = %d", shrinkage, r2_cs, ceiling(n_b3)),
+    if (!is.null(n_b2)) {
+      sprintf("B2 (MAPE=%.3f, P=%d <= 30): n = %d (informational)", mape, n_parameters, ceiling(n_b2))
+    } else {
+      "B2 (MAPE) requires P <= 30; use the van Smeden interactive tool for larger P"
+    },
+    "B4 (optimism in Nagelkerke R2 <= 0.05) is handled inside B3 via the",
+    "shrinkage target in the pmsampsize implementation; see Riley 2020 Box 1."
+  )
+
+  list(
+    design_type = "Prediction model development (Riley 2020, binary)",
+    n_required = as.integer(n_final),
+    events_required = as.integer(events),
+    epp = round(events / n_parameters, 2),
+    parameters = list(
+      prev = prev, n_parameters = n_parameters, r2_cs = r2_cs,
+      max_r2cs = round(max_r2cs, 4), shrinkage = shrinkage,
+      mape = mape, precision_delta = precision_delta, alpha = alpha
+    ),
+    formula = "B1: n=(z/d)^2*p(1-p); B3: n=P/((S-1)*ln(1-R2cs/S)); n = max(B1, B3)",
+    formula_latex = NULL,
+    reference = paste(
+      "Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020).",
+      "Calculating the sample size required for developing a clinical prediction",
+      "model. BMJ, 368, m441 (Box 1, Figures 1-5).\n\n",
+      "B2 formula: van Smeden, M., et al. (2019). Stat Methods Med Res, 28,",
+      "2455-74. B3 derivation: Riley et al. (2019). Stat Med, 38, 1276-96",
+      "(PART II). Software: pmsampsize (Stata/R)."
+    ),
+    roles = c(
+      "prev = anticipated outcome proportion in the target population",
+      "n_parameters = candidate predictor parameters (P)",
+      "r2_cs = anticipated Cox-Snell R2 (conservative, optimism-adjusted)",
+      "shrinkage = target uniform shrinkage factor S (default 0.9)",
+      "mape = target mean absolute prediction error (default 0.05)"
+    ),
+    hints = hints
+  )
+}
+
+#' Internal calculation: prediction model for a time-to-event outcome
+#' (Riley 2020 criterion T1: person-years for precise cumulative incidence)
+#' Anchor: lambda=0.1/year, t=10, delta=0.05 -> T >= 2366 person-years.
+#' @keywords internal
+calculate_predictive_timetoevent <- function(rate, timepoint, precision_delta,
+                                             alpha, n_parameters, epv) {
+  if (!is.numeric(rate) || rate <= 0) cli::cli_abort("{.arg rate} must be > 0.")
+  if (!is.numeric(timepoint) || timepoint <= 0) {
+    cli::cli_abort("{.arg timepoint} must be > 0.")
+  }
+  if (!is.numeric(precision_delta) || precision_delta <= 0 || precision_delta >= 1) {
+    cli::cli_abort("{.arg precision_delta} must be in (0, 1).")
+  }
+
+  f_t <- 1 - exp(-rate * timepoint)
+  z <- z_alpha(alpha, "two.sided")
+  # margin(t) = z * sqrt(rate/T) * t * (1 - F(t)); search T for both margins <= delta
+  T_person_years <- 1
+  repeat {
+    lam_hi <- rate + z * sqrt(rate / T_person_years)
+    lam_lo <- max(rate - z * sqrt(rate / T_person_years), 0)
+    f_hi <- 1 - exp(-lam_hi * timepoint)
+    f_lo <- 1 - exp(-lam_lo * timepoint)
+    if ((f_hi - f_t) <= precision_delta && (f_t - f_lo) <= precision_delta) break
+    T_person_years <- T_person_years + 1
+    if (T_person_years > 1e7) {
+      cli::cli_abort("Person-years search exceeded 1e7; check inputs.")
+    }
+  }
+
+  n_events_required <- NULL
+  if (!is.null(n_parameters) && !is.null(epv)) {
+    n_events_required <- as.integer(ceiling(epv * n_parameters))
+  }
+
+  list(
+    design_type = "Prediction model development (Riley 2020, time-to-event)",
+    person_time_required = as.integer(T_person_years),
+    n_required = if (!is.null(n_events_required)) as.integer(ceiling(n_events_required / f_t)),
+    events_required = n_events_required,
+    cumulative_incidence = round(f_t, 4),
+    parameters = list(
+      rate = rate, timepoint = timepoint,
+      precision_delta = precision_delta, alpha = alpha,
+      n_parameters = n_parameters, epv = epv
+    ),
+    formula = "F(t) = 1-exp(-rate*t); CI: 1-exp(-(rate +- z*sqrt(rate/T))*t); find T with margins <= delta",
+    formula_latex = NULL,
+    reference = paste(
+      "Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020).",
+      "Calculating the sample size required for developing a clinical prediction",
+      "model. BMJ, 368, m441 (Figure 1, time-to-event panel; criterion T1;",
+      "worked example: rate=0.10/year, t=10y, delta=0.05 -> 2366 person-years)."
+    ),
+    roles = c(
+      "rate = anticipated event rate per person-year",
+      "timepoint = key prediction time point t (years)",
+      "precision_delta = maximum margin of error for F(t)",
+      "n_parameters/epv = optional EPP cross-check (classic 10 EPV)"
+    )
+  )
+}
+
 #' Interrupted time series: level-change power (AR(1)-adjusted, experimental)
 #'
 #' Transparent normal approximation with the AR(1) effective-sample-size

@@ -55,7 +55,9 @@ validate_design_args <- function(design, args) {
     kappaEstimate = c("pi1", "pi2", "kappa", "d"),
     kappaTest = c("pi1", "pi2", "kappa1", "kappa2"),
     steppedWedgeMean = c("theta", "tau2", "sigma2_ind", "m", "n_clusters", "clusters_per_step"),
-    steppedWedgeProportion = c("theta", "tau2", "sigma2_ind", "m", "n_clusters", "clusters_per_step")
+    steppedWedgeProportion = c("theta", "tau2", "sigma2_ind", "m", "n_clusters", "clusters_per_step"),
+    predictiveRileyBinary = c("prev", "n_parameters", "r2_cs"),
+    predictiveRileyTimetoevent = c("rate", "timepoint", "precision_delta")
   )
 
   required <- required_args[[design]]

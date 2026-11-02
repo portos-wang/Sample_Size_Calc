@@ -2,6 +2,18 @@
 
 ## 3.1 (development)
 
+- `predictiveModel` + task="plan" + outcome="binary": **Riley 2020 BMJ method**
+  for prediction model development sample size (original paper obtained and
+  implemented). Criteria B1 (outcome proportion precision), B3 (shrinkage
+  target via Cox-Snell R2), and B2 (van Smeden MAPE, P <= 30) with the
+  entropy-based max R2cs helper. Anchors exact: B3 P=30/R2cs=0.05/S=0.9 ->
+  5249 (matches pmsampsize), B1 phi=0.5/delta=0.05 -> 385, B2 MAPE=0.05/
+  phi=0.3/P=10 -> 461 (Fig 2 worked example).
+- `predictiveModel` + task="plan" + outcome="rate": Riley 2020 criterion T1
+  for time-to-event outcomes — person-years of follow-up needed for precise
+  cumulative incidence under an exponential model (exact binomial-CI search;
+  anchor: rate=0.10/yr, t=10y, delta=0.05 -> 2366 person-years, exactly the
+  paper's Figure 1 worked example).
 - `mrmc_power()`: power calculation for MRMC studies (paired-patient,
   paired-reader) using the Obuchowski-Rockette mixed model / non-central F
   framework (Zhou et al. 2011 Eq 6.32, Tables 6.3-6.4). Verified against the
@@ -15,9 +27,6 @@
   Q = po(1-po)/(1-pe)^2. Anchors exact: Q(0.5,0.5,0.7) = 0.510 and the
   two-questionnaire test N = 214. (Table 1/2 QMAX values require the full FCE
   lambda1 term; estimate mode is conditional on the planning kappa.)
-- Riley 2019/2020 (prediction-model precision method) remains deferred: the
-  BMJ paper is not in the references/ library; will be implemented when
-  obtained.
 
 ## Breaking / API
 

@@ -194,6 +194,15 @@ ssr_combinations <- list(
   list(
     design = "steppedWedge", task = "test", outcome = "proportion",
     legacy = "steppedWedgeProportion"
+  ),
+  # --- 3.1: prediction model (Riley 2020) ---
+  list(
+    design = "predictiveModel", task = "plan", outcome = "binary",
+    legacy = "predictiveRileyBinary"
+  ),
+  list(
+    design = "predictiveModel", task = "plan", outcome = "rate",
+    legacy = "predictiveRileyTimetoevent"
   )
 )
 
@@ -553,6 +562,17 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
     "itsLevel" = calculate_its_level(
       effect_sd = args$effect_sd, n_pre = args$n_pre, n_post = args$n_post,
       rho = args$rho, alpha = alpha, power = power
+    ),
+    "predictiveRileyBinary" = calculate_predictive_riley_binary(
+      prev = args$prev, n_parameters = args$n_parameters,
+      r2_cs = args$r2_cs, shrinkage = args$shrinkage,
+      mape = args$mape, precision_delta = args$precision_delta,
+      alpha = alpha
+    ),
+    "predictiveRileyTimetoevent" = calculate_predictive_timetoevent(
+      rate = args$rate, timepoint = args$timepoint,
+      precision_delta = args$precision_delta, alpha = alpha,
+      n_parameters = args$n_parameters, epv = args$epv
     ),
     "kappaEstimate" = calculate_kappa(
       pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa,
