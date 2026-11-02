@@ -228,7 +228,7 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
     ),
     hints = c(
       "Calculates sample size ensuring the log-scale CI does not cross target_lr (threshold precision),",
-      "distinct from fixed-width CI approaches (e.g. presize::prec_lr)."
+      "distinct from fixed-width CI approaches (e.g. prec_lr in presize)."
     )
   )
 }

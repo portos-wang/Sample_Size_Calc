@@ -29,6 +29,6 @@ List consumed by as_sample_size_result()
 \description{
 Sample size for estimating a Pearson correlation coefficient with pre-specified
 confidence interval width w = 2*d (Machin et al. 2018, Ch.19, Equations 19.5-19.8).
-Matches presize::prec_cor for identical parameters.
+Matches prec_cor in the presize package for identical parameters.
 }
 \keyword{internal}

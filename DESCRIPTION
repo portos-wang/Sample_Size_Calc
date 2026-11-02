@@ -42,7 +42,9 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    pkgdown
+    pkgdown,
+    presize,
+    PowerTOST
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://portos-wang.github.io/Sample_Size_Calc/, https://github.com/portos-wang/sampleSizeCalc

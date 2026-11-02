@@ -196,7 +196,7 @@ calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
 #'
 #' Evaluates the exact power of the two one-sided tests (TOST) procedure using
 #' the noncentral t distribution (Phillips 1990; Julious 2004 Eq 13).
-#' Matches PowerTOST::sampleN.TOST exactly.
+#' Matches sampleN.TOST in the PowerTOST package exactly.
 #'
 #' @param cv Intra-subject coefficient of variation
 #' @param alpha Type I error (one-sided per test, default 0.05)
