@@ -195,7 +195,7 @@ comparisons.
 ``` r
 
 # Install from GitHub
-devtools::install_github("portos-wang/sampleSizeCalc")
+devtools::install_github("portos-wang/Sample_Size_Calc")
 
 # Or install from local source
 devtools::install_local("path/to/1_sample_size_determination")
@@ -1120,7 +1120,7 @@ correction).
 - **Complete formula reference**: `docs/formula_reference_guide.md`
 - **Literature verification**: `docs/literature_verification_report.md`
 - **Report issues**: [GitHub
-  Issues](https://github.com/portos-wang/sampleSizeCalc/issues)
+  Issues](https://github.com/portos-wang/Sample_Size_Calc/issues)
 
 ------------------------------------------------------------------------
 
@@ -1135,7 +1135,7 @@ If you use this package in your research, please cite:
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
   version = {3.1.1},
-  url = {https://github.com/portos-wang/sampleSizeCalc}
+  url = {https://github.com/portos-wang/Sample_Size_Calc}
 }
 ```
 
