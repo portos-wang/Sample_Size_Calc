@@ -93,7 +93,7 @@ A sample_size_result object
 ## Examples
 
 ``` r
-r <- new_sample_size_result(
+r <- sampleSizeCalc:::new_sample_size_result(
   design = "rct", task = "test", outcome = "mean",
   design_type = "Two independent samples, mean comparison",
   parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),
@@ -101,7 +101,5 @@ r <- new_sample_size_result(
   formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2",
   reference = "Chow et al. (2017)"
 )
-#> Error in new_sample_size_result(design = "rct", task = "test", outcome = "mean",     design_type = "Two independent samples, mean comparison",     parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05,         power = 0.8), legacy = list(n_per_group = 37L, total_n = 74L),     formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2", reference = "Chow et al. (2017)"): could not find function "new_sample_size_result"
 stopifnot(inherits(r, "sample_size_result"))
-#> Error: object 'r' not found
 ```

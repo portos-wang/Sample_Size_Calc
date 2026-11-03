@@ -24,6 +24,5 @@ Invisibly returns x
 
 ``` r
 r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-assert_sample_size_result(r)
-#> Error in assert_sample_size_result(r): could not find function "assert_sample_size_result"
+sampleSizeCalc:::assert_sample_size_result(r)
 ```

@@ -23,7 +23,7 @@ Invisibly returns the result object
 ``` r
 # \donttest{
 res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-plot_power_curve(res)
-#> Error in plot_power_curve(res): could not find function "plot_power_curve"
+sampleSizeCalc:::plot_power_curve(res)
+
 # }
 ```

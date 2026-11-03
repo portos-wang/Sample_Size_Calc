@@ -142,7 +142,7 @@ target_events_needed, target_state_cases_needed, cases_needed, ...)</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">new_sample_size_result</span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">sampleSizeCalc</span><span class="fu">:::</span><span class="fu">new_sample_size_result</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  design <span class="op">=</span> <span class="st">"rct"</span>, task <span class="op">=</span> <span class="st">"test"</span>, outcome <span class="op">=</span> <span class="st">"mean"</span>,</span></span>
 <span class="r-in"><span>  design_type <span class="op">=</span> <span class="st">"Two independent samples, mean comparison"</span>,</span></span>
 <span class="r-in"><span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>,</span></span>
@@ -150,9 +150,7 @@ target_events_needed, target_state_cases_needed, cases_needed, ...)</p></dd>
 <span class="r-in"><span>  formula_ascii <span class="op">=</span> <span class="st">"n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2"</span>,</span></span>
 <span class="r-in"><span>  reference <span class="op">=</span> <span class="st">"Chow et al. (2017)"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in new_sample_size_result(design = "rct", task = "test", outcome = "mean",     design_type = "Two independent samples, mean comparison",     parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05,         power = 0.8), legacy = list(n_per_group = 37L, total_n = 74L),     formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2", reference = "Chow et al. (2017)"):</span> could not find function "new_sample_size_result"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"sample_size_result"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'r' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

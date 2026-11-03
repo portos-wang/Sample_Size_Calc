@@ -23,8 +23,10 @@ Validated alpha value (invisible numeric scalar)
 ## Examples
 
 ``` r
-validate_alpha(0.05)   # OK
-#> Error in validate_alpha(0.05): could not find function "validate_alpha"
-try(validate_alpha(1.5))  # structured error
-#> Error in validate_alpha(1.5) : could not find function "validate_alpha"
+sampleSizeCalc:::validate_alpha(0.05)   # OK
+#> [1] 0.05
+try(sampleSizeCalc:::validate_alpha(1.5))  # structured error
+#> Error in sampleSizeCalc:::validate_alpha(1.5) : 
+#>   `alpha` must be between 0 and 1, not 1.5.
+#> ℹ Typical values are 0.05 or 0.01.
 ```
