@@ -75,16 +75,22 @@ test_that("diagAUC legacy behavior is untouched (golden master)", {
 
 # --- A5: diagLR log-CI rewrite (Hajian-Tilaki 6.4) ---
 
-test_that("diagLR rewrite computes the transparent log-CI formula", {
-  # NOTE: Hajian-Tilaki's worked example reports 80/group for LR-=0.4 with
-  # Se=0.9, Sp=0.5; re-deriving from their Eq 6.13 with n1=n2=n gives 9 per
-  # group (the paper's arithmetic solves a different scaling; documented in
-  # NUMERIC_ANCHORS.md). We assert our transparent implementation.
+test_that("negative LR precision reproduces the published 80-per-group example", {
   res <- calculate("diagLR", "estimate", "lr",
     sens = 0.9, spec = 0.5, target_lr = 0.4, lr_type = "negative"
   )
-  expect_equal(res$cases_needed, 9)
-  expect_identical(res$cases_needed, res$controls_needed)
+  expect_identical(res$cases_needed, 80L)
+  expect_identical(res$controls_needed, 80L)
+  expect_equal(res$total_subjects, 160)
+})
+
+test_that("positive LR precision uses the false-positive probability", {
+  res <- calculate("diagLR", "estimate", "lr",
+    sens = 0.8, spec = 0.7, target_lr = 2, lr_type = "positive"
+  )
+  expect_identical(res$cases_needed, 120L)
+  expect_identical(res$controls_needed, 120L)
+  expect_equal(res$total_subjects, 240)
 })
 
 test_that("diagLR legacy path is untouched (golden master)", {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-diagnostic-estimation.R
 \name{calculate_likelihood_ratio_v2}
 \alias{calculate_likelihood_ratio_v2}
-\title{Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.13/6.14)}
+\title{Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.10-6.14)}
 \usage{
 calculate_likelihood_ratio_v2(
   sens,

@@ -17,6 +17,12 @@
 
 ## Numerical Enhancements & Cross-Package Alignments
 
+- `diagLR`: Corrected the log-LR variance to use sensitivity and false-positive
+  probability for LR+, and false-negative probability and specificity for LR-.
+  The published Se=0.90, Sp=0.50, upper LR-=0.40 example now requires 80 cases
+  and 80 controls, rather than 9 per group. Both formula representations and
+  the clinical guides use the corrected calculation.
+
 - `singleCorrelation`: Fixed implementation to strictly match Machin et al.
   (2018, Chapter 19, Equations 19.5-19.8). Now supports both `precision`
   (absolute CI half-width) and `epsilon` (relative precision). Produces exact
@@ -40,8 +46,9 @@
   - `caseControlMatched`: Clarified that `psi` is the discordant pair
     proportion (pi10 + pi01), not the discordant odds ratio.
   - `cohortRate`: Clarified that required subjects = person-time / follow-up duration.
-  - `diagLR`: Clarified that sample size ensures the CI does not cross `target_lr`,
-    distinct from fixed-width CI estimation.
+  - `diagLR`: Clarified that planning targets the approximate CI limit at the
+    anticipated sensitivity and specificity, distinct from fixed-width CI
+    estimation or assurance about every realized interval.
 
 # sampleSizeCalc 3.1.0
 

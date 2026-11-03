@@ -155,7 +155,7 @@ calculate_auc_single_v2 <- function(auc, d, prevalence, alpha, ratio, var_method
 
 # ---------------------------------------------------------------- A5 rewrite
 
-#' Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.13/6.14)
+#' Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.10-6.14)
 #'
 #' Solves the CI-width equation for a target LR: given expected Se and Sp,
 #' the LR+ (or LR-) is determined; n per group is found such that the
@@ -168,15 +168,21 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
 
   if (lr_type == "positive") {
     lr_obs <- sens / (1 - spec)
+    var_term <- (1 - sens) / sens + spec / (1 - spec)
+    formula <- "log(LR+) +- Z * sqrt((1-Se)/(n*Se) + Sp/(n*(1-Sp)))"
+    formula_latex <- "$$\\log(LR^+) \\pm Z_{1-\\alpha/2}\\sqrt{\\frac{1-Se}{n \\cdot Se} + \\frac{Sp}{n(1-Sp)}}$$"
   } else {
     lr_obs <- (1 - sens) / spec
+    var_term <- sens / (1 - sens) + (1 - spec) / spec
+    formula <- "log(LR-) +- Z * sqrt(Se/(n*(1-Se)) + (1-Sp)/(n*Sp))"
+    formula_latex <- "$$\\log(LR^-) \\pm Z_{1-\\alpha/2}\\sqrt{\\frac{Se}{n(1-Se)} + \\frac{1-Sp}{n \\cdot Sp}}$$"
   }
   if (lr_obs <= 0) {
     cli::cli_abort("Computed {.val {lr_type}} LR is non-positive; check sens/spec.")
   }
 
-  # log(LR) CI: log(LR) +- z * sqrt( (1-Se)/(n1*Se) + (1-Sp)/(n2*Sp) )
-  # with n1 = n2 = n (equal cases and controls per Hajian-Tilaki's examples).
+  # Delta-method variance uses the two probabilities in the LR ratio:
+  # LR+ = Se/(1-Sp); LR- = (1-Se)/Sp. Here n_cases = n_controls = n.
   z <- stats::qnorm(1 - alpha / 2)
   target <- if (is.null(target_lr)) {
     cli::cli_abort(c(
@@ -195,7 +201,6 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
     )
   }
 
-  var_term <- (1 - sens) / sens + (1 - spec) / spec
   n_per_group <- (z / log_half_width)^2 * var_term
 
   list(
@@ -212,12 +217,12 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
       prevalence = prev_val,
       alpha = alpha
     ),
-    formula = "log(LR) +- Z * sqrt((1-Se)/(n*Se) + (1-Sp)/(n*Sp))",
-    formula_latex = "$$\\log(LR) \\pm Z_{1-\\alpha/2}\\sqrt{\\frac{1-Se}{n \\cdot Se} + \\frac{1-Sp}{n \\cdot Sp}}$$",
+    formula = formula,
+    formula_latex = formula_latex,
     reference = paste(
       "Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic",
       "test studies of biomedical informatics. Journal of Biomedical Informatics,",
-      "48, 193-204 (Section 6.4, Eqs 6.13/6.14; worked example n=80 per group).\n\n",
+      "48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).\n\n",
       "CI method: Simel, D. L., Samsa, G. P., & Matchar, D. B. (1991).",
       "Likelihood ratios with confidence: sample size estimation for accuracy",
       "of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130."
@@ -228,7 +233,8 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
       "n is computed per group (equal cases and controls)"
     ),
     hints = c(
-      "Calculates sample size ensuring the log-scale CI does not cross target_lr (threshold precision),",
+      "Plans the approximate CI limit at the anticipated Se/Sp to reach target_lr;",
+      "this is a precision calculation, not a guarantee about every realized CI.",
       "distinct from fixed-width CI approaches (e.g. prec_lr in presize)."
     )
   )
