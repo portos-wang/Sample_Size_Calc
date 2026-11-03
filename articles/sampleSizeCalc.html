@@ -98,9 +98,18 @@ boilerplates.</p>
 <div class="section level2">
 <h2 id="the-three-axis-api-v3-0">The Three-Axis API (v3.0+)<a class="anchor" aria-label="anchor" href="#the-three-axis-api-v3-0"></a>
 </h2>
-<p><strong>Scenario A — Antihypertensive RCT:</strong> Placebo 10 mmHg
-vs new ACE-inhibitor 12 mmHg reduction, pooled SD 3 mmHg (two-sided
-<span class="math inline">\(\alpha = 0.05\)</span>, 80% power).</p>
+<p>The following examples are teaching protocols. Clinical rates,
+effects, SDs, and margins are illustrative inputs that need compatible
+evidence in a real study. The linked English and Chinese guides expand
+<strong>52 scenarios</strong> with eligibility, endpoint timing,
+parameter rationale, and recruitment interpretation.</p>
+<p><strong>Scenario A — Antihypertensive RCT:</strong> Enroll adults
+with stable background treatment in a blinded, 1:1 parallel trial.
+Measure baseline-to-week-12 systolic BP reduction using standardized
+readings. Assume reductions of 10 and 12 mmHg and change-score SD 3
+mmHg, with two-sided α=0.05 and 80% power. The SD concerns individual
+changes, and the result counts independent patients with complete
+endpoints.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>, mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
@@ -130,9 +139,13 @@ vs new ACE-inhibitor 12 mmHg reduction, pooled SD 3 mmHg (two-sided
 <span><span class="co">#&gt; Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
-<p><strong>Scenario B — Framingham-style Cohort:</strong> 5-year
-coronary disease risk 20% in non-smokers vs 30% in smokers, 10%
-anticipated dropout.</p>
+<p><strong>Scenario B — Prospective cardiovascular cohort:</strong>
+Recruit current smokers and never-smokers who are free of coronary
+disease at baseline, then ascertain the first prespecified event over 5
+years using consistent follow-up. Assume cumulative risks of 30% and
+20%, equal group sizes, and 10% loss to follow-up. These are
+fixed-period risks, not prevalence or rates per person-year; the
+returned count already includes the requested loss adjustment.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"cohort"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>, p0 <span class="op">=</span> <span class="fl">0.20</span>, p1 <span class="op">=</span> <span class="fl">0.30</span>, dropout <span class="op">=</span> <span class="fl">0.10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
@@ -172,9 +185,13 @@ anticipated dropout.</p>
 <span><span class="co">#&gt;  Also: Schlesselman, J. J. (1982). Case-Control Studies. Oxford University Press (cohort/case-control shared formula, roles swapped); Machin et al. (2018) Ch.3.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
-<p><strong>Scenario C — Diagnostic ROC-AUC validation:</strong>
-Anticipated AUC = 0.80, CI half-width <span class="math inline">\(\pm
-0.10\)</span>, 1:1 case:control, binormal model.</p>
+<p><strong>Scenario C — Diagnostic ROC-AUC validation:</strong> Evaluate
+a frozen continuous biomarker score in reference-confirmed cases and
+clinically comparable non-cases, recruited in equal numbers. Each
+patient supplies one score and one reference result. Assume AUC 0.80 and
+a 95% CI half-width of 0.10 with a binormal variance model; the result
+must be met in both disease-status strata, not only as an overall
+total.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUC"</span>, <span class="st">"estimate"</span>, <span class="st">"auc"</span>,</span>
 <span>  auc <span class="op">=</span> <span class="fl">0.80</span>, d <span class="op">=</span> <span class="fl">0.10</span>,</span>
@@ -268,8 +285,12 @@ counts, and power curves</li>
 </h3>
 <p><strong>Use case</strong>: Comparing means between two independent
 groups (e.g., treatment vs. control)</p>
-<p><strong>Example</strong>: A clinical trial comparing mean blood
-pressure reduction between two treatments</p>
+<p><strong>Example</strong>: A blinded outpatient trial compares
+baseline-to-week-12 systolic BP reductions under two add-on treatments.
+Assume group means of 10 and 12 mmHg and common change-score SD 3 mmHg.
+The two independent groups need complete patient-level change scores;
+repeated BP readings are averaged within the visit and are not separate
+patients.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"twoMeans"</span>,</span>
@@ -322,8 +343,12 @@ Calculations in Clinical Research</em> (3rd ed.). CRC Press.</p>
 </h3>
 <p><strong>Use case</strong>: Comparing means from paired or matched
 observations (e.g., pre-post measurements, matched pairs)</p>
-<p><strong>Example</strong>: Measuring cognitive function before and
-after an intervention in the same subjects</p>
+<p><strong>Example</strong>: A cognitive rehabilitation cohort receives
+the same prespecified cognitive assessment before and 12 weeks after
+training. Assume an average 2.5-point change and SD of patient-level
+differences 4.0 points, targeting 90% power. Both visits must be linked;
+practice effects and natural history require consideration when
+interpreting uncontrolled change.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"pairedMeans"</span>,</span>
@@ -373,8 +398,12 @@ Biostatistics</em> (8th ed.). Cengage Learning.</p>
 </h3>
 <p><strong>Use case</strong>: Comparing proportions between two
 independent groups</p>
-<p><strong>Example</strong>: Comparing response rates between two
-treatments</p>
+<p><strong>Example</strong>: An exploratory oncology trial compares
+objective response at a fixed week-12 assessment, using the same imaging
+criteria in both randomized groups. Assume response rates of 30% and
+45%, with two-sided α=0.05 and 80% power. Prespecify early deaths,
+rescue therapy, and unevaluable imaging rather than excluding
+unsuccessful patients from the denominator.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"twoProportions"</span>,</span>
@@ -431,8 +460,12 @@ Methods for Rates and Proportions</em> (3rd ed.). Wiley.</p>
 </h3>
 <p><strong>Use case</strong>: Time-to-event analysis with log-rank
 test</p>
-<p><strong>Example</strong>: Oncology trial comparing overall survival
-between two treatments</p>
+<p><strong>Example</strong>: A randomized oncology trial uses all-cause
+death from randomization as the overall-survival endpoint, with
+last-known survival as the censoring date. Assume HR 0.70 under
+proportional hazards and 1:1 allocation. First calculate deaths
+required, then use accrual and survival assumptions to estimate patient
+enrollment and follow-up duration.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"survival"</span>,</span>
@@ -488,8 +521,12 @@ for the proportional-hazards regression model. <em>Biometrics</em>,
 </h3>
 <p><strong>Use case</strong>: Demonstrating that a new treatment is not
 worse than standard by more than a margin</p>
-<p><strong>Example</strong>: Non-inferiority trial for new
-antidepressant</p>
+<p><strong>Example</strong>: A parallel trial evaluates whether a
+simpler symptom-management strategy preserves most of an active
+comparator’s improvement on a prespecified depression score at week 12.
+Assume mean improvements 8.0 versus 8.5 points, SD 2.0, and maximum
+acceptable loss 1.0 point. Use one-sided α=0.025 and 90% power; the
+margin needs its own clinical and effect-preservation justification.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"nonInferiorityMeans"</span>,</span>
@@ -537,8 +574,12 @@ Calculations in Clinical Research</em> (3rd ed.). CRC Press.</p>
 </h3>
 <p><strong>Use case</strong>: Demonstrating that a new treatment is
 better than standard</p>
-<p><strong>Example</strong>: Superiority trial for new pain
-medication</p>
+<p><strong>Example</strong>: A pain trial compares week-12 improvement
+on a specified 0–100 scale, assuming means of 12 and 10 points and SD
+2.5. The objective is to exceed the active comparator by more than 0.5
+point, using one-sided α=0.025 and 85% power. The effective difference
+in the formula is the anticipated difference minus that prespecified
+superiority margin.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"superiorityMeans"</span>,</span>
@@ -584,7 +625,12 @@ larger sample size</p>
 </h3>
 <p><strong>Use case</strong>: Demonstrating two treatments are
 equivalent</p>
-<p><strong>Example</strong>: Bioequivalence study</p>
+<p><strong>Example</strong>: Two randomized anemia-support strategies
+are compared on mean hemoglobin at week 12, assuming 100 versus 102 g/L
+and SD 5 g/L. The teaching equivalence interval is ±5 g/L, with
+one-sided α=0.05 and 80% power. This is equivalence of a specified
+continuous endpoint, distinct from a pharmacokinetic bioequivalence
+study.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"equivalenceMeans"</span>,</span>
@@ -637,8 +683,12 @@ difference</p>
 </h3>
 <p><strong>Use case</strong>: Estimating sensitivity or specificity with
 a given precision</p>
-<p><strong>Example</strong>: Validating a new diagnostic test for
-disease X</p>
+<p><strong>Example</strong>: A referral clinic consecutively validates a
+locked-threshold diagnostic test using a common reference examination
+for all patients. Assume sensitivity 85%, 95% CI half-width 0.05, and
+source prevalence 20%. The case requirement is confirmed
+disease-positive patients; total screening is an expectation-based
+conversion, and specificity precision requires separate planning.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"diagnosticAccuracySingle"</span>,</span>
@@ -691,8 +741,12 @@ Informatics</em>, 48, 193-204.</p>
 </h3>
 <p><strong>Use case</strong>: Estimating AUC with a confidence interval
 of given width</p>
-<p><strong>Example</strong>: Validating a new biomarker’s discriminative
-ability</p>
+<p><strong>Example</strong>: A biomarker score is frozen before a
+clinical validation cohort is enrolled. Assume AUC 0.80, CI half-width
+0.05, and source prevalence 30%, with one score and a reference disease
+assessment per person. This legacy branch uses its Hanley–McNeil
+variance calculation; the three-axis example above demonstrates
+explicitly selecting a different variance model.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"auc_single"</span>,</span>
@@ -743,7 +797,12 @@ and use of AUC. <em>Radiology</em>, 143(1), 29-36.</p>
 </h3>
 <p><strong>Use case</strong>: Comparing AUCs of two diagnostic tests
 applied to same subjects</p>
-<p><strong>Example</strong>: Comparing two imaging modalities</p>
+<p><strong>Example</strong>: The same patients receive two continuous
+imaging scores, each evaluated against one common disease reference.
+Assume AUCs 0.85 and 0.80, correlation between the AUC estimators 0.6,
+and prevalence 25%. Preserve pairing and use pilot covariance
+information; correlation between raw image scores is not automatically
+the required AUC correlation.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"aucComparison"</span>,</span>
@@ -793,14 +852,18 @@ paired design</p>
 </h3>
 <p><strong>Use case</strong>: Sample size for case-control studies with
 odds ratio</p>
-<p><strong>Example</strong>: Case-control study investigating smoking
-and lung cancer</p>
+<p><strong>Example</strong>: Incident lung cancer cases and controls
+from the same source population report smoking before a common
+index-date window. Assume 30% control exposure and OR 2.5, with one
+control per case. This is an unmatched group-ratio design;
+<code>p0</code> is exposure prevalence among controls, and individual
+age matching would require a different calculation.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"caseControl"</span>,</span>
 <span>  p0 <span class="op">=</span> <span class="fl">0.30</span>, <span class="co"># Exposure rate in controls</span></span>
 <span>  OR <span class="op">=</span> <span class="fl">2.5</span>, <span class="co"># Target odds ratio</span></span>
-<span>  m <span class="op">=</span> <span class="fl">1</span>, <span class="co"># Controls per case (1:1 matching)</span></span>
+<span>  m <span class="op">=</span> <span class="fl">1</span>, <span class="co"># Controls per case (unmatched group ratio)</span></span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  power <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span>
@@ -1211,14 +1274,14 @@ Issues</a>
 <span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">  author = {Portos (Yishan) Wang and Bingxin Cai},</span></span>
 <span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="co">  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},</span></span>
 <span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
-<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="co">  version = {3.1.0},</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="co">  version = {3.1.1},</span></span>
 <span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a><span class="co">  url = {https://github.com/portos-wang/sampleSizeCalc}</span></span>
 <span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 <p><strong>When using specific methods, also cite the original
 methodology papers</strong> (see <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> output for
 complete citations).</p>
 <hr>
-<p><strong>Last Updated</strong>: 2026-11-02<br><strong>Version</strong>: 3.1.0</p>
+<p><strong>Last Updated</strong>: 2026-11-03<br><strong>Version</strong>: 3.1.1</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

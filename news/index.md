@@ -23,6 +23,13 @@
 
 ### Numerical Enhancements & Cross-Package Alignments
 
+- `diagLR`: Corrected the log-LR variance to use sensitivity and
+  false-positive probability for LR+, and false-negative probability and
+  specificity for LR-. The published Se=0.90, Sp=0.50, upper LR-=0.40
+  example now requires 80 cases and 80 controls, rather than 9 per
+  group. Both formula representations and the clinical guides use the
+  corrected calculation.
+
 - `singleCorrelation`: Fixed implementation to strictly match Machin et
   al. (2018, Chapter 19, Equations 19.5-19.8). Now supports both
   `precision` (absolute CI half-width) and `epsilon` (relative
@@ -30,6 +37,7 @@
   [`presize::prec_cor`](https://ctu-bern.github.io/presize/reference/prec_cor.html)
   (e.g., r=0.5, conf.width=0.10 -\> 867; r=0.5, conf.width=0.20 -\>
   219).
+
 - `bioequivalence`: Upgraded 2x2 crossover TOST from crude normal
   approximation to exact noncentral t distribution (Phillips 1990;
   Julious 2004 Equation 13). Added support for `theta0` (expected
@@ -38,12 +46,15 @@
   [`PowerTOST::sampleN.TOST`](https://rdrr.io/pkg/PowerTOST/man/sampleN.TOST.html)
   bit-for-bit (e.g., CV=0.25, theta0=1.0 -\> N=24, 12/sequence;
   theta0=0.95 -\> N=28, 14/sequence).
+
 - `diagAccuracy` (test): Added `method = c("asymptotic", "exact")`.
   Setting `method = "exact"` executes an exact binomial search per
   A’Hern (2001), returning critical successes `critical_successes`
   alongside sample size (e.g., prob=0.85, p0=0.70 gives n=49, critical
   cutoff r=40).
+
 - Methodological hints and parameter role clarifications added:
+
   - `steppedWedge`: Explicit warning regarding the absence of
     calendar-time fixed effects in Hussey & Hughes (2007) Equation 8 and
     potential power loss.
@@ -53,8 +64,10 @@
     proportion (pi10 + pi01), not the discordant odds ratio.
   - `cohortRate`: Clarified that required subjects = person-time /
     follow-up duration.
-  - `diagLR`: Clarified that sample size ensures the CI does not cross
-    `target_lr`, distinct from fixed-width CI estimation.
+  - `diagLR`: Clarified that planning targets the approximate CI limit
+    at the anticipated sensitivity and specificity, distinct from
+    fixed-width CI estimation or assurance about every realized
+    interval.
 
 ## sampleSizeCalc 3.1.0
 

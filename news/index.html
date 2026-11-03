@@ -62,13 +62,12 @@
 </ul></div>
 <div class="section level3">
 <h3 id="numerical-enhancements--cross-package-alignments-3-1-1">Numerical Enhancements &amp; Cross-Package Alignments<a class="anchor" aria-label="anchor" href="#numerical-enhancements--cross-package-alignments-3-1-1"></a></h3>
-<ul><li>
-<code>singleCorrelation</code>: Fixed implementation to strictly match Machin et al. (2018, Chapter 19, Equations 19.5-19.8). Now supports both <code>precision</code> (absolute CI half-width) and <code>epsilon</code> (relative precision). Produces exact agreement with <code><a href="https://ctu-bern.github.io/presize/reference/prec_cor.html" class="external-link">presize::prec_cor</a></code> (e.g., r=0.5, conf.width=0.10 -&gt; 867; r=0.5, conf.width=0.20 -&gt; 219).</li>
+<ul><li><p><code>diagLR</code>: Corrected the log-LR variance to use sensitivity and false-positive probability for LR+, and false-negative probability and specificity for LR-. The published Se=0.90, Sp=0.50, upper LR-=0.40 example now requires 80 cases and 80 controls, rather than 9 per group. Both formula representations and the clinical guides use the corrected calculation.</p></li>
+<li><p><code>singleCorrelation</code>: Fixed implementation to strictly match Machin et al. (2018, Chapter 19, Equations 19.5-19.8). Now supports both <code>precision</code> (absolute CI half-width) and <code>epsilon</code> (relative precision). Produces exact agreement with <code><a href="https://ctu-bern.github.io/presize/reference/prec_cor.html" class="external-link">presize::prec_cor</a></code> (e.g., r=0.5, conf.width=0.10 -&gt; 867; r=0.5, conf.width=0.20 -&gt; 219).</p></li>
+<li><p><code>bioequivalence</code>: Upgraded 2x2 crossover TOST from crude normal approximation to exact noncentral t distribution (Phillips 1990; Julious 2004 Equation 13). Added support for <code>theta0</code> (expected geometric mean ratio, default 1.0) and custom equivalence bounds (<code>margin_low</code>, <code>margin_high</code>). Results match <code><a href="https://rdrr.io/pkg/PowerTOST/man/sampleN.TOST.html" class="external-link">PowerTOST::sampleN.TOST</a></code> bit-for-bit (e.g., CV=0.25, theta0=1.0 -&gt; N=24, 12/sequence; theta0=0.95 -&gt; N=28, 14/sequence).</p></li>
+<li><p><code>diagAccuracy</code> (test): Added <code>method = c("asymptotic", "exact")</code>. Setting <code>method = "exact"</code> executes an exact binomial search per A’Hern (2001), returning critical successes <code>critical_successes</code> alongside sample size (e.g., prob=0.85, p0=0.70 gives n=49, critical cutoff r=40).</p></li>
 <li>
-<code>bioequivalence</code>: Upgraded 2x2 crossover TOST from crude normal approximation to exact noncentral t distribution (Phillips 1990; Julious 2004 Equation 13). Added support for <code>theta0</code> (expected geometric mean ratio, default 1.0) and custom equivalence bounds (<code>margin_low</code>, <code>margin_high</code>). Results match <code><a href="https://rdrr.io/pkg/PowerTOST/man/sampleN.TOST.html" class="external-link">PowerTOST::sampleN.TOST</a></code> bit-for-bit (e.g., CV=0.25, theta0=1.0 -&gt; N=24, 12/sequence; theta0=0.95 -&gt; N=28, 14/sequence).</li>
-<li>
-<code>diagAccuracy</code> (test): Added <code>method = c("asymptotic", "exact")</code>. Setting <code>method = "exact"</code> executes an exact binomial search per A’Hern (2001), returning critical successes <code>critical_successes</code> alongside sample size (e.g., prob=0.85, p0=0.70 gives n=49, critical cutoff r=40).</li>
-<li>Methodological hints and parameter role clarifications added:
+<p>Methodological hints and parameter role clarifications added:</p>
 <ul><li>
 <code>steppedWedge</code>: Explicit warning regarding the absence of calendar-time fixed effects in Hussey &amp; Hughes (2007) Equation 8 and potential power loss.</li>
 <li>
@@ -78,7 +77,7 @@
 <li>
 <code>cohortRate</code>: Clarified that required subjects = person-time / follow-up duration.</li>
 <li>
-<code>diagLR</code>: Clarified that sample size ensures the CI does not cross <code>target_lr</code>, distinct from fixed-width CI estimation.</li>
+<code>diagLR</code>: Clarified that planning targets the approximate CI limit at the anticipated sensitivity and specificity, distinct from fixed-width CI estimation or assurance about every realized interval.</li>
 </ul></li>
 </ul></div>
 </div>

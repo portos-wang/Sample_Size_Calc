@@ -83,12 +83,23 @@ critical step when preparing grant proposals or IRB submissions.</p>
 <p>Underpowered trials risk false-negative findings (<span class="math inline">\(P &gt; 0.05\)</span>), wasting research grants and
 patient effort. Conversely, overpowered trials waste resources and
 expose unnecessary subjects to experimental risks.</p>
-<p>The <code>sampleSizeCalc</code> package provides support for
-<strong>42 specific clinical scenarios</strong>. Default printed results
-include the plain-text formula, LaTeX source, calculation process, and
-literature references, with parameter roles where available.
-<strong>Every executable example below runs when the site is
-built</strong>, so its output comes from the package.</p>
+<p>The <code>sampleSizeCalc</code> package supports the designs
+illustrated in <strong>52 clinical scenarios</strong> below. Each
+example explains the population, study procedures, endpoint, planning
+assumptions, and how the result translates into recruitment.</p>
+<p>These are teaching protocols. Except where a published numerical
+example is explicitly identified, clinical effects, standard deviations,
+event rates, and margins are illustrative assumptions. The
+methodological reference supports the formula; it does not establish
+those clinical inputs. A real protocol should document the source
+population, endpoint definition, follow-up window, and uncertainty of
+each planning input.</p>
+<p>Numerical interpretations are evaluated from the R result objects
+when the site is built. Some diagnostic branches convert an unrounded
+requirement to a screening total; operational recruitment should also
+respect integer case and control quotas. Default reports contain the
+plain-text formula, LaTeX source, calculation process, and
+references.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -159,10 +170,27 @@ all inputs, design axes, and recorded adjustments.</p>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A cardiology group runs a
-phase-III antihypertensive trial of a new ACE-inhibitor vs. placebo. The
-phase-II data showed a mean systolic BP reduction of 10 mmHg on placebo
-and 12 mmHg on the new drug, with a pooled SD of 3 mmHg. Two-sided <span class="math inline">\(\alpha = 0.05\)</span>, power 80%.</li>
+<strong>Population and decision</strong>: A cardiology service plans
+a blinded, parallel, 1:1 randomized trial in adults aged 40–75 whose
+background antihypertensive treatment is stable, comparing an add-on
+study drug with add-on placebo.</li>
+<li>
+<strong>Procedures and endpoint</strong>: At baseline and week 12,
+use the same protocol to average repeated seated BP readings. The
+primary outcome is baseline minus week-12 systolic BP, so a larger
+positive change means greater improvement; each patient supplies one
+change score.</li>
+<li>
+<strong>Planning inputs</strong>: Assume mean reductions of 10 and
+12 mmHg and a common change-score SD of 3 mmHg. These map to
+<code>mean1</code>, <code>mean2</code>, and <code>sd</code>; the SD of
+baseline BP is not interchangeable with the SD of change. Verify these
+assumptions using comparable pilot or external data.</li>
+<li>
+<strong>Why this design</strong>: The question is whether two
+independent mean changes differ, using two-sided α=0.05 and 80% power.
+The targeted between-group difference is 2 mmHg, distinct from either
+group’s reduction from baseline.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 -
@@ -202,10 +230,11 @@ Press.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 37 patients per arm, 74 total. The
-calculation process shows the normal approximation (about 35.32 per
-arm), then explains the noncentral t power calculation used by
-<code><a href="https://rdrr.io/r/stats/power.t.test.html" class="external-link">stats::power.t.test()</a></code> and rounding to 37.</li>
+<strong>Result and recruitment</strong>: 37 analyzable patients per
+arm, 74 total. The report shows the normal approximation of about 35.32
+per arm before the noncentral t calculation and rounding. If 10% are
+expected to lack the primary endpoint, plan 42 per arm (84 total); this
+additional adjustment is not included in the RCT result.</li>
 </ul>
 <div class="section level4">
 <h4 id="the-four-report-components">The four report components<a class="anchor" aria-label="anchor" href="#the-four-report-components"></a>
@@ -261,11 +290,28 @@ example and instructions for saving the report.</p>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Gastroenterology trial of <em>H.
-pylori</em> eradication: 14-day bismuth quadruple therapy is expected to
-eradicate 85% of infections vs. 70% with standard triple therapy.
-Two-sided <span class="math inline">\(\alpha = 0.05\)</span>, power
-80%.</li>
+<strong>Population and decision</strong>: A gastroenterology trial
+enrolls adults with confirmed <em>H. pylori</em> infection who are
+eligible for either of two 14-day regimens, with recent antibiotic use
+and previous eradication failure handled by prespecified eligibility
+rules.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Determine eradication with
+a standardized urea breath test in a fixed post-treatment window. Define
+medication restrictions, invalid tests, and repeat assessments in
+advance; improvement in symptoms at treatment completion is not the
+eradication endpoint.</li>
+<li>
+<strong>Planning inputs</strong>: Illustrative rates are
+<code>p1 = 0.85</code> and <code>p2 = 0.70</code>, an absolute
+difference of 15 percentage points. Actual sources must match treatment
+history, resistance setting, and the timing and definition of
+eradication.</li>
+<li>
+<strong>Why this design</strong>: Different patients form the two
+groups, so use independent proportions with two-sided α=0.05 and 80%
+power. Prespecify how nonadherence and missing follow-up enter the
+analysis.</li>
 <li>
 <strong>Formula</strong> (Fleiss asymptotic): <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} +
@@ -308,7 +354,10 @@ Fleiss, Tytun &amp; Ury (1980), <em>Biometrics</em> 36(2), 343-346.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 121 patients per arm, 242 total.</li>
+<strong>Result and recruitment</strong>: 121 patients per arm, 242
+total. Allowing for 10% missing primary endpoints gives 135 per arm and
+270 total; the analysis population and missing-data strategy still
+require explicit definitions.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -316,10 +365,26 @@ Fleiss, Tytun &amp; Ury (1980), <em>Biometrics</em> 36(2), 343-346.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Oncology trial of first-line
-immunotherapy vs. chemotherapy in non-small-cell lung cancer; the
-anticipated hazard ratio is HR = 0.70 with 1:1 allocation. How many
-deaths/progressions must accrue?</li>
+<strong>Population and decision</strong>: An oncology group plans a
+1:1 randomized trial in advanced non-small-cell lung cancer patients
+eligible for both study regimens, with follow-up measured from
+randomization.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Specify overall survival
+as the primary outcome, with death from any cause as the event and last
+confirmed survival as the censoring date. Progression is not an
+overall-survival event; a progression-free survival design needs its own
+event definition and assumptions.</li>
+<li>
+<strong>Planning inputs</strong>: Assume proportional hazards,
+<code>hr = 0.70</code>, experimental allocation <code>pE = 0.50</code>,
+two-sided α=0.05, and 80% power. A hazard ratio is not the ratio of two
+fixed-time death probabilities.</li>
+<li>
+<strong>Why this design</strong>: First determine the number of
+deaths required. Accrual duration, additional follow-up, survival
+distributions, and losses then determine what fraction of recruited
+patients will contribute an event and when analysis is feasible.</li>
 <li>
 <strong>Formula</strong> (Schoenfeld): <span class="math display">\[E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1 -
 p_E)[\ln(HR)]^2}\]</span> Schoenfeld (1983), <em>Biometrics</em> 39(2),
@@ -355,8 +420,11 @@ p_E)[\ln(HR)]^2}\]</span> Schoenfeld (1983), <em>Biometrics</em> 39(2),
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: Exactly <strong>247 primary events
-(deaths/progressions)</strong> required.</li>
+<strong>Result and recruitment</strong>: 247 deaths are required. If
+a separate accrual and follow-up model predicts an event fraction of 60%
+at analysis, a rough resource estimate is 412 patients. That fraction is
+an additional assumption, not an output derived from HR by this
+function.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -364,10 +432,26 @@ p_E)[\ln(HR)]^2}\]</span> Schoenfeld (1983), <em>Biometrics</em> 39(2),
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A domestic generic antidiabetic
-must show it is not worse than the originator by more than the
-prespecified margin. On a 0-30 neuropathy symptom score the improvement
-is expected to be 10 vs. 9.5 points (SD = 3); the margin is <span class="math inline">\(\Delta = 1.0\)</span>. One-sided <span class="math inline">\(\alpha = 0.05\)</span>.</li>
+<strong>Population and decision</strong>: A randomized parallel
+trial compares a lower-cost symptom-management strategy with usual care
+in patients with symptomatic diabetic peripheral neuropathy, while
+keeping background treatment stable.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Use improvement from
+baseline to week 12 on a prespecified symptom scale, with larger
+reductions indicating benefit. Standardize assessment and require
+sufficient baseline symptoms to avoid a pronounced floor effect.</li>
+<li>
+<strong>Planning inputs</strong>: Assume improvements of 10 and 9.5
+points, SD=3, and a maximum acceptable loss of <code>margin = 1</code>
+point. Justify the margin using clinical importance and the established
+comparator effect; it should not be chosen from the anticipated
+difference alone.</li>
+<li>
+<strong>Why this design</strong>: Demonstrate that study minus
+control improvement exceeds −1 point. This example uses one-sided α=0.05
+and 80% power; a protocol choosing one-sided 0.025 must recalculate
+accordingly.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 +
@@ -402,7 +486,10 @@ is expected to be 10 vs. 9.5 points (SD = 3); the margin is <span class="math i
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 50 per arm, 100 total.</li>
+<strong>Result and recruitment</strong>: 50 per arm, 100 total.
+Document the primary analysis population, adherence handling, and
+missing outcomes alongside the margin justification; they are part of
+the non-inferiority design.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -410,9 +497,25 @@ is expected to be 10 vs. 9.5 points (SD = 3); the margin is <span class="math i
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A generic antibiotic must show
-non-inferior cure rates vs. the originator: both anticipated at 85%,
-with a clinically acceptable margin of 5% (<span class="math inline">\(\Delta = 0.05\)</span>). One-sided <span class="math inline">\(\alpha = 0.05\)</span>.</li>
+<strong>Population and decision</strong>: An adult lower urinary
+tract infection trial compares a more convenient study regimen with an
+effective active comparator, using consistent microbiological and
+eligibility criteria.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define clinical cure in a
+fixed post-treatment visit window, with prespecified rules for rescue
+treatment, antibiotic switching, and missing visits. Each patient
+contributes one binary outcome.</li>
+<li>
+<strong>Planning inputs</strong>: Assume both cure rates are 85%,
+with a maximum acceptable absolute loss of 5 percentage points:
+<code>p1 = p2 = 0.85</code>, <code>margin = 0.05</code>. The margin is
+illustrative and requires clinical and effect-preservation
+justification.</li>
+<li>
+<strong>Why this design</strong>: Use one-sided α=0.05 and 80% power
+to exclude an unacceptable reduction in cure. A nonsignificant ordinary
+difference test does not establish non-inferiority.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}\]</span>
@@ -452,7 +555,10 @@ Chow et al. (2017); Machin et al. (2018) Ch. 11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 631 per arm, 1262 total.</li>
+<strong>Result and recruitment</strong>: 631 per arm, 1262 total. If
+endpoint completeness is expected to be 90%, plan 702 per arm. Treatment
+failures should not be removed from the denominator as though they were
+recruitment losses.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -460,11 +566,25 @@ Chow et al. (2017); Machin et al. (2018) Ch. 11.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Knee osteoarthritis trial: a new
-NSAID gel must beat the active comparator on the WOMAC pain subscale
-(0-20) by more than 1 point. Anticipated reductions: 12 vs. 10 points,
-SD = 3. One-sided <span class="math inline">\(\alpha =
-0.05\)</span>.</li>
+<strong>Population and decision</strong>: A knee osteoarthritis
+trial randomizes patients with sufficient baseline pain to a study
+topical preparation or active comparator, seeking improvement beyond a
+prespecified clinically relevant difference.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Measure
+baseline-to-week-12 reduction on a specified WOMAC pain subscale, with
+standardized assessments and rules for rescue medication before
+measurement.</li>
+<li>
+<strong>Planning inputs</strong>: Assume reductions of 12 versus 10
+points, SD=3, and <code>margin = 1</code> point. The effective
+difference is 12−10−1=1 point; using the full anticipated 2-point
+difference in the denominator would answer a different question.</li>
+<li>
+<strong>Why this design</strong>: This is superiority beyond a
+positive margin, with one-sided α=0.05 and 80% power. Specify the scale
+version, score direction, and clinical reasoning for the margin before
+observing results.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 -
@@ -499,7 +619,10 @@ SD = 3. One-sided <span class="math inline">\(\alpha =
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 112 per arm, 224 total.</li>
+<strong>Result and recruitment</strong>: 112 per arm, 224 total.
+Recruitment must deliver the required primary endpoints; changing the
+margin after observing outcomes would change the original scientific
+question.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -507,10 +630,26 @@ SD = 3. One-sided <span class="math inline">\(\alpha =
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Onychomycosis trial: complete
-cure rate 30% with the new oral antifungal vs. 20% with terbinafine, and
-the sponsor requires the difference to exceed a 5% superiority
-margin.</li>
+<strong>Population and decision</strong>: A dermatology trial
+compares two oral regimens in patients with confirmed toenail
+onychomycosis, defining one target nail per patient for the primary
+analysis.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Evaluate complete cure at
+a fixed long-term visit, such as week 52, requiring both clinical
+clearing and mycological negativity. End-of-treatment cosmetic
+improvement is not the same endpoint.</li>
+<li>
+<strong>Planning inputs</strong>: Assume cure rates of 30% and 20%,
+and require the difference to exceed 5 percentage points:
+<code>p1 = 0.30</code>, <code>p2 = 0.20</code>,
+<code>margin = 0.05</code>. The remaining effective difference is
+0.05.</li>
+<li>
+<strong>Why this design</strong>: Use one-sided α=0.05 and 80% power
+for superiority beyond the margin. Parameter sources should match
+severity, previous treatment, cure definition, and follow-up
+duration.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2-\Delta)^2}\]</span>
@@ -545,7 +684,9 @@ Chow et al. (2017).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 916 per arm, 1832 total.</li>
+<strong>Result and recruitment</strong>: 916 per arm, 1832 total. If
+10% lack the long-term endpoint, plan 1018 per arm and ensure sufficient
+follow-up visit capacity.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -553,11 +694,25 @@ Chow et al. (2017).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two formulations of
-levothyroxine must be shown therapeutically equivalent: mean serum
-thyroxine 10 vs. 10.2 <span class="math inline">\(\mu\)</span>g/dL (SD =
-3), equivalence corridor <span class="math inline">\(\pm 1.0\)</span>
-<span class="math inline">\(\mu\)</span>g/dL.</li>
+<strong>Population and decision</strong>: A parallel randomized
+study compares two formulations in patients with stable hypothyroidism
+and stable background dosing, allowing sufficient time for the
+prespecified steady-state assessment.</li>
+<li>
+<strong>Procedures and endpoint</strong>: This teaching example uses
+mean steady-state total serum thyroxine, with standardized sampling time
+and laboratory platform. It illustrates equivalence of a continuous
+pharmacodynamic endpoint, not a complete bioequivalence or
+interchangeability assessment.</li>
+<li>
+<strong>Planning inputs</strong>: Assume means of 10 and 10.2 μg/dL,
+SD=3 μg/dL, and an equivalence corridor of ±1 μg/dL. The SD and margins
+require endpoint-specific clinical and pilot evidence.</li>
+<li>
+<strong>Why this design</strong>: Both unacceptable directions must
+be excluded using equivalence testing, with one-sided α=0.05 and target
+power 80%. Failure to find a difference does not establish
+equivalence.</li>
 <li>
 <strong>Formula</strong> (TOST): <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 -
@@ -592,7 +747,10 @@ thyroxine 10 vs. 10.2 <span class="math inline">\(\mu\)</span>g/dL (SD =
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 241 per arm, 482 total.</li>
+<strong>Result and recruitment</strong>: 241 per arm, 482 total.
+This requirement concerns the single defined continuous endpoint;
+additional primary or pharmacokinetic outcomes need their own
+planning.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -600,10 +758,26 @@ thyroxine 10 vs. 10.2 <span class="math inline">\(\mu\)</span>g/dL (SD =
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two analgesics for
-post-operative pain: response rates 50% vs. 52%; regulators accept
-equivalence within <span class="math inline">\(\pm 10\)</span>
-percentage points.</li>
+<strong>Population and decision</strong>: An anesthesia service
+randomizes adults undergoing the same type of surgery to two
+postoperative analgesic regimens, asking whether a more convenient
+regimen provides sufficiently similar response rates.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define success in advance,
+for example meeting a specified pain-reduction threshold without rescue
+medication during the first 6 hours. Prespecify rescue use, early
+withdrawal, and how repeated pain observations form one patient-level
+result.</li>
+<li>
+<strong>Planning inputs</strong>: Assume response rates of 50% and
+52%, with an equivalence corridor of ±10 percentage points:
+<code>p1 = 0.50</code>, <code>p2 = 0.52</code>,
+<code>margin = 0.10</code>.</li>
+<li>
+<strong>Why this design</strong>: Use equivalence of independent
+proportions, one-sided α=0.05 and 80% power. The margin must be
+justified for this response definition rather than treated as a
+universal analgesic standard.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}\]</span>
@@ -637,7 +811,9 @@ Chow et al. (2017).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 669 per arm, 1338 total.</li>
+<strong>Result and recruitment</strong>: 669 per arm, 1338 total.
+The count is independent patients with primary outcomes, not the number
+of repeated pain assessments.</li>
 </ul>
 <hr>
 </div>
@@ -650,10 +826,25 @@ Chow et al. (2017).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Asthma cohort: the same patients
-are measured before and after 12 weeks of inhaled corticosteroids. Mean
-FVC improvement is 2 L with SD of the within-patient differences 3
-L.</li>
+<strong>Population and decision</strong>: A rehabilitation clinic
+follows the same chronic low-back pain patients before and after a
+6-week standardized exercise program, using a 0–10 pain scale.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define improvement as
+baseline minus week-6 score and use consistent measurement conditions.
+Each patient’s two scores must be linkable to form one paired
+difference.</li>
+<li>
+<strong>Planning inputs</strong>: Assume mean improvement
+<code>meanDiff = 2</code> points and difference-score SD
+<code>sdDiff = 3</code>. Estimate the latter from paired pilot data;
+neither the baseline nor follow-up SD alone is an appropriate
+substitute.</li>
+<li>
+<strong>Why this design</strong>: Use a two-sided paired-mean
+calculation with α=0.05 and 80% power. A before–after study estimates
+change; separating treatment effects from natural history requires an
+appropriate comparator design.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot
@@ -688,7 +879,10 @@ Biostatistics</em> (8th ed.).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 20 pairs (40 total measurements).</li>
+<strong>Result and recruitment</strong>: 20 patients must complete
+both assessments, giving 40 measurements. A pair means two observations
+from one patient here. With 90% paired completion, recruit 23
+patients.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -696,9 +890,24 @@ Biostatistics</em> (8th ed.).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: The same patients receive two
-SARS-CoV-2 assays: a rapid antigen test (positive 80%) and RT-PCR
-(positive 60%). The expected proportion of discordant pairs is <span class="math inline">\(\psi = 0.25\)</span>.</li>
+<strong>Population and decision</strong>: A chronic-disease clinic
+introduces a medication reminder program in one cohort and compares
+adherence success before the program and at week 8.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Apply the same
+prespecified adherence threshold in both periods. Each patient forms a
+paired binary record; the question is whether success rises from 60% to
+80%, not a comparison of independent cohorts.</li>
+<li>
+<strong>Planning inputs</strong>: Set post-program
+<code>p1 = 0.80</code>, baseline <code>p2 = 0.60</code>, and discordant
+proportion <code>psi = 0.25</code>. This implies about 22.5% changing
+from failure to success and 2.5% changing in the opposite direction;
+verify that pattern using paired pilot records.</li>
+<li>
+<strong>Why this design</strong>: McNemar/Connor planning uses the
+discordant pairs, with two-sided α=0.05 and 80% power. Both measurements
+are needed for a complete pair.</li>
 <li>
 <strong>Formula</strong> (Connor): <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{\psi} +
@@ -739,7 +948,10 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \delta =
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 47 pairs.</li>
+<strong>Result and recruitment</strong>: 47 patients with complete
+pairs, or 94 assessments. At 90% paired completion, recruit 53 patients;
+doubling the observations does not double the number of distinct
+people.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -747,9 +959,25 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \delta =
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A rare-disease trial (no control
-arm feasible): historical median-based mean survival is 10 months; the
-new targeted therapy is expected to reach 12 months (SD = 3).</li>
+<strong>Population and decision</strong>: A rare-disease
+rehabilitation project evaluates exercise endurance after a training
+program, using a comparable historical mean as a fixed benchmark because
+recruitment is limited.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Measure fully observed
+endurance duration in a standardized constant-load exercise test at week
+8, in minutes. This is a continuous functional endpoint, not a censored
+survival time; historical and new cohorts need comparable severity,
+workloads, and stopping rules.</li>
+<li>
+<strong>Planning inputs</strong>: Treat the historical mean as
+<code>mu0 = 10</code> minutes, anticipate <code>mu1 = 12</code>, and
+assume <code>sigma = 3</code>, with two-sided α=0.05 and 80% power.</li>
+<li>
+<strong>Why this design</strong>: This approximation treats the
+reference mean as known without error. A small or poorly matched
+historical sample requires a design that incorporates its uncertainty
+rather than treating a survival median as a known mean.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha/2} + Z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}\]</span>
@@ -786,7 +1014,10 @@ Machin et al. (2018), Chapter 5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 18 patients.</li>
+<strong>Result and recruitment</strong>: 18 patients with the
+defined endpoint. If 10% cannot complete the exercise assessment, plan
+20 recruits; comparability of the reference remains central to
+interpretation.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -794,9 +1025,25 @@ Machin et al. (2018), Chapter 5.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Relapsed/refractory lymphoma:
-historical best response rate is 70%; the new CAR-T protocol is
-anticipated to reach 80%.</li>
+<strong>Population and decision</strong>: An exploratory single-arm
+study enrolls relapsed/refractory lymphoma patients with defined prior
+treatment lines, comparing a new protocol with a fixed historical
+response rate.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Assess objective response
+at day 90 using consistent criteria. Prespecify deaths before
+assessment, rescue treatment, and unevaluable patients; restricting the
+denominator to surviving imaged patients changes the endpoint.</li>
+<li>
+<strong>Planning inputs</strong>: Use teaching assumptions
+<code>p0 = 0.70</code> and <code>p1 = 0.80</code>. Actual evidence must
+match treatment line, response definition, and assessment window to
+avoid an inappropriate historical comparator.</li>
+<li>
+<strong>Why this design</strong>: This example uses a two-sided
+normal approximation with α=0.05 and 80% power. For an exact one-sided
+success cutoff or interim futility decision, consider the following
+A’Hern or Simon examples.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{p_0(1-p_0)} +
@@ -834,7 +1081,10 @@ Z_{\beta}\sqrt{p_1(1-p_1)}\right]^2}{(p_1-p_0)^2}\]</span> Hajian-Tilaki
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 153 patients.</li>
+<strong>Result and recruitment</strong>: 153 patients with
+ascertainable primary outcomes. This count addresses the planned
+distinction between 70% and 80%; it does not promise that the eventual
+response rate will equal the alternative.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -842,16 +1092,30 @@ Z_{\beta}\sqrt{p_1(1-p_1)}\right]^2}{(p_1-p_0)^2}\]</span> Hajian-Tilaki
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A single-arm phase-II trial of a
-new sarcoma regimen: unacceptable response rate <span class="math inline">\(p_0 = 0.10\)</span>, target <span class="math inline">\(p_1 = 0.30\)</span>. The <em>optimal</em> design
-minimises the expected sample size when the drug is ineffective.</li>
+<strong>Population and decision</strong>: A single-arm phase-II
+sarcoma study enrolls patients with measurable advanced disease and
+consistent previous treatment eligibility, seeking early termination
+when the regimen has inadequate activity.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Confirm objective response
+at approximately 8 weeks using prespecified criteria. Allow stage-1
+patients to reach the assessment window and verify their outcomes before
+the formal continuation decision.</li>
+<li>
+<strong>Planning inputs</strong>: Set an unacceptable response rate
+<code>p0 = 0.10</code>, a promising rate <code>p1 = 0.30</code>,
+one-sided α=0.05, and 80% power. Both rates must refer to the same
+disease subgroup and response definition.</li>
+<li>
+<strong>Why this design</strong>: <code>optimizer = "optimal"</code>
+minimizes expected enrollment under the null, potentially accepting a
+larger maximum total than the minimax design.</li>
 <li>
 <strong>Formula</strong>: exact binomial enumeration (Simon 1989).
 The design <span class="math inline">\((r_1/n_1, r/n)\)</span> satisfies
-<span class="math display">\[\underbrace{P(X_1 \le r_1 \mid
-p_0)}_{\text{early stop}} +
-\sum_{x_1=r_1+1}^{n_1}\binom{n_1}{x_1}p_0^{x_1}(1-p_0)^{n_1-x_1}\,\underbrace{P(X_2
-&gt; r - x_1 \mid p_0)}_{\text{stage 2}} \le \alpha\]</span> and the
+<span class="math display">\[P_p(\text{reject }H_0) =
+\sum_{x_1=r_1+1}^{n_1}\binom{n_1}{x_1}p^{x_1}(1-p)^{n_1-x_1}\,P_p(X_2
+&gt; r-x_1), \quad P_{p_0}(\text{reject }H_0)\le\alpha\]</span> and the
 analogous expression under <span class="math inline">\(p_1\)</span> must
 reach the target power. Simon (1989), <em>Controlled Clinical
 Trials</em> 10(1), 1-10.</li>
@@ -895,9 +1159,10 @@ Trials</em> 10(1), 1-10.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: Stage 1 enrolls 10 (stop if <span class="math inline">\(\le 1\)</span> response); Stage 2 reaches 29
-(effective if <span class="math inline">\(&gt;5\)</span> responses).
-Expected <span class="math inline">\(N = 15.0\)</span>.</li>
+<strong>Result and stopping rules</strong>: Enroll 10 initially and
+stop for futility if responses are ≤1. Otherwise add 19 patients to a
+maximum of 29. Reject the null only if total responses exceed 5 (at
+least 6). Stage 1 is included in the maximum total.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -905,9 +1170,24 @@ Expected <span class="math inline">\(N = 15.0\)</span>.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Same sarcoma trial, but the
-sponsor needs to cap the <em>worst-case</em> enrollment (budget/facility
-constraints).</li>
+<strong>Population and decision</strong>: A center addresses the
+same advanced sarcoma response question but has a firm ceiling on drug
+supply and eligible patients, making the worst-case enrollment
+especially important.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Use the same response
+definition and assessment window, with a prespecified stage-wise
+continuation rule. Do not switch optimization criteria after examining
+interim responses.</li>
+<li>
+<strong>Planning inputs</strong>: Keep <code>p0 = 0.10</code>,
+<code>p1 = 0.30</code>, α=0.05, and 80% power, changing only
+<code>optimizer = "minimax"</code> so resource comparisons use the same
+error constraints.</li>
+<li>
+<strong>Why this design</strong>: Minimax minimizes the maximum
+total sample size, not necessarily the expected number under the null.
+Compare both criteria when budgeting assessments and medication.</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_2_6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"singleArmPhaseII"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>, p0 <span class="op">=</span> <span class="fl">0.10</span>, p1 <span class="op">=</span> <span class="fl">0.30</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span>, optimizer <span class="op">=</span> <span class="st">"minimax"</span><span class="op">)</span></span>
@@ -951,8 +1231,10 @@ constraints).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: Total <span class="math inline">\(N =
-25\)</span> patients (Stage 1 enrolls 11, stop if <span class="math inline">\(\le 0\)</span>).</li>
+<strong>Result and stopping rules</strong>: Stage 1 enrolls 11,
+stopping if responses are ≤0; the maximum total is 25, with rejection
+requiring more than 5 responses. Compare that maximum with the optimal
+design’s 29 patients.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -960,9 +1242,24 @@ constraints).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: The same phase-II question
-answered with a single-stage design (no interim futility analysis
-possible).</li>
+<strong>Population and decision</strong>: Another center studies the
+same sarcoma response question, but recruitment is concentrated and
+endpoint assessment delayed, so an interim futility analysis would not
+meaningfully affect enrollment.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Perform one formal
+decision after every enrolled patient reaches the prespecified
+objective-response assessment window, retaining comparability with the
+historical benchmark.</li>
+<li>
+<strong>Planning inputs</strong>: Set <code>p0 = 0.10</code>,
+<code>p1 = 0.30</code>, one-sided α=0.05, and 80% power, then search the
+exact binomial distribution for a feasible total and rejection
+boundary.</li>
+<li>
+<strong>Why this design</strong>: A’Hern is a single-stage design.
+In this implementation, <code>r_total</code> is the boundary that must
+be exceeded, not the minimum number of successes itself.</li>
 </ul>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_2_7</span> <span class="op">&lt;-</span> <span class="fu">sampleSizeCalc</span><span class="fu">:::</span><span class="fu"><a href="../reference/calculate_ahern.html">calculate_ahern</a></span><span class="op">(</span>p0 <span class="op">=</span> <span class="fl">0.10</span>, p1 <span class="op">=</span> <span class="fl">0.30</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
@@ -1005,10 +1302,11 @@ possible).</li>
 <span><span class="co">#&gt; [3] "declare effective if responses &gt; r_total of n_required"</span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 25 patients, reject null if responses <span class="math inline">\(&gt;5\)</span> (<span class="math inline">\(\ge
-6\)</span>).</li>
+<strong>Result and decision rule</strong>: Enroll 25; at least 6
+responses are needed. The rule is <code>X &gt; r_total</code>, whereas
+some publications use a symbol for the minimum success count.</li>
 <li>
-<strong>Formula</strong>: exact binomial — <span class="math inline">\(P(X \ge r \mid p_0) \le \alpha\)</span> and <span class="math inline">\(P(X \ge r \mid p_1) \ge 1-\beta\)</span> (A’Hern
+<strong>Formula</strong>: exact binomial — <span class="math inline">\(P(X &gt; r \mid p_0) \le \alpha\)</span> and <span class="math inline">\(P(X &gt; r \mid p_1) \ge 1-\beta\)</span> (A’Hern
 2001).</li>
 </ul>
 </div>
@@ -1017,10 +1315,25 @@ possible).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Asthma patients receive two
-inhaled salbutamol formulations in random order (washout 7 days); FEV1 %
-predicted improvement differs by 2 percentage points, within-subject SD
-<span class="math inline">\(\sigma_w = 3\)</span>.</li>
+<strong>Population and decision</strong>: A respiratory clinic
+compares two short-acting inhaled formulations in stable asthma patients
+able to complete repeat lung-function testing, randomizing the order to
+AB or BA.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each patient receives one
+formulation in each period, with FEV1 percent predicted measured at a
+fixed post-dose time. Prespecify washout based on duration of action and
+control background therapy and testing conditions.</li>
+<li>
+<strong>Planning inputs</strong>: Target <code>delta = 2</code>
+percentage points with within-subject period-error SD
+<code>sigma_within = 3</code>. This is not the same quantity as the SD
+of the difference between two observations.</li>
+<li>
+<strong>Why this design</strong>: Use a 2×2 crossover calculation
+with two-sided α=0.05 and 80% power. Stability and negligible carryover
+support the design, and the two sequences need balanced
+recruitment.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{2(Z_{\alpha/2}+Z_{\beta})^2\sigma_w^2}{\delta^2}\]</span> Senn
@@ -1060,7 +1373,10 @@ predicted improvement differs by 2 percentage points, within-subject SD
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 36 per sequence, 72 total.</li>
+<strong>Result and recruitment</strong>: The function returns 36 per
+sequence, 72 patients total, each completing two periods. With 10%
+incomplete follow-up, plan 40 per sequence; period measurements are not
+additional independent patients.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1068,10 +1384,25 @@ predicted improvement differs by 2 percentage points, within-subject SD
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Generic amlodipine
-vs. originator in healthy volunteers, <span class="math inline">\(2\times2\)</span> crossover, intra-subject CV =
-25%, expected geometric mean ratio <span class="math inline">\(\theta_0
-= 1.0\)</span>, acceptance range 80-125%.</li>
+<strong>Population and decision</strong>: A randomized two-sequence,
+two-period pharmacokinetic study compares test and reference
+formulations in eligible healthy adults, each receiving both
+formulations in the assigned order.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Evaluate a single
+specified log-transformed PK parameter, such as AUC, using fixed
+sampling, washout, assay, and evaluable-profile rules.</li>
+<li>
+<strong>Planning inputs</strong>: Assume within-subject
+<code>cv = 0.25</code>, expected geometric mean ratio
+<code>theta0 = 1.0</code>, bounds 0.80–1.25, one-sided α=0.05, and 80%
+power. Source the CV from compatible crossover data for that PK
+parameter.</li>
+<li>
+<strong>Why this design</strong>: The function evaluates log-scale
+TOST power and searches sequence size. If AUC, Cmax, or other co-primary
+PK endpoints must all pass, assess each requirement and choose a study
+size that covers the prespecified objectives.</li>
 <li>
 <strong>Formula</strong> (exact noncentral <span class="math inline">\(t\)</span>, Phillips 1990): <span class="math display">\[\text{Power} = F_t(-t_{1-\alpha, \nu}; \nu,
 \delta_2) - F_t(t_{1-\alpha, \nu}; \nu, \delta_1), \quad \nu =
@@ -1119,8 +1450,10 @@ N-2\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 12 per sequence, <strong>24 healthy
-volunteers total</strong> (matches <code>PowerTOST</code> exactly).</li>
+<strong>Result and recruitment</strong>: 12 per sequence, 24
+complete subjects, with calculated power 83.72%. With 10% incomplete
+profiles, plan 28 recruits across balanced sequences. Recalculate if the
+expected ratio departs from 1.0.</li>
 </ul>
 <hr>
 </div>
@@ -1133,10 +1466,25 @@ volunteers total</strong> (matches <code>PowerTOST</code> exactly).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Framingham-style cohort on
-smoking and coronary heart disease: 5-year incidence 20% in non-smokers
-vs. 30% in smokers, 1:1 allocation, planning for 10% loss to
-follow-up.</li>
+<strong>Population and decision</strong>: A cardiovascular cohort
+enrolls adults free of coronary disease at baseline but at appreciable
+cardiovascular risk, defining current smokers and never-smokers before a
+planned 5-year follow-up.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Use annual contacts and
+record verification to identify the first prespecified coronary event,
+with consistent ascertainment in both exposure groups. Existing cases do
+not enter an incidence denominator.</li>
+<li>
+<strong>Planning inputs</strong>: Assume 5-year risks of 20% and
+30%, <code>ratio = 1</code>, and <code>dropout = 0.10</code>. These are
+cumulative risks over a fixed period, not cross-sectional prevalence or
+annual incidence densities.</li>
+<li>
+<strong>Why this design</strong>: A two-proportion approximation
+plans detection of the risk difference with two-sided α=0.05 and 80%
+power. Exposure is not randomized; confounding control and multivariable
+event requirements need separate analysis planning.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n_{1} =
 \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} +
@@ -1186,7 +1534,10 @@ Med Prim Care</em> 13(7), 2559.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 327 per arm, 654 total.</li>
+<strong>Result and recruitment</strong>: 327 per group, 654 total,
+already including the specified 10% loss adjustment. Do not apply the
+same inflation again, and budget maintenance of the cohort over the full
+5 years.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1194,10 +1545,25 @@ Med Prim Care</em> 13(7), 2559.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Occupational epidemiology:
-workers exposed to a solvent develop disease at 0.20 events per
-person-year vs. 0.10 in unexposed workers; 1:1 person-time
-allocation.</li>
+<strong>Population and decision</strong>: An occupational cohort
+compares respiratory-disease incidence densities between exposed and
+unexposed workers whose entry and exit times vary, requiring observed
+person-time as the denominator.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define first incident
+disease and time at risk consistently, recording events and censoring.
+This Poisson rate approximation assumes approximately stable
+group-specific rates during observation.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>rate1 = 0.20</code>
+and <code>rate0 = 0.10</code> events per person-year with equal
+person-time allocation. Convert sources reported per thousand
+person-years to the same units before calculation.</li>
+<li>
+<strong>Why this design</strong>: The result is required
+person-time, with two-sided α=0.05 and 80% power. Convert to workers
+using the realistic average observable time at risk, accounting for
+events and losses.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[T_{0} =
 \frac{(Z_{\alpha/2}+Z_{\beta})^2(\lambda_1/r+\lambda_0)}{(\lambda_1-\lambda_0)^2},
@@ -1244,8 +1610,10 @@ allocation.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 236 person-time units per group (71
-expected events).</li>
+<strong>Result and recruitment</strong>: 236 unexposed and 236
+exposed person-years, with about 71 expected events. If each worker
+contributes an average of 2 observed years at risk, rough group sizes
+are 118 and 118 workers.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1253,9 +1621,24 @@ expected events).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Hospital-based case-control
-study of late-night screen exposure and myocardial infarction: 30% of
-controls are exposed, anticipated OR = 2.0, 1 control per case.</li>
+<strong>Population and decision</strong>: A hospital-linked
+community registry studies long-term night work and first myocardial
+infarction, enrolling incident cases and controls from the same source
+population that could have produced those cases.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Measure night-work
+exposure in a fixed window before the case’s index date using records or
+a standardized questionnaire; use comparable index windows for controls
+to avoid treating post-infarction work changes as prior exposure.</li>
+<li>
+<strong>Planning inputs</strong>: Assume 30% of controls were
+exposed, target <code>OR = 2.0</code>, and use one control per case:
+<code>p0 = 0.30</code>, <code>m = 1</code>. Here <code>p0</code> is
+control exposure prevalence, not disease prevalence.</li>
+<li>
+<strong>Why this design</strong>: This is an unmatched case-control
+comparison. A 1:1 group ratio does not mean individual age matching; the
+next example addresses matched pairs.</li>
 <li>
 <strong>Formula</strong> (Schlesselman): <span class="math display">\[n_{cases} =
 \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} +
@@ -1301,7 +1684,10 @@ p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}\]</span> Schlesselman (1982),
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 141 cases, 141 controls (282 total).</li>
+<strong>Result and recruitment</strong>: 141 cases and 141 controls,
+282 people total. Assess case availability and control participation
+separately; additional controls do not automatically compensate for too
+few cases.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1309,9 +1695,25 @@ p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}\]</span> Schlesselman (1982),
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Oral contraceptive use and
-ischaemic stroke in young women, individually matched 1:1 by age;
-control exposure rate 30%, OR = 2.0.</li>
+<strong>Population and decision</strong>: A study of oral
+contraceptive use and first ischemic stroke in young women pairs each
+incident case with an age-comparable control from the same source
+population.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Measure exposure for both
+women before the same index date and preserve the pairing in analysis.
+Discordant pairs, where only one member was exposed, provide the main
+information.</li>
+<li>
+<strong>Planning inputs</strong>: Given control exposure 30% and
+<code>OR = 2</code>, the function derives case exposure and discordance
+using an independence-within-pair approximation. Real matching can
+induce exposure correlation, so verify the approximation using matched
+pilot tables.</li>
+<li>
+<strong>Why this design</strong>: Use a 1:1 matched case-control
+calculation with two-sided α=0.05 and 80% power. A pair here consists of
+two people, unlike a patient’s before–after observations.</li>
 <li>
 <strong>Formula</strong> (Dupont discordant-pairs): <span class="math display">\[n_{pairs} = \frac{\left[Z_{\alpha/2}\sqrt{\psi} +
 Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \psi =
@@ -1359,7 +1761,9 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> Dupont (1988), <em>Biometrics</em> 44(4),
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 144 pairs (288 total).</li>
+<strong>Result and recruitment</strong>: 144 complete matched pairs,
+288 people. With 90% complete-pair retention, prepare 160 pairs and plan
+verification and analysis at the pair level.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1367,9 +1771,24 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> Dupont (1988), <em>Biometrics</em> 44(4),
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A community cross-sectional
-survey of hypertension: prevalence 20% in unexposed vs. 30% in exposed
-(obese) participants.</li>
+<strong>Population and decision</strong>: A community survey
+compares current hypertension prevalence in obese and non-obese adults
+drawn from the same sampling frame, measuring exposure and outcome at
+the same survey visit.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Prespecify BMI groups and
+hypertension ascertainment, using consistent BP measurement and
+medication-history collection. The endpoint is existing disease, not
+future incidence.</li>
+<li>
+<strong>Planning inputs</strong>: Assume non-obese
+<code>p0 = 0.20</code> and obese <code>p1 = 0.30</code>, equal
+comparison groups, two-sided α=0.05, and 80% power.</li>
+<li>
+<strong>Why this design</strong>: This calculation serves an
+association comparison. Exposure quotas affect estimation of overall
+prevalence, and village or household cluster sampling requires its own
+design-effect consideration.</li>
 <li>
 <strong>Formula</strong>: same two-proportion kernel as 3.1 with
 <span class="math inline">\(m = 1\)</span> (Machin et al. 2018, Ch.
@@ -1416,7 +1835,10 @@ survey of hypertension: prevalence 20% in unexposed vs. 30% in exposed
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 294 per group, 588 total.</li>
+<strong>Result and recruitment</strong>: 294 per group, 588 total.
+If only 20% of screened residents are obese, obtaining that group’s
+quota requires roughly 1470 screened residents on average, exceeding the
+final comparison sample.</li>
 </ul>
 <hr>
 </div>
@@ -1429,9 +1851,25 @@ survey of hypertension: prevalence 20% in unexposed vs. 30% in exposed
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A county diabetes prevalence
-survey: anticipated prevalence 10%, the estimate must lie within <span class="math inline">\(\pm 2\)</span> percentage points of the truth with
-95% confidence.</li>
+<strong>Population and decision</strong>: A county health service
+estimates diabetes prevalence in a defined adult age range using an
+explicit population register, initially planning for independently
+sampled individuals.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Classify each participant
+using a consistent diagnostic-history and laboratory protocol, with
+prespecified age eligibility and nonresponse handling across
+communities.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>p = 0.10</code> and a
+95% CI absolute half-width <code>precision = 0.02</code>. Two percentage
+points of absolute error differs from 20% relative error, even though
+they coincide numerically at this assumed prevalence.</li>
+<li>
+<strong>Why this design</strong>: This is precision estimation,
+requiring neither a between-group effect nor power. Account separately
+for cluster sampling, finite population correction when relevant, and
+nonresponse.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}\]</span> Lwanga &amp; Lemeshow
@@ -1471,7 +1909,9 @@ survey: anticipated prevalence 10%, the estimate must lie within <span class="ma
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 865 participants.</li>
+<strong>Result and recruitment</strong>: 865 valid disease-status
+records. At 90% response, invite about 962 people; any design-effect
+adjustment must also be incorporated into the actual sampling plan.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1479,9 +1919,24 @@ survey: anticipated prevalence 10%, the estimate must lie within <span class="ma
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Establishing a paediatric serum
-ferritin reference value: population SD = 10 <span class="math inline">\(\mu\)</span>g/L, the mean must be estimated within
-<span class="math inline">\(\pm 2\)</span> <span class="math inline">\(\mu\)</span>g/L.</li>
+<strong>Population and decision</strong>: A pediatric service
+estimates mean serum ferritin in a specific healthy-child age stratum,
+with eligibility addressing factors such as acute infection that can
+alter ferritin.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Obtain one measurement per
+child using standardized collection and assays. The objective is a
+population mean and its CI, not a reference interval covering 95% of
+individual children.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>sigma = 10</code>
+μg/L, absolute half-width <code>precision = 2</code> μg/L, and 95%
+confidence. If analysis changes to a log scale, both SD and precision
+must be specified on that scale.</li>
+<li>
+<strong>Why this design</strong>: Use single-mean precision planning
+and inspect pilot distributions and outlier handling. This sample size
+does not establish precision for reference-interval endpoints.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \left(\frac{Z_{1-\alpha/2} \cdot \sigma}{d}\right)^2\]</span> Machin et
@@ -1519,7 +1974,9 @@ al. (2018), Ch. 9.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 97 participants.</li>
+<strong>Result and recruitment</strong>: 97 valid measurements. With
+5% unusable specimens, prepare 103 children; estimating separate age or
+sex strata requires separate stratum-level planning.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1527,9 +1984,24 @@ al. (2018), Ch. 9.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Validating waist circumference
-as a proxy for body-fat percentage: anticipated <span class="math inline">\(r = 0.50\)</span>, the 95% CI half-width must not
-exceed <span class="math inline">\(\pm 0.10\)</span>.</li>
+<strong>Population and decision</strong>: A nutrition study
+estimates the Pearson correlation between waist circumference and DXA
+body-fat percentage in adults with a representative range of body sizes,
+avoiding selection solely from extremes.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Obtain both measurements
+on the same day and prespecify how replicate waist measurements are
+averaged. Each participant supplies one complete pair of continuous
+values.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>r=0.50</code> and a
+95% CI half-width of approximately 0.10, corresponding to total width
+about 0.20. The correlation is not R² and is not a measure of
+interchangeability.</li>
+<li>
+<strong>Why this design</strong>: Use Fisher-z precision planning
+for correlation. Demonstrating that two measurements can substitute for
+each other requires separate agreement objectives and methods.</li>
 <li>
 <strong>Formula</strong> (Machin Eqs 19.5-19.8): <span class="math display">\[N_{P0} = \frac{4 z_{1-\alpha/2}^2 (1-r^2)^2}{w^2}
 + 3, \quad N_{Final} = (N_{P0}-3)\left(\frac{w_0}{w}\right)^2 +
@@ -1570,8 +2042,10 @@ exceed <span class="math inline">\(\pm 0.10\)</span>.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 219 participants (matches
-<code><a href="https://ctu-bern.github.io/presize/reference/prec_cor.html" class="external-link">presize::prec_cor</a></code>).</li>
+<strong>Result and recruitment</strong>: 219 participants with
+complete measurement pairs. With 5% unusable pairs, recruit 231 people;
+repeated measurements of one person do not replace independent
+participants.</li>
 </ul>
 <hr>
 </div>
@@ -1584,9 +2058,26 @@ exceed <span class="math inline">\(\pm 0.10\)</span>.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Validating a colorectal cancer
-screening kit: expected sensitivity 85%, CI half-width <span class="math inline">\(\pm 5\%\)</span>, clinic prevalence 20%. How many
-confirmed cases and how many total screens?</li>
+<strong>Population and decision</strong>: A stool-test validation
+consecutively recruits symptomatic or high-risk patients referred for
+colonoscopy, with an anticipated target-disease prevalence of 20%. That
+prevalence is not intended to represent general community
+screening.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Collect the index-test
+sample before the reference examination, use a locked threshold, and
+ascertain disease consistently in all participants while keeping
+interpretations as independent as feasible.</li>
+<li>
+<strong>Planning inputs</strong>: Target sensitivity
+<code>prob = 0.85</code>, 95% CI half-width <code>d = 0.05</code>, and
+<code>prevalence = 0.20</code> for conversion from confirmed cases to a
+screening cohort.</li>
+<li>
+<strong>Why this design</strong>: This plans sensitivity precision
+and therefore requires enough reference-positive cases. If specificity
+precision is also primary, calculate its non-case requirement and meet
+both quotas.</li>
 <li>
 <strong>Formula</strong> (Zhou Eq 6.2): <span class="math display">\[n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot
 p(1-p)}{d^2}, \quad N_{screen} =
@@ -1626,8 +2117,10 @@ McClish (2011), Section 6.1.1, pp. 194-196.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 196 confirmed cases required; 980 total
-screened patients.</li>
+<strong>Result and recruitment</strong>: 196 confirmed cases, with
+returned average screening size 980. An expected case yield is not a 90%
+probability guarantee; use Section 5.15 for that recruitment
+requirement.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1635,9 +2128,25 @@ screened patients.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: An AI lung-nodule system must
-demonstrate sensitivity significantly above the 70% industry pass mark;
-anticipated sensitivity 85%, prevalence 20%.</li>
+<strong>Population and decision</strong>: An imaging team validates
+a lung-nodule AI in a referral population using a frozen model and
+positive threshold, with validation patients separate from development
+and threshold-selection data.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Compare sensitivity among
+reference-confirmed malignant cases. Define a patient-level result or
+one prespecified lesion per patient rather than treating multiple
+nodules from one person as independent cases.</li>
+<li>
+<strong>Planning inputs</strong>: The protocol adopts minimum
+acceptable sensitivity <code>p0 = 0.70</code> and anticipates
+<code>prob = 0.85</code>. The 70% threshold is an assumption for this
+study, not a universal industry standard.</li>
+<li>
+<strong>Why this design</strong>: Use an asymptotic one-sided test
+with α=0.05 and 80% power; assume referral-population prevalence 20% for
+average screening conversion. Plan specificity separately if
+required.</li>
 <li>
 <strong>Formula</strong> (Hajian-Tilaki Eq 6.8): <span class="math display">\[n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} +
 Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}\]</span>
@@ -1671,7 +2180,10 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 50 cases, 250 screened.</li>
+<strong>Result and recruitment</strong>: 50 disease-positive cases.
+The unrounded requirement produces a returned screening total of 248;
+converting the rounded case quota at 20% prevalence gives 250. Allow
+separately for invalid tests or incomplete reference assessments.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1679,9 +2191,24 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: The same AI validation, but with
-a small sample where the normal approximation is unsafe; the exact
-binomial method removes the approximation error.</li>
+<strong>Population and decision</strong>: The same locked-threshold
+lung-nodule AI is evaluated with relatively few disease-positive cases,
+motivating a direct exact-binomial requirement for the number correctly
+detected.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each confirmed malignant
+patient is classified as a true positive or false negative, with
+reference and unevaluable-result rules fixed before analysis. Do not
+move the AI threshold after seeing whether the cutoff is met.</li>
+<li>
+<strong>Planning inputs</strong>: Retain sensitivity 85% versus null
+70%, one-sided α=0.05, and 80% power, but specify
+<code>method = "exact"</code> to search the discrete design.</li>
+<li>
+<strong>Why this design</strong>: Actual error and power need not
+equal nominal settings exactly. Record <code>actual_alpha</code>,
+<code>actual_power</code>, and <code>critical_successes</code> along
+with the sample size.</li>
 <li>
 <strong>Formula</strong>: exact binomial — <span class="math inline">\(P(X \ge r \mid p_0) \le \alpha\)</span>, <span class="math inline">\(P(X \ge r \mid p) \ge 1-\beta\)</span> (A’Hern
 2001).</li>
@@ -1722,7 +2249,9 @@ binomial method removes the approximation error.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 49 confirmed cases, critical cutoff <span class="math inline">\(r = 40\)</span>.</li>
+<strong>Result and decision rule</strong>: 49 confirmed cases and at
+least 40 true-positive classifications. Actual α is 0.048 and power
+0.8089; at 20% prevalence, returned average screening size is 245.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1730,11 +2259,27 @@ binomial method removes the approximation error.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A new breast-lesion AI must
-improve BOTH sensitivity (80% <span class="math inline">\(\to\)</span>
-90%) and specificity (75% <span class="math inline">\(\to\)</span> 85%)
-against biopsy truth, prevalence 40%. Each endpoint is powered at 90% so
-joint power is ~80% (Akoglu 2022).</li>
+<strong>Population and decision</strong>: An independent
+breast-lesion AI validation requires both sensitivity and specificity to
+exceed their own benchmarks, consecutively enrolling patients scheduled
+for reference assessment with one defined analysis unit per
+patient.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Reference-positive
+patients contribute sensitivity and reference-negative patients
+contribute specificity. Both endpoints must succeed; biopsy establishes
+disease truth and is not itself a competing accuracy benchmark.</li>
+<li>
+<strong>Planning inputs</strong>: Assume Se of 90% versus null 80%,
+Sp of 85% versus null 75%, and <code>dual_power = 0.90</code>. Powering
+each endpoint at 90% supports an approximately 80% lower planning bound
+for joint success; the actual joint behavior depends on the design.</li>
+<li>
+<strong>Why this design</strong>: Track case and non-case
+requirements separately. The function also returns the larger
+requirement and a conservative screening conversion, but the two
+endpoint requirements do not refer to the same disease-status
+group.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \max\left(n_{Se},\, n_{Sp}\right), \quad n =
@@ -1780,7 +2325,11 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 123 cases, 308 screened.</li>
+<strong>Result and recruitment</strong>: Sensitivity requires 109
+cases, specificity 137 non-cases. The reported maximum is 137, with
+conservative conversion 343. At prevalence 40%, separately converting
+rounded case and non-case quotas gives an average lower planning total
+of 273; account additionally for random case yield.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1788,9 +2337,25 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two independent cohorts receive
-two competing pneumonia CT-AI systems: sensitivity 85% vs. 75%,
-prevalence 20%.</li>
+<strong>Population and decision</strong>: Two pneumonia CT-AI
+systems are validated in independent patient groups, for example by
+random allocation from the same source population with each person
+assigned to one system’s formal assessment.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Apply the same reference
+process in both groups and compare sensitivity in confirmed pneumonia
+cases. Severity distribution and reference ascertainment should not
+systematically differ between groups.</li>
+<li>
+<strong>Planning inputs</strong>: Assume sensitivities
+<code>p1 = 0.85</code>, <code>p2 = 0.75</code>, source prevalence 20%,
+two-sided α=0.05, and 80% power. This is not a comparison of positivity
+among all screened patients.</li>
+<li>
+<strong>Why this design</strong>: Use an unpaired two-proportion
+approach with independent confirmed cases in each group. If both systems
+evaluate the same patients, switch to paired planning with a discordance
+assumption.</li>
 <li>
 <strong>Formula</strong> (Fleiss kernel): <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} +
@@ -1828,7 +2393,10 @@ Z_{\beta}\sqrt{p_1(1-p_1)+p_2(1-p_2)}\right]^2}{(p_1-p_2)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 250 cases per group, 2500 screened.</li>
+<strong>Result and recruitment</strong>: 250 confirmed pneumonia
+cases per group, with total average screening size 2500. Non-cases can
+support additional specificity reporting, but this calculation does not
+separately guarantee specificity precision or power.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1836,10 +2404,24 @@ Z_{\beta}\sqrt{p_1(1-p_1)+p_2(1-p_2)}\right]^2}{(p_1-p_2)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: The same patients undergo both
-assays (paired design): sensitivities 85% vs. 75%, expected
-discordant-pair proportion <span class="math inline">\(\psi =
-0.10\)</span> — dramatically fewer cases needed.</li>
+<strong>Population and decision</strong>: Both frozen AI systems now
+evaluate the same patients’ CT images, and a common reference process
+establishes pneumonia status.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Compare paired sensitivity
+only in disease-positive patients, recording both-correct, system-1-only
+correct, system-2-only correct, and both-incorrect results.</li>
+<li>
+<strong>Planning inputs</strong>: Assume sensitivities 85% versus
+75% and <code>psi = 0.10</code>. This equals the minimum discordance
+compatible with the rate difference and implies no reverse discordance,
+making it an optimistic assumption; paired pilot data should inform less
+favorable scenarios.</li>
+<li>
+<strong>Why this design</strong>: Connor planning uses
+within-patient dependence, with two-sided α=0.05 and 80% power. A
+diagnostic pair is one patient assessed twice, not two independently
+recruited cases.</li>
 <li>
 <strong>Formula</strong> (Connor): <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{\psi} +
@@ -1881,7 +2463,10 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 77 pairs of cases, 385 screened.</li>
+<strong>Result and recruitment</strong>: 77 disease-positive
+patients, each evaluated by both systems. The returned screening
+conversion is 381; converting the rounded quota at 20% prevalence gives
+385 screened patients on average.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1889,9 +2474,26 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A simplified rapid test
-(sensitivity 90%) must be non-inferior to the laboratory reference (88%)
-within a 5% margin, prevalence 30%.</li>
+<strong>Population and decision</strong>: A home-sampling assay is
+compared with a laboratory assay to determine whether reduced sampling
+burden preserves acceptable sensitivity, using two independent patient
+groups in this example.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each group receives its
+assigned assay and the same reference process. Compare true-positive
+fractions among confirmed cases; patients assessed by both assays would
+require consideration of paired covariance instead.</li>
+<li>
+<strong>Planning inputs</strong>: Assume study sensitivity 90%,
+control sensitivity 88%, maximum acceptable loss
+<code>margin = 0.05</code>, one-sided α=0.05, and 80% power. Justify the
+margin in terms of missed cases, convenience, and comparator
+performance.</li>
+<li>
+<strong>Why this design</strong>: <code>n_per_group</code> is the
+case requirement in each independent assay group. The screening
+conversion field describes one group and is not the total recruitment
+across both groups.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}\]</span>
@@ -1936,7 +2538,10 @@ within a 5% margin, prevalence 30%.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 247 cases, 824 screened.</li>
+<strong>Result and recruitment</strong>: 247 cases per group, 494
+cases across groups. The returned single-group screening conversion is
+823; at 30% prevalence, rounded case quotas require about 1648 screened
+patients across both groups.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1944,8 +2549,24 @@ within a 5% margin, prevalence 30%.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two benchtop analysers:
-sensitivity 90% vs. 89%, equivalence corridor <span class="math inline">\(\pm 5\%\)</span>.</li>
+<strong>Population and decision</strong>: A hospital evaluates
+whether two point-of-care analyzers have sufficiently similar
+sensitivity, assigning separate patients to independent device groups
+with a common reference examination.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Use fixed positivity
+thresholds and standardized specimen handling and quality control.
+Testing the same specimens on both devices creates a paired study and
+requires a corresponding method.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>p1 = 0.90</code>,
+<code>p2 = 0.89</code>, equivalence bounds ±0.05, one-sided α=0.05, and
+80% power. The acceptable difference must reflect the particular disease
+and consequences of missed diagnoses.</li>
+<li>
+<strong>Why this design</strong>: Equivalence excludes unacceptable
+differences in both directions. A nonsignificant ordinary comparison is
+not evidence that the devices are interchangeable.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}\]</span>
@@ -1988,7 +2609,10 @@ sensitivity 90% vs. 89%, equivalence corridor <span class="math inline">\(\pm 5
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 1006 cases, 3354 screened.</li>
+<strong>Result and recruitment</strong>: 1006 confirmed cases per
+group, 2012 across groups. The single-group screening field is 3353;
+converting integer case quotas at 30% prevalence gives 6708 total
+screened patients.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1996,8 +2620,25 @@ sensitivity 90% vs. 89%, equivalence corridor <span class="math inline">\(\pm 5
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Planning a biomarker validation
-cohort: anticipated AUC = 0.80, 95% CI half-width <span class="math inline">\(\pm 0.10\)</span>, cases:controls 1:1.</li>
+<strong>Population and decision</strong>: A biomarker team validates
+the discrimination of a frozen continuous risk score, recruiting
+reference-confirmed cases and non-cases in a 1:1 ratio from the same
+intended clinical population.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each patient contributes
+one score, and ROC-AUC summarizes ranking discrimination. Non-cases
+should resemble actual clinical comparators rather than exclusively
+healthy volunteers compared with advanced cases.</li>
+<li>
+<strong>Planning inputs</strong>: Assume AUC=0.80, 95% CI half-width
+<code>d = 0.10</code>, <code>ratio = 1</code>, and
+<code>var_method = "binormal"</code>. Inform the AUC and variance choice
+using independent pilot or external validation data.</li>
+<li>
+<strong>Why this design</strong>: This estimates AUC precision with
+investigator-set disease quotas. Such a quota sample does not directly
+estimate population prevalence or unweighted positive predictive
+value.</li>
 <li>
 <strong>Formula</strong> (Obuchowski 1994 binormal variance, Zhou Eq
 6.5): <span class="math display">\[n_{cases} =
@@ -2045,7 +2686,10 @@ cohort: anticipated AUC = 0.80, 95% CI half-width <span class="math inline">\(\p
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 46 cases, 46 controls (92 total).</li>
+<strong>Result and recruitment</strong>: 46 cases and the same
+number of non-cases, 92 total. Meet both disease-status quotas; a
+sufficient total with too few cases does not meet this precision
+plan.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2053,9 +2697,25 @@ cohort: anticipated AUC = 0.80, 95% CI half-width <span class="math inline">\(\p
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A new miRNA panel must show AUC
-significantly above the 0.70 clinical pass line; anticipated AUC 0.80,
-prevalence 30%.</li>
+<strong>Population and decision</strong>: A team validates an
+independent miRNA score against a prespecified minimum useful
+discrimination level, rather than merely testing whether it exceeds
+random ranking at AUC=0.5.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Freeze the algorithm
+before collecting continuous scores and reference disease status,
+handling cases and non-cases consistently. The primary endpoint is the
+overall ROC-AUC.</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>auc = 0.80</code>,
+minimum acceptable <code>auc0 = 0.70</code>, source prevalence 30%,
+one-sided α=0.05, and 80% power. Justify the minimum for the intended
+application.</li>
+<li>
+<strong>Why this design</strong>: An AUC test does not automatically
+guarantee sensitivity, specificity at an operating threshold, or
+calibration. Plan those separately if they are also primary
+objectives.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n_{cases} =
 \frac{\left(Z_{\alpha}\sqrt{V(AUC_0)} +
@@ -2096,7 +2756,9 @@ Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 180 cases, 600 screened.</li>
+<strong>Result and recruitment</strong>: 180 cases, with an average
+screening size of 600. Non-cases also contribute to AUC estimation, so
+recruiting cases alone does not satisfy the design.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2104,10 +2766,22 @@ Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: CT vs. MRI for liver lesion
-characterisation: anticipated AUCs 0.80 vs. 0.70, correlation between
-the two AUC estimates <span class="math inline">\(r = 0.50\)</span>
-(same patients).</li>
+<strong>Population and decision</strong>: A liver-lesion study
+obtains two imaging scores from the same patients and uses a common
+reference standard to compare two correlated ROC-AUC estimates.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Retain patient-level
+pairing between the continuous scores, with reference interpretation as
+independent as feasible from either study score.</li>
+<li>
+<strong>Planning inputs</strong>: Assume AUCs 0.80 and 0.70 and
+<code>r=0.50</code>, where r is correlation between AUC estimators, not
+ordinary Pearson correlation between raw scores. Use compatible paired
+pilot data to inform it.</li>
+<li>
+<strong>Why this design</strong>: Use two-sided α=0.05, 80% power,
+and assumed prevalence 30%. Completing both examinations provides paired
+information; it does not create two independent patients.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n_{cases} =
 \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 -
@@ -2142,7 +2816,9 @@ AUC_2)^2}\]</span> Hajian-Tilaki (2014), Eqs 7.6/7.8.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 223 cases, 744 screened.</li>
+<strong>Result and recruitment</strong>: 223 cases assessed by both
+methods; the screening field is 743. Converting the rounded case quota
+at 30% prevalence gives 744 screened patients on average.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2150,9 +2826,23 @@ AUC_2)^2}\]</span> Hajian-Tilaki (2014), Eqs 7.6/7.8.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A portable low-cost device (AUC
-0.85) must be non-inferior to the standard platform (AUC 0.82) within
-margin 0.05.</li>
+<strong>Population and decision</strong>: A hospital evaluates a
+portable, lower-cost scoring device for preservation of the standard
+device’s discrimination, arranging equal case and non-case quotas and
+obtaining both scores from each patient.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Generate both continuous
+scores with locked algorithms, construct ROC curves against the same
+disease reference, and retain patient pairing.</li>
+<li>
+<strong>Planning inputs</strong>: Assume study AUC=0.85, reference
+AUC=0.82, <code>r=0.50</code>, maximum loss <code>margin = 0.05</code>,
+one-sided α=0.05, and 80% power.</li>
+<li>
+<strong>Why this design</strong>: Justify the AUC margin for the
+intended use. This branch uses equal case/non-case allocation in its
+variance calculation; its total is not derived from natural clinical
+prevalence.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{2(Z_{\alpha}+Z_{\beta})^2
@@ -2194,7 +2884,10 @@ V(1-r)}{(AUC_1-AUC_2+\Delta)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 80 cases, 160 screened.</li>
+<strong>Result and recruitment</strong>: The case requirement is 80,
+and the total conversion field is 159. Enforcing integer equal case and
+non-case quotas gives 160 people, each receiving both device
+assessments.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2202,9 +2895,25 @@ V(1-r)}{(AUC_1-AUC_2+\Delta)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two AI vendors claim
-interchangeable performance: AUC 0.85 vs. 0.84, equivalence margin
-0.05.</li>
+<strong>Population and decision</strong>: Two AI scores are
+evaluated for sufficiently similar AUCs on the same clinical validation
+sample, with cases and non-cases recruited in equal proportions.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each patient receives both
+frozen continuous scores, and paired AUC differences are calculated
+against the same disease reference. AUCs from independent hospital
+samples are not correlated estimates merely because they use similar
+patients.</li>
+<li>
+<strong>Planning inputs</strong>: Assume AUCs 0.85 and 0.84,
+<code>r=0.50</code>, equivalence bounds ±0.05, one-sided α=0.05, and 80%
+power. Variance-model and correlation assumptions materially affect the
+requirement.</li>
+<li>
+<strong>Why this design</strong>: The objective excludes both
+unacceptable directions of AUC difference. AUC equivalence alone does
+not establish interchangeability at every threshold or clinical
+decision.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{2(Z_{\alpha}+Z_{\beta/2})^2
@@ -2246,7 +2955,9 @@ V(1-r)}{(\Delta-|AUC_1-AUC_2|)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 317 cases, 634 screened.</li>
+<strong>Result and recruitment</strong>: 416 cases, with total
+conversion 831. Equal integer case and non-case quotas require 832
+people, each providing scores from both systems.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2254,13 +2965,29 @@ V(1-r)}{(\Delta-|AUC_1-AUC_2|)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A D-dimer rule-out pathway
-requires the upper 95% CI limit of LR<span class="math inline">\(^-\)</span> to stay below 0.40; expected
-sensitivity 90%, specificity 50%.</li>
+<strong>Population and decision</strong>: An emergency team
+independently validates a fixed-threshold D-dimer pathway, focusing on
+how a negative result changes pulmonary embolism probability and
+initially planning equal confirmed case and non-case quotas.</li>
 <li>
-<strong>Formula</strong> (Simel 1991 log-CI): <span class="math display">\[\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n
-\cdot Se} + \frac{1-Sp}{n \cdot Sp}}\]</span> Hajian-Tilaki (2014),
-Section 6.4, Eqs 6.13/6.14.</li>
+<strong>Procedures and endpoint</strong>: Ascertain disease
+consistently, estimate sensitivity and specificity, and plan the upper
+log-scale CI limit for LR−=(1−Se)/Sp rather than a fixed-width
+sensitivity CI.</li>
+<li>
+<strong>Planning inputs</strong>: Assume Se=0.90 and Sp=0.50, giving
+anticipated LR−=0.20; target an approximate 95% upper limit of
+<code>target_lr = 0.40</code> at those anticipated parameters. Justify
+the target using pretest probability and the intended decision.</li>
+<li>
+<strong>Why this design</strong>: With equal groups, the variance
+coefficient is 0.9/0.1+0.5/0.5=10 and the target log distance is
+log(0.4/0.2). This is approximate precision planning, not 95% assurance
+that every realized study CI meets the target.</li>
+<li>
+<strong>Formula</strong> (Simel 1991 log-CI): <span class="math display">\[\log(LR^-) \pm
+Z_{1-\alpha/2}\sqrt{\frac{Se}{n(1-Se)} + \frac{1-Sp}{n\cdot
+Sp}}\]</span> Hajian-Tilaki (2014), Section 6.4, Eqs 6.13/6.14.</li>
 </ul>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_5_14</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagLR"</span>, <span class="st">"estimate"</span>, <span class="st">"lr"</span>, sens <span class="op">=</span> <span class="fl">0.90</span>, spec <span class="op">=</span> <span class="fl">0.50</span>, target_lr <span class="op">=</span> <span class="fl">0.40</span>, lr_type <span class="op">=</span> <span class="st">"negative"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
@@ -2268,39 +2995,44 @@ Section 6.4, Eqs 6.13/6.14.</li>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Likelihood ratio (negative, log-CI method)"</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">9</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">9</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">18</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">80</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">80</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">160</span></span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • sens/spec = expected sensitivity/specificity (determine the observed LR)</span></span>
 <span><span class="co">#&gt; • target_lr = LR boundary the CI must not cross (precision target)</span></span>
 <span><span class="co">#&gt; • n is computed per group (equal cases and controls)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Calculates sample size ensuring the log-scale CI does not cross target_lr (threshold precision),</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Plans the approximate CI limit at the anticipated Se/Sp to reach target_lr;</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> this is a precision calculation, not a guarantee about every realized CI.</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> distinct from fixed-width CI approaches (e.g. prec_lr in presize).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
-<span><span class="co">#&gt; `log(LR) +- Z * sqrt((1-Se)/(n*Se) + (1-Sp)/(n*Sp))`</span></span>
+<span><span class="co">#&gt; `log(LR-) +- Z * sqrt(Se/(n*(1-Se)) + (1-Sp)/(n*Sp))`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
-<span><span class="co">#&gt; $$\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n \cdot Se} + \frac{1-Sp}{n \cdot Sp}}$$</span></span>
+<span><span class="co">#&gt; $$\log(LR^-) \pm Z_{1-\alpha/2}\sqrt{\frac{Se}{n(1-Se)} + \frac{1-Sp}{n \cdot Sp}}$$</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Step 1: Identify study design: Likelihood ratio (negative, log-CI method).</span></span>
 <span><span class="co">#&gt; • Step 2: Input parameters: sensitivity = 0.90, specificity = 0.50, lr_type =</span></span>
 <span><span class="co">#&gt; negative, lr_observed = 0.20, target_lr = 0.40, prevalence = 1, alpha = 0.05.</span></span>
-<span><span class="co">#&gt; • Step 3: Apply design formula: log(LR) +- Z * sqrt((1-Se)/(n*Se) +</span></span>
+<span><span class="co">#&gt; • Step 3: Apply design formula: log(LR-) +- Z * sqrt(Se/(n*(1-Se)) +</span></span>
 <span><span class="co">#&gt; (1-Sp)/(n*Sp)).</span></span>
-<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Total sample size: 18; Cases needed:</span></span>
-<span><span class="co">#&gt; 9; Controls needed: 9; Total subjects: 18.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Total sample size: 160; Cases needed:</span></span>
+<span><span class="co">#&gt; 80; Controls needed: 80; Total subjects: 160.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
-<span><span class="co">#&gt; Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.13/6.14; worked example n=80 per group).</span></span>
+<span><span class="co">#&gt; Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  CI method: Simel, D. L., Samsa, G. P., &amp; Matchar, D. B. (1991). Likelihood ratios with confidence: sample size estimation for accuracy of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 9 cases, 9 controls (18 total).</li>
+<strong>Result and recruitment</strong>: 80 confirmed pulmonary
+embolism cases and 80 non-cases, 160 total. These are disease-status
+quotas, not total consecutive emergency attendees; a consecutive design
+must additionally account for local prevalence and the yield of both
+groups.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2308,10 +3040,26 @@ Section 6.4, Eqs 6.13/6.14.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: On average, screening 980
-patients yields the 196 confirmed cases needed for Section 5.1 — but
-that only holds with 50% probability. To <em>guarantee</em> enough cases
-with 90% probability, inflate the screening list.</li>
+<strong>Population and decision</strong>: A colorectal referral
+cohort needs 196 reference-positive cases and anticipates prevalence
+20%, so the team must decide how many complete test-and-reference
+appointments to prepare.</li>
+<li>
+<strong>Procedures and endpoint</strong>: With a fixed consecutively
+enrolled total, the number of cases varies around its expectation.
+Screening 980 people gives an expected 196 cases, not a high-probability
+guarantee of that many.</li>
+<li>
+<strong>Planning inputs</strong>: Use <code>n = 196</code>,
+<code>prevalence = 0.20</code>, and <code>beta = 0.10</code> as the
+tolerated probability of insufficient cases. This beta concerns
+recruitment yield, distinct from type-II error in an accuracy hypothesis
+test.</li>
+<li>
+<strong>Why this design</strong>: Find the smallest total meeting
+the binomial tail requirement, assuming approximately independent
+disease status and stable source prevalence. Enrichment or stratified
+quotas require their corresponding recruitment assumptions.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[P(\text{Binomial}(N, \text{prevalence}) \ge n)
 \ge 1-\beta\]</span> Zhou et al. (2011), Eq 6.3.</li>
@@ -2322,7 +3070,10 @@ with 90% probability, inflate the screening list.</li>
 <span><span class="co">#&gt; Average screening target: 980; 90% guaranteed enrollment target: 1061</span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 1058 screened patients to guarantee <span class="math inline">\(\ge 196\)</span> cases with 90% probability.</li>
+<strong>Result and recruitment</strong>: Prepare 1061 complete
+participants, 81 more than the expectation-based total. Under these
+assumptions the chance of at least 196 cases is 90.09%. Incomplete
+reference examinations require additional operational allowance.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2330,10 +3081,25 @@ with 90% probability, inflate the screening list.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A mammography study where 8
-radiologists independently read 50 cases with two imaging techniques;
-detect an AUC difference of 0.10 using the Obuchowski-Rockette mixed
-model.</li>
+<strong>Population and decision</strong>: An imaging study compares
+two breast-imaging techniques using 8 radiologists and the same 50
+patients, accounting for both patient and reader variability.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Randomize reading order,
+control memory effects between sessions, and blind readers to reference
+status. Each reader evaluates both techniques for each patient.</li>
+<li>
+<strong>Planning inputs</strong>: Reuse the Zhou textbook planning
+components: AUC difference <code>delta = 0.10</code>,
+reader/occasion/case variances 0.00123, 0.00087, and 0.05, and
+correlations 0.25, 0.20, and 0.10. These require compatible MRMC pilot
+information and are not replaceable by the SD of a single AUC
+estimate.</li>
+<li>
+<strong>Why this design</strong>: <code><a href="../reference/mrmc_power.html">mrmc_power()</a></code>
+evaluates power at fixed patient and reader counts; it does not solve
+for minimum enrollment. One reading occasion entails 50×8×2=800
+interpretations.</li>
 <li>
 <strong>Formula</strong> (non-central <span class="math inline">\(F\)</span>, Zhou Eq 6.32): <span class="math display">\[\lambda =
 \frac{J\delta^2}{2\left[\sigma_b^2(1-\rho_1) + \sigma_w^2/Q +
@@ -2384,8 +3150,10 @@ Zhou et al. (2011), Section 6.5, p. 225.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 88.8% statistical power (the textbook
-reports ~89%).</li>
+<strong>Result and workload</strong>: Calculated power is 88.8%.
+Recalculate if reader availability, case spectrum, or variance
+components change; maintaining only the same total number of
+interpretations is insufficient.</li>
 </ul>
 <hr>
 </div>
@@ -2398,9 +3166,25 @@ reports ~89%).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: ICUs (not patients) are
-randomized to a new catheter-care bundle: complication score 10 <span class="math inline">\(\to\)</span> 12, SD = 3, average 20 beds per ICU,
-intra-cluster correlation ICC = 0.05.</li>
+<strong>Population and decision</strong>: A multicenter ICU study
+randomizes wards to a care workflow to reduce contamination between
+patients treated by the same staff, with about 20 eligible patients per
+ward.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define a patient-level
+continuous recovery score with higher values indicating benefit,
+standardized timing, and assessor training. Assume control mean 10 and
+intervention mean 12.</li>
+<li>
+<strong>Planning inputs</strong>: Use patient-level SD=3,
+<code>icc = 0.05</code>, and <code>cluster_size = 20</code>, giving
+design effect 1.95. ICC evidence should match the ward structure,
+outcome, and recruitment period.</li>
+<li>
+<strong>Why this design</strong>: The function inflates an
+individually randomized requirement and rounds to complete clusters.
+Also assess whether the cluster count, unequal sizes, and intended
+cluster or mixed-model analysis support the actual trial.</li>
 <li>
 <strong>Formula</strong> (design effect): <span class="math display">\[DE = 1 + (m-1) \times ICC = 1.95, \quad
 n_{clusters} = \left\lceil \frac{n_{individual} \times DE}{m}
@@ -2441,8 +3225,10 @@ Ch. 12.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 4 clusters (80 patients) per arm, 8
-clusters (160 patients) total.</li>
+<strong>Result and recruitment</strong>: 4 wards and 80 patients per
+arm, 8 wards and 160 patients overall. Plan ward-level losses at the
+cluster level; adding patients in only a few wards does not replace
+additional independent wards.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2450,9 +3236,25 @@ clusters (160 patients) total.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Village-level randomization of a
-screening-uptake intervention: uptake 20% <span class="math inline">\(\to\)</span> 30%, 20 residents per village, ICC =
-0.05.</li>
+<strong>Population and decision</strong>: A public-health team
+randomizes villages to appointment reminders and education to improve
+screening uptake in eligible residents, reducing within-village
+intervention spillover.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Recruit 20 eligible
+residents per village using a prespecified procedure and verify
+completion of one valid screen within a fixed 6-month window, yielding
+one binary outcome per resident.</li>
+<li>
+<strong>Planning inputs</strong>: Assume uptake 20% versus 30%,
+<code>icc = 0.05</code>, <code>cluster_size = 20</code>, two-sided
+α=0.05, and 80% power. Eligibility and observation windows should match
+the source data.</li>
+<li>
+<strong>Why this design</strong>: Inflate the two-proportion
+requirement and round to whole villages. Unequal village sizes or
+stratified randomization warrant assessment against the final analysis
+design.</li>
 <li>
 <strong>Formula</strong>: same design effect applied to the
 two-proportion kernel.</li>
@@ -2497,8 +3299,10 @@ two-proportion kernel.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 29 clusters per arm, 58 clusters (1160
-patients) total.</li>
+<strong>Result and recruitment</strong>: 29 villages and 580
+residents per arm, 58 villages and 1160 residents total. Budget village
+coordination and resident follow-up separately, including procedures for
+villages that miss their target size.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2506,9 +3310,27 @@ patients) total.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: 24 counties sequentially adopt a
-hand-hygiene program (6 counties per step, baseline + 4 steps, 100
-births per county per period); treatment effect <span class="math inline">\(\theta = -0.016\)</span> on infection risk.</li>
+<strong>Population and decision</strong>: Twenty-four counties
+sequentially implement hand hygiene, with randomized switching order in
+batches of 6. Four switches plus baseline create 5 observation periods,
+and all counties ultimately receive the intervention.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Sample about 100 new
+neonates per county per period and ascertain infection in a fixed
+window. This is repeated cross-sectional sampling, not 5 repeated
+observations of the same neonates; the binary endpoint is planned using
+an additive risk-difference approximation.</li>
+<li>
+<strong>Planning inputs</strong>: Set <code>theta = -0.016</code>,
+between-county variance <code>tau2 = 2.25e-4</code>, individual variance
+<code>sigma2_ind = 0.0475</code> (about 5% baseline risk), and
+<code>m = 100</code>.</li>
+<li>
+<strong>Why this design</strong>: Evaluate power for a fixed
+cluster, period, and sample configuration. The implemented simplified
+formula does not explicitly fit a full calendar-time trend; seasonal or
+secular changes require a model or simulation including those
+effects.</li>
 <li>
 <strong>Formula</strong> (Hussey &amp; Hughes Eq 8): <span class="math display">\[Var(\hat{\theta}) = \frac{I \tau^2 (\tau^2 +
 T\sigma^2)}{(IU - W)\tau^2 + (U^2 + ITU - TW - IV)\sigma^2}, \quad
@@ -2556,7 +3378,10 @@ Hussey &amp; Hughes (2007), <em>Contemp Clin Trials</em> 28(2),
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 90.8% statistical power.</li>
+<strong>Result and workload</strong>: Calculated power is 90.8%.
+With different neonates each period, budget 24×5×100=12000 observations,
+together with switching training, period definitions, and complete
+county-period data.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2564,10 +3389,26 @@ Hussey &amp; Hughes (2007), <em>Contemp Clin Trials</em> 28(2),
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Knee osteoarthritis pain graded
-mild/moderate/severe with expected distribution 20%/50%/30%; the new
-intra-articular therapy is anticipated to shift the odds of a better
-category by OR = 1.5.</li>
+<strong>Population and decision</strong>: A 1:1 randomized
+osteoarthritis trial compares a study injection with control using pain
+improvement at week 12, classified as small, moderate, or large
+improvement.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Define category thresholds
+in advance and obtain one ordered patient-level outcome using the same
+scale and scoring procedures. Category order must be consistent with the
+anticipated treatment direction.</li>
+<li>
+<strong>Planning inputs</strong>: Assume pooled category
+distribution <code>prop_bar = c(0.2, 0.5, 0.3)</code>, common
+<code>or = 1.5</code>, two-sided α=0.05, and 80% power. The distribution
+is the combined planning distribution, not an arbitrary single-arm set
+of rates.</li>
+<li>
+<strong>Why this design</strong>: Whitehead’s approximation assumes
+a common proportional odds effect across cutpoints. Effects concentrated
+in a particular category require assessment under an appropriate
+alternative distribution.</li>
 <li>
 <strong>Formula</strong> (Whitehead 1993): <span class="math display">\[N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log
 OR)^2\,(1-\sum \bar{p}_j^3)}\]</span>
@@ -2608,7 +3449,10 @@ OR)^2\,(1-\sum \bar{p}_j^3)}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 86 per arm, 171 total.</li>
+<strong>Result and recruitment</strong>: The formula returns total
+lower bound 171 and rounded group size 86. Strict 1:1 allocation
+therefore needs 172 participants before any allowance for missing
+endpoints.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2617,16 +3461,31 @@ Binary)<a class="anchor" aria-label="anchor" href="#clinical-prediction-model-de
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Developing an ICU mortality
-prediction model with 10 candidate predictors, outcome proportion 30%,
-anticipated Cox-Snell <span class="math inline">\(R^2_{CS} =
-0.10\)</span>, target shrinkage <span class="math inline">\(S =
-0.90\)</span>.</li>
+<strong>Population and decision</strong>: An ICU team develops a
+model predicting in-hospital death at admission, consecutively enrolling
+eligible first admissions and using predictors available at the intended
+prediction time.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each patient has one
+admission outcome. Count parameters needed for categorical expansions,
+splines, and interactions; 10 parameters need not mean 10 raw
+variables.</li>
+<li>
+<strong>Planning inputs</strong>: Assume outcome proportion
+<code>prev = 0.30</code>, <code>n_parameters = 10</code>, anticipated
+Cox–Snell R²=0.10, target shrinkage 0.90, and overall-risk precision
+0.05. External performance estimates should be relevant and adjusted for
+optimism.</li>
+<li>
+<strong>Why this design</strong>: This branch takes the larger of
+overall-risk precision B1 and shrinkage B3, with auxiliary information.
+It does not implement every Riley criterion or automatically plan
+machine-learning tuning and external validation.</li>
 <li>
 <strong>Formula</strong> (Riley 2020, criteria B1 &amp; B3): <span class="math display">\[n_{B1} = \left(\frac{z}{\delta}\right)^2
 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n =
 \max(n_{B1}, n_{B3})\]</span> Riley et al. (2020), <em>BMJ</em> 368,
-m441 (matches <code>pmsampsize</code>).</li>
+m441 (criteria B1 and B3 in this example).</li>
 </ul>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_6_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"predictiveModel"</span>, <span class="st">"plan"</span>, <span class="st">"binary"</span>, prev <span class="op">=</span> <span class="fl">0.30</span>, n_parameters <span class="op">=</span> <span class="fl">10</span>, r2_cs <span class="op">=</span> <span class="fl">0.10</span>, shrinkage <span class="op">=</span> <span class="fl">0.90</span>, precision_delta <span class="op">=</span> <span class="fl">0.05</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
@@ -2672,8 +3531,11 @@ m441 (matches <code>pmsampsize</code>).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 850 participants and 255 events (matches
-<code>pmsampsize</code>).</li>
+<strong>Result and recruitment</strong>: 850 patients with about 255
+expected deaths at the assumed rate. Document which criteria are
+covered, internal validation, and missing-predictor handling; splitting
+the development sample does not create an independent external
+validation study.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2681,10 +3543,24 @@ m441 (matches <code>pmsampsize</code>).</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A 10-year cardiovascular death
-prediction model: annual event rate 0.10, the cumulative incidence at 10
-years must be estimated within <span class="math inline">\(\pm
-5\%\)</span>.</li>
+<strong>Population and decision</strong>: A cardiovascular cohort
+plans a model for 10-year mortality risk and first assesses how much
+observed time at risk is needed to estimate the overall baseline
+cumulative incidence.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Record time from entry to
+death or censoring, approximating the overall event process by a
+constant hazard so that 10-year risk is 1−exp(−rate×10).</li>
+<li>
+<strong>Planning inputs</strong>: Assume <code>rate = 0.10</code>
+events per person-year, <code>timepoint = 10</code> years, and two-sided
+95% CI errors no larger than <code>precision_delta = 0.05</code>. Align
+the rate and time units.</li>
+<li>
+<strong>Why this design</strong>: This addresses overall-risk
+precision criterion T1, not all model-development requirements.
+Extrapolation from shorter observation to 10 years relies especially
+strongly on the assumed hazard model.</li>
 <li>
 <strong>Formula</strong> (criterion T1): <span class="math inline">\(F(t) = 1 - e^{-\lambda t}\)</span>; find
 person-years <span class="math inline">\(T\)</span> such that both CI
@@ -2723,7 +3599,10 @@ margins of <span class="math inline">\(F(t)\)</span> stay within <span class="ma
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 2366 person-years.</li>
+<strong>Result and recruitment</strong>: 2366 person-years at risk.
+If each patient contributes an average of 5 observed years at risk, an
+initial resource estimate is 474 patients; events, censoring, accrual,
+and other development criteria determine the actual requirement.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2731,9 +3610,24 @@ margins of <span class="math inline">\(F(t)\)</span> stay within <span class="ma
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Quick grant-proposal rule of
-thumb for a 10-predictor logistic model in a population with 30% event
-prevalence.</li>
+<strong>Population and decision</strong>: At an early grant-planning
+stage, investigators want a rough cohort size for a binary mortality
+prediction model containing 10 predictor parameters.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each patient contributes
+one complete hospital outcome, and events are deaths. Include
+coefficients for categorical levels, interactions, and nonlinear effects
+in the parameter count.</li>
+<li>
+<strong>Planning inputs</strong>: Use <code>epv = 10</code>,
+<code>n_parameters = 10</code>, and
+<code>event_prevalence = 0.30</code>, calculating events first and then
+converting by the anticipated event proportion.</li>
+<li>
+<strong>Why this design</strong>: EPV is a resource-planning rule of
+thumb rather than a complete calculation for power or prediction error.
+Develop the protocol further using explicit performance and shrinkage
+assumptions such as those in Section 6.5.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n_{events} =
 EPV \times k, \quad n_{subjects} = n_{events} / \pi\]</span> Peduzzi et
@@ -2773,7 +3667,10 @@ al. (1996), <em>J Clin Epidemiol</em> 49(12), 1373-1379.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 100 events, 334 total participants.</li>
+<strong>Result and recruitment</strong>: Target 100 events, giving
+334 patients by the assumed event proportion. This targets an expected
+event count; actual observed events can still fall short and need
+consideration in accrual and follow-up planning.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2781,21 +3678,37 @@ al. (1996), <em>J Clin Epidemiol</em> 49(12), 1373-1379.</li>
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Two radiologists independently
-grade 2-view mammograms; anticipated <span class="math inline">\(\kappa
-= 0.70\)</span>, the 95% CI half-width must not exceed <span class="math inline">\(\pm 0.10\)</span>.</li>
+<strong>Population and decision</strong>: Two radiologists estimate
+binary reading agreement in a prespecified breast-imaging assessment set
+designed to have approximately balanced positive and negative reading
+margins.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Readers independently
+assess the same images while blinded to each other’s decisions. Each
+patient forms a pair of ratings; κ measures agreement beyond chance, not
+sensitivity or specificity.</li>
+<li>
+<strong>Planning inputs</strong>: Use balanced
+<code>pi1 = pi2 = 0.50</code>, anticipated <code>kappa = 0.70</code>,
+and 95% CI half-width <code>d = 0.10</code>. Actual margins require
+evidence from the target population or an explicit enrichment
+strategy.</li>
+<li>
+<strong>Why this design</strong>: This estimates one κ with two
+fixed readers. The unit is the patient/specimen being rated; repeating
+the same image does not replace independent specimens.</li>
 <li>
 <strong>Formula</strong> (Cantor 1996): <span class="math display">\[n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2,
 \quad Q = \frac{p_o(1-p_o)}{(1-p_e)^2}\]</span>
 </li>
 </ul>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res_6_8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"kappa"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>, pi1 <span class="op">=</span> <span class="fl">0.30</span>, pi2 <span class="op">=</span> <span class="fl">0.30</span>, kappa <span class="op">=</span> <span class="fl">0.70</span>, d <span class="op">=</span> <span class="fl">0.10</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">res_6_8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"kappa"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>, pi1 <span class="op">=</span> <span class="fl">0.50</span>, pi2 <span class="op">=</span> <span class="fl">0.50</span>, kappa <span class="op">=</span> <span class="fl">0.70</span>, d <span class="op">=</span> <span class="fl">0.10</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_6_8</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Cohen's kappa estimation (CI precision)"</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Required sample size</span>: <span style="color: #0000BB;">165</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Required sample size</span>: <span style="color: #0000BB;">196</span></span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • pi1/pi2 = expected Rating-1 proportions for rater 1 / rater 2</span></span>
@@ -2808,18 +3721,21 @@ grade 2-view mammograms; anticipated <span class="math inline">\(\kappa
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Step 1: Identify study design: Cohen's kappa estimation (CI precision).</span></span>
-<span><span class="co">#&gt; • Step 2: Input parameters: pi1 = 0.30, pi2 = 0.30, kappa = 0.70, d = 0.10,</span></span>
-<span><span class="co">#&gt; alpha = 0.05, Q = 0.4272.</span></span>
+<span><span class="co">#&gt; • Step 2: Input parameters: pi1 = 0.50, pi2 = 0.50, kappa = 0.70, d = 0.10,</span></span>
+<span><span class="co">#&gt; alpha = 0.05, Q = 0.51.</span></span>
 <span><span class="co">#&gt; • Step 3: Apply design formula: n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2.</span></span>
-<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Required sample size: 165; Total</span></span>
-<span><span class="co">#&gt; sample size: 165.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Required sample size: 196; Total</span></span>
+<span><span class="co">#&gt; sample size: 196.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
 <span><span class="co">#&gt; Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's kappa. Psychological Methods, 1(2), 150-153 (Fleiss-Cohen-Everitt 1969 asymptotic variance; worked examples N=165 and N=214).</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 165 participants.</li>
+<strong>Result and workload</strong>: 196 independent specimens,
+each assessed by both readers, giving 392 readings. This result concerns
+the balanced assessment set; different rating margins require their own
+planning.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2827,9 +3743,23 @@ grade 2-view mammograms; anticipated <span class="math inline">\(\kappa
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: Does a new structured reporting
-checklist improve agreement over the old one? Anticipated <span class="math inline">\(\kappa_1 = 0.70\)</span> vs. <span class="math inline">\(\kappa_2 = 0.50\)</span> in two independent reader
-groups.</li>
+<strong>Population and decision</strong>: An imaging department
+compares a structured reporting checklist with routine reading using
+independent patient image sets for the two workflows, with two readers
+producing paired ratings within each set.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Estimate a κ in each
+group, then compare the independent estimates. Reusing the same images
+under both workflows creates dependent κ estimates and is not the design
+modeled here.</li>
+<li>
+<strong>Planning inputs</strong>: Assume κ values 0.70 and 0.50,
+margins of 0.50, two-sided α=0.05, and 80% power. The required number
+refers to specimens per group, not to the number of radiologists.</li>
+<li>
+<strong>Why this design</strong>: Keep case spectrum, reader
+training, and category definitions comparable between groups so the
+comparison reflects the intended reporting workflow difference.</li>
 <li>
 <strong>Formula</strong>: <span class="math display">\[n =
 \frac{\left[z_{\alpha}\sqrt{2Q_1} +
@@ -2868,7 +3798,9 @@ z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}\]</span> Cantor (1996),
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 214 participants per group.</li>
+<strong>Result and workload</strong>: 214 specimens per group, 428
+total. Two ratings per specimen imply about 856 interpretations across
+the study.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2876,10 +3808,26 @@ z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}\]</span> Cantor (1996),
 </h3>
 <ul>
 <li>
-<strong>Clinical scenario</strong>: A sugar-sweetened beverage tax:
-monthly consumption monitored 12 months before and 12 months after the
-policy; anticipated level jump of 2 outcome-SDs, AR(1) autocorrelation
-<span class="math inline">\(\rho = 0.30\)</span>.</li>
+<strong>Population and decision</strong>: A hospital implements an
+antimicrobial stewardship policy on a defined date, using 12 monthly
+observations before and 12 after implementation to assess an immediate
+level change.</li>
+<li>
+<strong>Procedures and endpoint</strong>: Each time point is a
+hospital-level aggregate, such as antibiotic-use intensity per hundred
+patient-days. Monthly dependence matters; patients contributing to a
+month are not independent time points in this calculation.</li>
+<li>
+<strong>Planning inputs</strong>: Assume a change of 2 residual
+outcome SDs, <code>effect_sd = 2</code>, AR(1) correlation
+<code>rho = 0.30</code>, and <code>n_pre = n_post = 12</code>. This is a
+strong illustrative standardized effect, not a 2% reduction.</li>
+<li>
+<strong>Why this design</strong>: This evaluates approximate power
+for a fixed time series using a simplified level-shift and AR(1)
+adjustment. Seasonality, pre-existing trends, slope changes, or
+concurrent policies need appropriate segmented-regression or simulation
+planning.</li>
 <li>
 <strong>Formula</strong> (AR(1)-adjusted approximation): <span class="math display">\[\text{power} = \Phi\left(\frac{\delta}{SE} -
 z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} +
@@ -2924,19 +3872,179 @@ approximation).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>Output</strong>: 94.9% statistical power.</li>
+<strong>Result and observation plan</strong>: Approximate power for
+the 24 monthly observations is 94.9%. This does not mean 24 patients are
+required or that seasonality and time trends are controlled; align
+observation length with the intended model and data quality.</li>
 </ul>
 <hr>
 </div>
 </div>
 <div class="section level2">
-<h2 id="chapter-7-protocol-boilerplate-visual-diagnostics">Chapter 7: Protocol Boilerplate &amp; Visual Diagnostics<a class="anchor" aria-label="anchor" href="#chapter-7-protocol-boilerplate-visual-diagnostics"></a>
+<h2 id="chapter-7-protocol-writing-visual-diagnostics">Chapter 7: Protocol Writing &amp; Visual Diagnostics<a class="anchor" aria-label="anchor" href="#chapter-7-protocol-writing-visual-diagnostics"></a>
 </h2>
+<div class="section level3">
+<h3 id="turning-the-scenarios-into-complete-protocols">Turning the scenarios into complete protocols<a class="anchor" aria-label="anchor" href="#turning-the-scenarios-into-complete-protocols"></a>
+</h3>
+<div class="section level4">
+<h4 id="protocol-a-bp-trial-assumptions-and-recruitment-sensitivity">Protocol A: BP trial assumptions and recruitment sensitivity<a class="anchor" aria-label="anchor" href="#protocol-a-bp-trial-assumptions-and-recruitment-sensitivity"></a>
+</h4>
+<p>Record the Section 1.1 population, week-12 change endpoint, and
+independent-patient analysis unit together. Identify the supporting
+study, its sample size, mean changes, and change-score SD. A source
+reporting only baseline SD or a standard error does not directly provide
+the planning SD.</p>
+<p>The table holds the control mean at 10, two-sided α=0.05, and power
+at 80%, while increasing SD from 3 to 4 or reducing the group difference
+from 2 to 1.5. Recruitment is separately inflated for 10% missing
+primary outcomes, illustrating the impact of plausible uncertainty on
+the budget.</p>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rct_plan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Base case"</span>, <span class="st">"Higher variability"</span>, <span class="st">"Smaller difference"</span>, <span class="st">"Both changes"</span><span class="op">)</span>,</span>
+<span>  mean2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">12</span>, <span class="fl">11.5</span>, <span class="fl">11.5</span><span class="op">)</span>,</span>
+<span>  sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rct_plan</span><span class="op">$</span><span class="va">complete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rct_plan</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>,</span>
+<span>    mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="va">rct_plan</span><span class="op">$</span><span class="va">mean2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, sd <span class="op">=</span> <span class="va">rct_plan</span><span class="op">$</span><span class="va">sd</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">)</span><span class="op">$</span><span class="va">n_per_group</span></span>
+<span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rct_plan</span><span class="op">$</span><span class="va">recruit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">rct_plan</span><span class="op">$</span><span class="va">complete</span> <span class="op">/</span> <span class="fl">0.9</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rct_plan</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Scenario"</span>, <span class="st">"Study mean"</span>, <span class="st">"Change SD"</span>, <span class="st">"Complete/arm"</span>, <span class="st">"Recruit/arm"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Scenario</th>
+<th align="right">Study mean</th>
+<th align="right">Change SD</th>
+<th align="right">Complete/arm</th>
+<th align="right">Recruit/arm</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Base case</td>
+<td align="right">12.0</td>
+<td align="right">3</td>
+<td align="right">37</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">Higher variability</td>
+<td align="right">12.0</td>
+<td align="right">4</td>
+<td align="right">64</td>
+<td align="right">72</td>
+</tr>
+<tr class="odd">
+<td align="left">Smaller difference</td>
+<td align="right">11.5</td>
+<td align="right">3</td>
+<td align="right">64</td>
+<td align="right">72</td>
+</tr>
+<tr class="even">
+<td align="left">Both changes</td>
+<td align="right">11.5</td>
+<td align="right">4</td>
+<td align="right">113</td>
+<td align="right">126</td>
+</tr>
+</tbody>
+</table>
+<p>State which scenario drives the final target, why it is appropriate,
+and whether recruitment and endpoint capacity can support it. Merely
+stating that inputs came from the literature obscures differences in
+populations and measurements.</p>
+</div>
+<div class="section level4">
+<h4 id="protocol-b-sensitivity-case-quotas-and-screening-capacity">Protocol B: Sensitivity case quotas and screening capacity<a class="anchor" aria-label="anchor" href="#protocol-b-sensitivity-case-quotas-and-screening-capacity"></a>
+</h4>
+<p>Section 5.1 requires 196 evaluable disease-positive cases, whereas a
+referral service initially sees patients of unknown disease status.
+Estimate source prevalence from consecutive records using the same
+referral criteria before translating the case target into examination
+capacity.</p>
+<p>The table compares prevalence assumptions of 10%, 20%, and 30%,
+showing expectation-based conversion and the minimum enrollment for 90%
+probability of enough cases. The 95% confidence level for sensitivity
+and the 90% recruitment-yield probability are separate quantities.</p>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">diag_plan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prevalence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">diag_plan</span><span class="op">$</span><span class="va">expected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span></span>
+<span>  <span class="va">res_5_1</span><span class="op">$</span><span class="va">target_state_cases_needed</span> <span class="op">/</span> <span class="va">diag_plan</span><span class="op">$</span><span class="va">prevalence</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">diag_plan</span><span class="op">$</span><span class="va">guaranteed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">diag_plan</span><span class="op">$</span><span class="va">prevalence</span>, <span class="kw">function</span><span class="op">(</span><span class="va">prev</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/screen_required.html">screen_required</a></span><span class="op">(</span><span class="va">res_5_1</span><span class="op">$</span><span class="va">target_state_cases_needed</span>, <span class="va">prev</span>, beta <span class="op">=</span> <span class="fl">0.10</span><span class="op">)</span></span>
+<span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">diag_plan</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Prevalence"</span>, <span class="st">"Expectation-based total"</span>, <span class="st">"90% yield requirement"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Prevalence</th>
+<th align="right">Expectation-based total</th>
+<th align="right">90% yield requirement</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1</td>
+<td align="right">1960</td>
+<td align="right">2132</td>
+</tr>
+<tr class="even">
+<td align="right">0.2</td>
+<td align="right">980</td>
+<td align="right">1061</td>
+</tr>
+<tr class="odd">
+<td align="right">0.3</td>
+<td align="right">654</td>
+<td align="right">704</td>
+</tr>
+</tbody>
+</table>
+<p>These targets refer to participants completing both index and
+reference assessments. Define reference-test capacity, repeat specimens,
+and monthly throughput. If only 95% of invitees complete both
+assessments, treating the table as an invitation count does not preserve
+the original case-yield guarantee.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="protocol-text-to-adapt">Protocol text to adapt<a class="anchor" aria-label="anchor" href="#protocol-text-to-adapt"></a>
+</h3>
+<blockquote>
+<p><strong>RCT example.</strong> This parallel, blinded, randomized
+trial evaluates baseline-to-week-12 systolic BP reduction. Based on
+[insert compatible evidence source], anticipated reductions are 10 and
+12 mmHg with common change-score SD 3 mmHg. Two-sided α=0.05 and 80%
+power require 37 analyzable patients per arm using two-sample t-test
+planning. Allowing 10% missing primary endpoints, we plan 42 per arm, 84
+total. Calculations use sampleSizeCalc; the primary analysis population
+and missing-outcome handling are prespecified in the analysis plan.</p>
+</blockquote>
+<blockquote>
+<p><strong>Diagnostic example.</strong> Consecutive patients from
+[insert intended referral setting] undergo a locked-threshold index test
+and a common reference examination. Based on [insert compatible evidence
+sources], anticipated sensitivity is 85% and prevalence 20%. Estimating
+sensitivity with approximately 0.05 half-width at 95% confidence
+requires 196 evaluable cases. A minimum 1061 complete participants gives
+at least 90% probability of enough cases under the binomial prevalence
+assumption. Procedures for incomplete reference assessments and
+supplementary recruitment are prespecified separately.</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="detailed-reports-and-plots">Detailed reports and plots<a class="anchor" aria-label="anchor" href="#detailed-reports-and-plots"></a>
+</h3>
 <p>Default <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> output includes both formula formats,
 the calculation process, and references. Use <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> to
 additionally display all input parameters, design axes, and recorded
 adjustments:</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">res_1_1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Summary</span></span>
@@ -2981,12 +4089,13 @@ adjustments:</p>
 <span><span class="co">#&gt; ── Reference</span></span>
 <span><span class="co">#&gt; Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_1_1</span>, type <span class="op">=</span> <span class="st">"power"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sampleSizeCalc-guide-en_files/figure-html/plot-power-en-1.png" class="r-plt" alt="" width="691.2"></p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_1_1</span>, type <span class="op">=</span> <span class="st">"sample_size"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sampleSizeCalc-guide-en_files/figure-html/plot-effect-en-1.png" class="r-plt" alt="" width="691.2"></p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

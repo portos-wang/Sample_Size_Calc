@@ -138,7 +138,7 @@ margins), and likelihood ratios.
   : AUC margin designs (non-inferiority / equivalence of two ROC areas)
 - [`calculate_likelihood_ratio_v2()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_likelihood_ratio_v2.md)
   : Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq
-  6.13/6.14)
+  6.10-6.14)
 - [`screen_required()`](https://portos-wang.github.io/Sample_Size_Calc/reference/screen_required.md)
   : Total screening size with probability guarantee (Zhou Eq 6.3)
 - [`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md)

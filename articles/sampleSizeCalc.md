@@ -20,9 +20,18 @@ in clinical and epidemiological research.
 
 ## The Three-Axis API (v3.0+)
 
-**Scenario A — Antihypertensive RCT:** Placebo 10 mmHg vs new
-ACE-inhibitor 12 mmHg reduction, pooled SD 3 mmHg (two-sided \\\alpha =
-0.05\\, 80% power).
+The following examples are teaching protocols. Clinical rates, effects,
+SDs, and margins are illustrative inputs that need compatible evidence
+in a real study. The linked English and Chinese guides expand **52
+scenarios** with eligibility, endpoint timing, parameter rationale, and
+recruitment interpretation.
+
+**Scenario A — Antihypertensive RCT:** Enroll adults with stable
+background treatment in a blinded, 1:1 parallel trial. Measure
+baseline-to-week-12 systolic BP reduction using standardized readings.
+Assume reductions of 10 and 12 mmHg and change-score SD 3 mmHg, with
+two-sided α=0.05 and 80% power. The SD concerns individual changes, and
+the result counts independent patients with complete endpoints.
 
 ``` r
 
@@ -56,8 +65,13 @@ calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
 #> 
 ```
 
-**Scenario B — Framingham-style Cohort:** 5-year coronary disease risk
-20% in non-smokers vs 30% in smokers, 10% anticipated dropout.
+**Scenario B — Prospective cardiovascular cohort:** Recruit current
+smokers and never-smokers who are free of coronary disease at baseline,
+then ascertain the first prespecified event over 5 years using
+consistent follow-up. Assume cumulative risks of 30% and 20%, equal
+group sizes, and 10% loss to follow-up. These are fixed-period risks,
+not prevalence or rates per person-year; the returned count already
+includes the requested loss adjustment.
 
 ``` r
 
@@ -101,8 +115,12 @@ calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, dropout = 0.10)
 #> 
 ```
 
-**Scenario C — Diagnostic ROC-AUC validation:** Anticipated AUC = 0.80,
-CI half-width \\\pm 0.10\\, 1:1 case:control, binormal model.
+**Scenario C — Diagnostic ROC-AUC validation:** Evaluate a frozen
+continuous biomarker score in reference-confirmed cases and clinically
+comparable non-cases, recruited in equal numbers. Each patient supplies
+one score and one reference result. Assume AUC 0.80 and a 95% CI
+half-width of 0.10 with a binormal variance model; the result must be
+met in both disease-status strata, not only as an overall total.
 
 ``` r
 
@@ -190,8 +208,11 @@ devtools::install_local("path/to/1_sample_size_determination")
 **Use case**: Comparing means between two independent groups (e.g.,
 treatment vs. control)
 
-**Example**: A clinical trial comparing mean blood pressure reduction
-between two treatments
+**Example**: A blinded outpatient trial compares baseline-to-week-12
+systolic BP reductions under two add-on treatments. Assume group means
+of 10 and 12 mmHg and common change-score SD 3 mmHg. The two independent
+groups need complete patient-level change scores; repeated BP readings
+are averaged within the visit and are not separate patients.
 
 ``` r
 
@@ -250,8 +271,12 @@ Research* (3rd ed.). CRC Press.
 **Use case**: Comparing means from paired or matched observations (e.g.,
 pre-post measurements, matched pairs)
 
-**Example**: Measuring cognitive function before and after an
-intervention in the same subjects
+**Example**: A cognitive rehabilitation cohort receives the same
+prespecified cognitive assessment before and 12 weeks after training.
+Assume an average 2.5-point change and SD of patient-level differences
+4.0 points, targeting 90% power. Both visits must be linked; practice
+effects and natural history require consideration when interpreting
+uncontrolled change.
 
 ``` r
 
@@ -304,7 +329,12 @@ Cengage Learning.
 
 **Use case**: Comparing proportions between two independent groups
 
-**Example**: Comparing response rates between two treatments
+**Example**: An exploratory oncology trial compares objective response
+at a fixed week-12 assessment, using the same imaging criteria in both
+randomized groups. Assume response rates of 30% and 45%, with two-sided
+α=0.05 and 80% power. Prespecify early deaths, rescue therapy, and
+unevaluable imaging rather than excluding unsuccessful patients from the
+denominator.
 
 ``` r
 
@@ -364,8 +394,12 @@ Proportions* (3rd ed.). Wiley.
 
 **Use case**: Time-to-event analysis with log-rank test
 
-**Example**: Oncology trial comparing overall survival between two
-treatments
+**Example**: A randomized oncology trial uses all-cause death from
+randomization as the overall-survival endpoint, with last-known survival
+as the censoring date. Assume HR 0.70 under proportional hazards and 1:1
+allocation. First calculate deaths required, then use accrual and
+survival assumptions to estimate patient enrollment and follow-up
+duration.
 
 ``` r
 
@@ -425,7 +459,12 @@ proportional-hazards regression model. *Biometrics*, 39(2), 499-503.
 **Use case**: Demonstrating that a new treatment is not worse than
 standard by more than a margin
 
-**Example**: Non-inferiority trial for new antidepressant
+**Example**: A parallel trial evaluates whether a simpler
+symptom-management strategy preserves most of an active comparator’s
+improvement on a prespecified depression score at week 12. Assume mean
+improvements 8.0 versus 8.5 points, SD 2.0, and maximum acceptable loss
+1.0 point. Use one-sided α=0.025 and 90% power; the margin needs its own
+clinical and effect-preservation justification.
 
 ``` r
 
@@ -478,7 +517,12 @@ Research* (3rd ed.). CRC Press.
 
 **Use case**: Demonstrating that a new treatment is better than standard
 
-**Example**: Superiority trial for new pain medication
+**Example**: A pain trial compares week-12 improvement on a specified
+0–100 scale, assuming means of 12 and 10 points and SD 2.5. The
+objective is to exceed the active comparator by more than 0.5 point,
+using one-sided α=0.025 and 85% power. The effective difference in the
+formula is the anticipated difference minus that prespecified
+superiority margin.
 
 ``` r
 
@@ -527,7 +571,11 @@ meaningful - Smaller margin requires larger sample size
 
 **Use case**: Demonstrating two treatments are equivalent
 
-**Example**: Bioequivalence study
+**Example**: Two randomized anemia-support strategies are compared on
+mean hemoglobin at week 12, assuming 100 versus 102 g/L and SD 5 g/L.
+The teaching equivalence interval is ±5 g/L, with one-sided α=0.05 and
+80% power. This is equivalence of a specified continuous endpoint,
+distinct from a pharmacokinetic bioequivalence study.
 
 ``` r
 
@@ -581,7 +629,12 @@ observed difference
 **Use case**: Estimating sensitivity or specificity with a given
 precision
 
-**Example**: Validating a new diagnostic test for disease X
+**Example**: A referral clinic consecutively validates a
+locked-threshold diagnostic test using a common reference examination
+for all patients. Assume sensitivity 85%, 95% CI half-width 0.05, and
+source prevalence 20%. The case requirement is confirmed
+disease-positive patients; total screening is an expectation-based
+conversion, and specificity precision requires separate planning.
 
 ``` r
 
@@ -638,7 +691,12 @@ diagnostic test studies. *Journal of Biomedical Informatics*, 48,
 
 **Use case**: Estimating AUC with a confidence interval of given width
 
-**Example**: Validating a new biomarker’s discriminative ability
+**Example**: A biomarker score is frozen before a clinical validation
+cohort is enrolled. Assume AUC 0.80, CI half-width 0.05, and source
+prevalence 30%, with one score and a reference disease assessment per
+person. This legacy branch uses its Hanley–McNeil variance calculation;
+the three-axis example above demonstrates explicitly selecting a
+different variance model.
 
 ``` r
 
@@ -694,7 +752,12 @@ on AUC value and prevalence - Hanley-McNeil method is standard approach
 **Use case**: Comparing AUCs of two diagnostic tests applied to same
 subjects
 
-**Example**: Comparing two imaging modalities
+**Example**: The same patients receive two continuous imaging scores,
+each evaluated against one common disease reference. Assume AUCs 0.85
+and 0.80, correlation between the AUC estimators 0.6, and prevalence
+25%. Preserve pairing and use pilot covariance information; correlation
+between raw image scores is not automatically the required AUC
+correlation.
 
 ``` r
 
@@ -746,7 +809,12 @@ design
 
 **Use case**: Sample size for case-control studies with odds ratio
 
-**Example**: Case-control study investigating smoking and lung cancer
+**Example**: Incident lung cancer cases and controls from the same
+source population report smoking before a common index-date window.
+Assume 30% control exposure and OR 2.5, with one control per case. This
+is an unmatched group-ratio design; `p0` is exposure prevalence among
+controls, and individual age matching would require a different
+calculation.
 
 ``` r
 
@@ -754,7 +822,7 @@ result <- sample_size_calculator(
   design = "caseControl",
   p0 = 0.30, # Exposure rate in controls
   OR = 2.5, # Target odds ratio
-  m = 1, # Controls per case (1:1 matching)
+  m = 1, # Controls per case (unmatched group ratio)
   alpha = 0.05,
   power = 0.8
 )
@@ -1066,7 +1134,7 @@ If you use this package in your research, please cite:
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
-  version = {3.1.0},
+  version = {3.1.1},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
@@ -1077,5 +1145,5 @@ for complete citations).
 
 ------------------------------------------------------------------------
 
-**Last Updated**: 2026-11-02  
-**Version**: 3.1.0
+**Last Updated**: 2026-11-03  
+**Version**: 3.1.1

@@ -86,11 +86,14 @@ Wang &amp; AI Research Team</h4>
 0.05\)</span>，得出“无统计学显著差异”的假阴性结论，浪费科研经费与受试者心血。
 2.
 <strong>样本量过大（Overpowered，不符合医学伦理）</strong>：纳入过多患者不仅拖延试验周期，更在伦理上让多余的受试者暴露在未知疗效或有潜在副作用的试验药物中。</p>
-<p><code>sampleSizeCalc</code>（临床研究样本量计算器）覆盖了现代临床科研从经典双臂
-RCT、流行病学调查，到前沿的 Simon
-两阶段肿瘤试验、生物等效性（BE）、多阅片者诊断试验（MRMC）以及 BMJ
-最新的 Riley 2020 预测模型样本量规则等 <strong>42
-个具体场景</strong>。</p>
+<p><code>sampleSizeCalc</code>（临床研究样本量计算器）覆盖了经典双臂
+RCT、流行病学调查、Simon
+两阶段试验、生物等效性、诊断试验及预测模型等设计。本指南用 <strong>52
+个临床场景</strong>说明如何把研究问题转成计算参数。</p>
+<p>下面的研究方案均为教学示例。除明确标注的教材数值例题外，治疗效果、标准差、发生率及界值是演示假设；公式的参考文献不代表这些临床参数已有实证支持。实际方案应记录参数来自哪项同类研究、哪批先导数据，以及人群、随访时间和结局定义是否一致。</p>
+<p>每个场景依次说明研究人群、实施流程、参数设定和设计选择。结果解读中的数值由
+R
+对象直接生成。部分诊断分支先用未取整样本量换算筛查数；招募计划还应按已取整的病例配额换算，并分别保证疾病阳性与阴性受试者数量。</p>
 <p><strong>默认打印计算结果时，会同时显示纯文本公式、LaTeX
 公式源码、计算过程和参考文献，并按设计提供参数角色说明。</strong>
 赋值保存结果后，输入对象名称或调用 <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>
@@ -191,9 +194,25 @@ outcome, ...)}\]</span></p>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：心内科评价新降压药。对照组预计收缩压平均降低
-10 mmHg；试验组预计降低 12 mmHg（差值 <span class="math inline">\(\Delta
-= 2\)</span> mmHg）。标准差（SD）约为 3 mmHg。设定双侧 <span class="math inline">\(\alpha = 0.05\)</span>、<span class="math inline">\(\text{Power} = 80\%\)</span>。</li>
+<strong>研究背景与人群</strong>：心内科拟开展两臂、双盲、平行随机试验，纳入
+40–75
+岁、基础降压方案稳定的门诊患者，比较加用研究药与加用安慰剂的效果，按 1:1
+分组。</li>
+<li>
+<strong>实施与主要结局</strong>：基线和第 12
+周均按统一流程取多次坐位血压的平均值。主要结局是“基线减去第 12
+周”的收缩压降幅，正值越大表示改善越多；每名患者贡献一个连续结局。</li>
+<li>
+<strong>参数设定与依据</strong>：演示假设对照组平均下降 10
+mmHg、研究药组下降 12 mmHg，个体降幅的合并 SD 为 3
+mmHg。<code>mean1 = 10</code>、<code>mean2 = 12</code>、<code>sd = 3</code>
+对应这些量，不能用基线血压 SD 替代降幅
+SD。正式取值需核对同类人群、相同测量流程的先导资料。</li>
+<li>
+<strong>设计选择</strong>：问题是两组平均降幅是否不同，因此使用双侧
+<code>alpha = 0.05</code>、<code>power = 0.8</code>
+的两独立样本均数比较；这里的 2 mmHg
+是拟检出的组间差，不是每组各自的治疗效果。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n = 2
 \left( \frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}
@@ -236,10 +255,11 @@ Research</em> (3rd ed.). CRC Press.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 37 人，总计 74
-人。计算过程先给出正态近似的每组约 35.32 人，再说明通过
-<code><a href="https://rdrr.io/r/stats/power.t.test.html" class="external-link">stats::power.t.test()</a></code> 求解非中心 t 分布效能，最终向上取整为
-37 人。</li>
+<strong>输出解读与招募安排</strong>：每组需 37 名可分析患者，总计 74
+人。报告先列出正态近似的每组约 35.32 人，再通过非中心 t
+分布效能求解并取整。若另预计 10%
+的主要结局无法获得，则应按每组向上取整，计划招募 42 人/组、共 84
+人；该调整尚未包含在上述 RCT 结果中。</li>
 </ul>
 <div class="section level4">
 <h4 id="默认报告的四项内容与提取方式">默认报告的四项内容与提取方式<a class="anchor" aria-label="anchor" href="#%E9%BB%98%E8%AE%A4%E6%8A%A5%E5%91%8A%E7%9A%84%E5%9B%9B%E9%A1%B9%E5%86%85%E5%AE%B9%E4%B8%8E%E6%8F%90%E5%8F%96%E6%96%B9%E5%BC%8F"></a>
@@ -295,9 +315,19 @@ Research</em> (3rd ed.). CRC Press.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：消化内科评价幽门螺杆菌根除率。传统 14
-天三联方案根除率为 70%（<span class="math inline">\(p_2 =
-0.70\)</span>），新的秘剂四联方案预计达 85%（<span class="math inline">\(p_1 = 0.85\)</span>）。设定双侧 <span class="math inline">\(\alpha = 0.05\)</span>、<span class="math inline">\(\text{Power} = 80\%\)</span>。</li>
+<strong>研究背景与人群</strong>：消化内科拟纳入经检测确认幽门螺杆菌感染、尚未接受本轮根除治疗的成年人，随机比较两种
+14 天治疗方案；近期抗菌药使用和既往根除失败应按方案预先处理。</li>
+<li>
+<strong>实施与主要结局</strong>：疗程结束后按统一时间窗进行尿素呼气试验，预先定义停药要求及无效检测的处理。主要结局是每位受试者是否达到根除标准，不能把服药结束时症状好转当作根除。</li>
+<li>
+<strong>参数设定与依据</strong>：以
+<code>p1 = 0.85</code>、<code>p2 = 0.70</code>
+演示预期根除率，目标是检出 15
+个百分点的绝对差异。真实取值应来自治疗史、耐药背景、根除判定时间相近的研究或本中心数据。</li>
+<li>
+<strong>设计选择</strong>：两组由不同患者构成，使用独立两比例比较，双侧
+α=0.05、效能
+80%。意向性分析如何处理漏服药和未完成复查，应在招募前写入方案。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{\left[ Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} +
@@ -341,7 +371,9 @@ K. (1980). <em>Biometrics</em>, 36(2), 343-346.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 121 人，总计 242 人。</li>
+<strong>输出解读与招募安排</strong>：每组需要 121 人，总计 242
+人。若招募资源估计需预留 10% 的主要结局缺失，可计划 135 人/组、共 270
+人；最终分析集及缺失数据策略仍需预先规定。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -349,9 +381,17 @@ K. (1980). <em>Biometrics</em>, 36(2), 343-346.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：晚期非小细胞肺癌一线免疫治疗 vs 化疗的
-III 期试验：预期风险比（Hazard Ratio）<span class="math inline">\(\text{HR} = 0.70\)</span>，试验组与对照组 1:1
-分组，检验效能 80%。需累计多少终点事件？</li>
+<strong>研究背景与人群</strong>：肿瘤科拟在符合两种治疗适应条件的晚期非小细胞肺癌患者中，按
+1:1 随机比较研究方案与对照方案，随访从随机化之日开始。</li>
+<li>
+<strong>实施与主要结局</strong>：主要结局设为总生存期，事件严格定义为任何原因死亡；存活患者在末次确认存活时间删失。若研究目标改为无进展生存期，需要重新定义事件并重新估计参数。</li>
+<li>
+<strong>参数设定与依据</strong>：假设比例风险成立，拟检出
+<code>hr = 0.70</code>，实验组分配比例 <code>pE = 0.50</code>，双侧
+α=0.05、效能 80%。HR
+是瞬时风险比，不能直接当成两个固定时点死亡率之比。</li>
+<li>
+<strong>设计选择</strong>：本步先求所需死亡事件数。再根据计划入组期、追加随访期、预期生存曲线和失访情况估计事件成熟比例，才能制定需要招募多少患者及何时分析。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[E =
 \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1 - p_E) [\ln(HR)]^2}\]</span>
@@ -388,8 +428,10 @@ III 期试验：预期风险比（Hazard Ratio）<span class="math inline">\(\te
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：试验需随访至累计发生 <strong>247
-例终点事件（死亡/复发）</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要累计 247
+例死亡事件。若另有入组与随访模型估计分析时约 60%
+的受试者发生死亡，则资源规划的粗略人数为 412 人；60%
+是另一个规划假设，并非本函数根据 HR 自动得到的结果。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -397,9 +439,18 @@ III 期试验：预期风险比（Hazard Ratio）<span class="math inline">\(\te
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：评价国产仿制降糖药是否不劣于进口原研药：神经病变症状评分（0-30）改善，试验组预期降低
-10 分（<span class="math inline">\(\mu_1 = 10\)</span>），对照组降低 9.5
-分（<span class="math inline">\(\mu_2 = 9.5\)</span>），标准差 <span class="math inline">\(\text{SD} = 3\)</span>，非劣效界值 <span class="math inline">\(\text{margin} = 1.0\)</span> 分。</li>
+<strong>研究背景与人群</strong>：拟在有症状的糖尿病周围神经病变患者中，比较一种成本较低的症状管理方案与常规方案，采用平行随机设计，并使合并治疗保持稳定。</li>
+<li>
+<strong>实施与主要结局</strong>：以第 12
+周相对基线的症状评分降幅为主要结局，降幅越大越好；量表范围、评估者培训及基线最低症状程度需预先规定，避免明显地板效应。</li>
+<li>
+<strong>参数设定与依据</strong>：演示设研究组降幅为 10 分、对照组
+9.5 分，SD 为 3 分，允许最大疗效损失 <code>margin = 1</code>
+分。该界值应根据临床重要性及对照治疗既往效应论证，不能由本次预期差异反推。</li>
+<li>
+<strong>设计选择</strong>：需要证明“研究组减对照组”的差值大于 −1
+分，故采用非劣效性均数设计。本例单侧 α=0.05、效能
+80%；正式方案如选用单侧 0.025，应按该值重新计算。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 +
@@ -435,7 +486,8 @@ III 期试验：预期风险比（Hazard Ratio）<span class="math inline">\(\te
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 50 人，两组总计 100 人。</li>
+<strong>输出解读与招募安排</strong>：需要 50 人/组、总计 100
+人。方案应同时说明主要分析集、依从性处理和缺失结局策略；这些分析约定与非劣效界值的临床论证一起构成样本量依据。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -443,8 +495,17 @@ III 期试验：预期风险比（Hazard Ratio）<span class="math inline">\(\te
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：仿制抗菌药申请：口服治愈率需证明不劣于原研药（两者均预期
-85%），监管接受的非劣效界值为 5 个百分点（<span class="math inline">\(\text{margin} = 0.05\)</span>）。</li>
+<strong>研究背景与人群</strong>：拟在病原学及入组标准一致的成人下尿路感染患者中，随机比较研究抗菌方案与有效对照方案，目标是评估较便利方案能否保持可接受的治愈效果。</li>
+<li>
+<strong>实施与主要结局</strong>：在预设的治疗后访视窗口判定临床治愈，每位患者只有“治愈/未治愈”一个结局；救援治疗、提前更换抗菌药和失访的处理应预先统一。</li>
+<li>
+<strong>参数设定与依据</strong>：演示假设两组治愈率均为
+85%，可接受的最大绝对损失为 5 个百分点，即
+<code>p1 = p2 = 0.85</code>、<code>margin = 0.05</code>。该界值是本例假设，须结合对照疗效保留和临床后果论证。</li>
+<li>
+<strong>设计选择</strong>：检验研究组治愈率是否不低于对照组超过 5
+个百分点，采用单侧 α=0.05、效能 80%
+的非劣效两比例计算；不能用“组间差异不显著”代替非劣效结论。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha} + Z_{\beta})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 +
@@ -485,7 +546,9 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 631 人，总计 1262 人。</li>
+<strong>输出解读与招募安排</strong>：需 631 人/组、合计 1262
+人。若主要结局完整率预计为 90%，按组预留后需 702
+人/组；治疗失败不应被当成“脱落”而从治愈率分母中剔除。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -493,11 +556,19 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：膝骨关节炎新型 NSAID
-凝胶的优效性试验：不仅需优于活性对照药，且需在 WOMAC
-疼痛量表（0-20）上至少多降 1 分（<span class="math inline">\(\text{margin} = 1\)</span>）。预期试验组降 12
-分，对照组降 10 分，<span class="math inline">\(\text{SD} =
-3\)</span>。</li>
+<strong>研究背景与人群</strong>：风湿科拟在有足够基线疼痛程度的膝骨关节炎患者中，随机比较研究外用制剂与活性对照，研究目标是获得超过预设临床幅度的疼痛改善。</li>
+<li>
+<strong>实施与主要结局</strong>：统一治疗 12 周，以 WOMAC
+疼痛分量表的基线至终点降幅为连续结局，规定救援镇痛药的使用记录和评估前时间窗。</li>
+<li>
+<strong>参数设定与依据</strong>：演示预期研究组降 12 分、对照组降 10
+分，降幅 SD=3；<code>margin = 1</code>
+分表示需要超过的组间差异。因此公式中的有效差为 12−10−1=1
+分，不能把预期差 2 分直接作为分母。</li>
+<li>
+<strong>设计选择</strong>：这是带正向界值的优效性检验，使用单侧
+α=0.05、效能 80%。量表版本、分值方向及 1
+分界值的临床意义应在正式方案中明确。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 -
@@ -532,7 +603,8 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 112 人，总计 224 人。</li>
+<strong>输出解读与招募安排</strong>：需 112 人/组、合计 224
+人。招募计划应保证主要结局可获得；减少界值与增加预期差异会改变有效差，不能在观察到结果后再调整界值。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -540,10 +612,18 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：甲真菌病新口服抗真菌药：完全治愈率预期
-30%，对照药特比蕲芬 20%，且申办方要求差异至少超过 5
-个百分点的优效界值（<span class="math inline">\(\text{margin} =
-0.05\)</span>）才算临床有意义。</li>
+<strong>研究背景与人群</strong>：皮肤科拟在经真菌学确认的趾甲真菌病患者中，随机比较两种口服治疗方案；主要分析以患者为单位，并预先选定一个目标趾甲。</li>
+<li>
+<strong>实施与主要结局</strong>：治疗后随访至预设的第 52
+周，以临床清除与真菌学阴性同时达到定义“完全治愈”。疗程结束时的外观改善不能替代该长期结局。</li>
+<li>
+<strong>参数设定与依据</strong>：演示治愈率为 30% 与
+20%，研究要求真实差异超过 5 个百分点，故输入
+<code>p1 = 0.30</code>、<code>p2 = 0.20</code>、<code>margin = 0.05</code>，有效差为
+0.05。</li>
+<li>
+<strong>设计选择</strong>：采用单侧 α=0.05、效能 80%
+的带界值优效性两比例设计。参数资料需要匹配疾病严重程度、既往治疗和同样的治愈判定时间。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha} + Z_{\beta})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 -
@@ -578,7 +658,9 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 916 人，总计 1832 人。</li>
+<strong>输出解读与招募安排</strong>：需要 916 人/组、合计 1832
+人。长随访应另估结局缺失比例；按 10% 预留时为 1018
+人/组，且应规划治疗后复查容量。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -586,11 +668,16 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两种左甲状腺素钠制剂的疗效等效性验证：预期血清甲状腺素均值差
-0.2 μg/dL，临床可接受的等效边界为 <span class="math inline">\(\pm
-1.0\)</span> μg/dL（<span class="math inline">\(\text{margin} =
-1.0\)</span>），<span class="math inline">\(\text{SD} =
-3\)</span>。</li>
+<strong>研究背景与人群</strong>：拟在剂量及基础病情稳定的甲状腺功能减退患者中，随机比较两种制剂的药效学结局，两臂患者独立，终点评估前给予足够的稳态观察时间。</li>
+<li>
+<strong>实施与主要结局</strong>：本例仅以稳态血清总甲状腺素均值作连续终点，统一采血时点与检验平台；它演示均数等效设计，不构成制剂生物等效性或可互换性的完整评价。</li>
+<li>
+<strong>参数设定与依据</strong>：假设均值为 10 与 10.2 μg/dL、SD=3
+μg/dL，预设等效范围 ±1 μg/dL，即 <code>margin = 1</code>。界值和 SD
+均需由相应终点的临床与先导资料支撑。</li>
+<li>
+<strong>设计选择</strong>：目标是把组间差异限制在两个边界以内，采用双单侧检验的等效性计算，单侧
+α=0.05、整体目标效能 80%；“没有发现差异”并不等于等效。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 -
@@ -625,7 +712,8 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 241 人，总计 482 人。</li>
+<strong>输出解读与招募安排</strong>：需 241 人/组、合计 482
+人。这里的样本量对应单个已定义连续终点；若另有主要终点或不同药代参数，应分别规划其统计要求。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -633,10 +721,17 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两种术后镇痛药有效率分别为 50% 与
-52%，监管机构接受的临床等效区间为 <span class="math inline">\(\pm
-10\)</span> 个百分点（<span class="math inline">\(\text{margin} =
-0.10\)</span>）。</li>
+<strong>研究背景与人群</strong>：麻醉科拟在接受相同类型手术的成人中，随机比较两种术后镇痛方案，评估在更便利给药条件下能否获得相近的镇痛成功率。</li>
+<li>
+<strong>实施与主要结局</strong>：例如预先将“术后 6
+小时内疼痛降幅达到规定标准且无需救援用药”定义为成功；明确救援用药、提前退出及多次疼痛记录的归并规则。</li>
+<li>
+<strong>参数设定与依据</strong>：演示成功率为 50% 与
+52%，可接受的绝对差异区间为 ±10 个百分点，对应
+<code>p1 = 0.50</code>、<code>p2 = 0.52</code>、<code>margin = 0.10</code>。</li>
+<li>
+<strong>设计选择</strong>：采用等效性两比例设计，单侧 α=0.05、效能
+80%。界值应在揭盲前根据该成功定义的临床意义确定，并非通用于所有镇痛药的标准。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha} + Z_{\beta/2})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(\Delta -
@@ -670,7 +765,8 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 669 人，总计 1338 人。</li>
+<strong>输出解读与招募安排</strong>：需 669 人/组、合计 1338
+人。该人数对应完整的二分类主要终点，不能用多次疼痛测量次数替代独立患者数。</li>
 </ul>
 <hr>
 </div>
@@ -683,8 +779,19 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：哮喘队列：同一批患者吸入糖皮质激素治疗 12
-周前后各测一次用力肺活量（FVC），前后差值均数 2 L，差值的标准差 <span class="math inline">\(\text{SD}_{\text{diff}} = 3\)</span> L。</li>
+<strong>研究背景与人群</strong>：康复门诊拟对一组慢性腰痛患者实施 6
+周标准化运动干预，在同一患者治疗前后各测量一次 0–10 分疼痛评分。</li>
+<li>
+<strong>实施与主要结局</strong>：主要结局是每位患者的“基线评分减第 6
+周评分”，预期平均改善 2
+分；两次测量应使用相同量表和时间条件，并能够按患者配对。</li>
+<li>
+<strong>参数设定与依据</strong>：输入
+<code>meanDiff = 2</code>、<code>sdDiff = 3</code>，后者是患者内差值的
+SD。它应来自成对先导数据，不能直接取治疗前或治疗后单次评分的 SD。</li>
+<li>
+<strong>设计选择</strong>：采用双侧 α=0.05、效能 80%
+的配对均数计算。一组前后研究可估计平均变化；如需区分自然病程与干预效应，还需要相应的对照研究设计。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot
@@ -719,8 +826,10 @@ al. (2018) Ch.11.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>20 对受试者（40
-人次前后测量）</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 20
+名患者完成前后两次评估，即 40
+次测量。这里的一“对”是同一患者的两次观测，不能理解成两名患者；若预计 10%
+不能完成配对，可招募 23 名患者。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -728,8 +837,21 @@ al. (2018) Ch.11.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：同一批疑似感染患者同时接受新冠快速抗原检测（阳性率
-80%）与 RT-PCR 核酸检测（阳性率 60%），预期不一致对占总对数的比例 <span class="math inline">\(\psi = 0.25\)</span>。</li>
+<strong>研究背景与人群</strong>：慢病门诊拟在同一批患者中实施服药提醒项目，比较干预前与第
+8 周达到预设服药依从性标准的比例。</li>
+<li>
+<strong>实施与主要结局</strong>：以同一规则将每个时期判为达标或未达标，按患者形成
+2×2 配对表。主要问题是达标率是否从 60% 提高至
+80%，不是把两次随访当成两个独立样本。</li>
+<li>
+<strong>参数设定与依据</strong>：用 <code>p1 = 0.80</code>
+表示干预后比例、<code>p2 = 0.60</code>
+表示干预前比例，并假设不一致配对占比 <code>psi = 0.25</code>。这相当于约
+22.5% 由未达标变达标、2.5% 反向变化，需由配对先导资料判断是否合理。</li>
+<li>
+<strong>设计选择</strong>：McNemar/Connor
+计算利用不一致配对的信息，双侧 α=0.05、效能
+80%。只有两期都完成评估的患者才能提供完整配对。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{\text{pairs}} = \frac{\left[
 Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
@@ -770,8 +892,9 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>47
-对受试者</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 47
+名患者的完整配对记录，共 94 次评估。若预计配对完成率为 90%，应招募 53
+人；输出中的两倍计数不表示需要同样数量的不同患者。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -779,9 +902,16 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：某罕见病（无法设立对照组）历史平均生存期为
-10 个月（<span class="math inline">\(\mu_0 =
-10\)</span>），新的靶向治疗预期可延长至 12 个月（<span class="math inline">\(\mu_1 = 12\)</span>），<span class="math inline">\(\text{SD} = 3\)</span> 个月。</li>
+<strong>研究背景与人群</strong>：罕见病康复项目拟评价一个训练方案后的恒定负荷运动耐力，因为可招募人群有限，先与可比历史队列的固定均值作单臂比较。</li>
+<li>
+<strong>实施与主要结局</strong>：终点为第 8
+周标准化运动试验中完整测得的耐力持续时间，单位分钟；不是存在删失的生存期。历史与本次试验应匹配入组病情、运动负荷和停止规则。</li>
+<li>
+<strong>参数设定与依据</strong>：将历史均值作为固定
+<code>mu0 = 10</code> 分钟，预期本次均值 <code>mu1 = 12</code>、SD
+<code>sigma = 3</code> 分钟，双侧 α=0.05、效能 80%。</li>
+<li>
+<strong>设计选择</strong>：该单样本近似把历史均值当成无估计误差的常数。如果历史样本很小或测量方案不同，应将历史对照的不确定性纳入其他设计，而不能直接沿用本结果。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha/2} + Z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}\]</span>
@@ -818,8 +948,10 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需招募 <strong>18
-名单臂患者</strong>。</li>
+<strong>输出解读与招募安排</strong>：需 18
+名可分析患者，每人提供一次终点评估。若预计 10%
+的运动测试无法完成，可安排 20
+名患者；对照值的可比性仍是解释结果的关键。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -827,10 +959,18 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：复发/难治性淋巴瘤的历史最佳缓解率仅
-70%（<span class="math inline">\(p_0 = 0.70\)</span>），新的 CAR-T
-细胞治疗方案预期提高至 80%（<span class="math inline">\(p_1 =
-0.80\)</span>）。</li>
+<strong>研究背景与人群</strong>：血液科拟在入组及既往治疗线数明确的复发/难治性淋巴瘤患者中，开展一个探索性单臂治疗研究，与固定的历史反应率进行比较。</li>
+<li>
+<strong>实施与主要结局</strong>：在预设的第 90
+天由统一标准评价是否达到客观缓解，明确缓解前死亡、救援治疗与无法评估的处理；分母按方案规定，不能只保留存活且完成影像复查者。</li>
+<li>
+<strong>参数设定与依据</strong>：教学设历史反应率
+<code>p0 = 0.70</code>、预期反应率
+<code>p1 = 0.80</code>。正式值需来自相同治疗线数、反应标准及观察窗口的人群，避免把更早期患者的疗效作为历史对照。</li>
+<li>
+<strong>设计选择</strong>：本例用双侧 α=0.05、效能 80%
+的单臂比例近似计算；若需要精确的单侧决策界值或期中停试规则，可参考后续
+A’Hern 或 Simon 场景。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{\left[ Z_{\alpha/2}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p_1(1-p_1)}
@@ -868,7 +1008,9 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需招募 <strong>153 名患者</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 153
+名患者的可判定主要结局。人数是为区分 70% 与 80%
+的假设设定，不能据此承诺真实治疗反应率一定达到 80%。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -876,11 +1018,20 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：肉瘤新方案单臂 II
-期试验：不可接受的历史响应率 <span class="math inline">\(p_0 =
-0.10\)</span>，期望目标响应率 <span class="math inline">\(p_1 =
-0.30\)</span>。采用 Simon Optimal
-设计，使药物无效时的期望样本量最小。</li>
+<strong>研究背景与人群</strong>：肿瘤科拟对有可测量病灶、既往治疗线数一致的晚期肉瘤患者开展单臂
+II 期研究，希望在药物无效时尽早停止招募。</li>
+<li>
+<strong>实施与主要结局</strong>：主要结局为治疗后约 8
+周、按预设标准确认的客观缓解。第一阶段患者应完成相应观察后再进行正式无效性判断，阶段间需预留评估和数据核实时间。</li>
+<li>
+<strong>参数设定与依据</strong>：设不可接受反应率
+<code>p0 = 0.10</code>、值得继续开发的反应率
+<code>p1 = 0.30</code>，单侧 α=0.05、效能
+80%。两个率应对应同样的疾病亚型和缓解定义。</li>
+<li>
+<strong>设计选择</strong>：<code>optimizer = "optimal"</code>
+使零假设下的期望入组人数尽可能小；代价是最大总人数可能高于 minimax
+方案。</li>
 <li>
 <strong>数学公式与出处</strong>：完全精确二项网格穷举搜索，Simon, R.
 (1989). <em>Controlled Clin Trials</em>, 10(1), 1-10。设计 <span class="math inline">\((r_1/n_1, r/n)\)</span> 需同时满足 <span class="math inline">\(P(\text{有效}\mid p_0) \le \alpha\)</span> 与
@@ -926,10 +1077,10 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：第 1 阶段招 10 人，缓解 <span class="math inline">\(\le 1\)</span> 人则因无效停牌；若缓解 <span class="math inline">\(&gt;1\)</span> 人，继续招 19 人至 29
-人。两阶段总缓解人数 <span class="math inline">\(&gt;5\)</span>（即
-<span class="math inline">\(\ge 6\)</span> 人）宣布有效。期望样本量仅
-15.0 人。</li>
+<strong>输出解读与执行规则</strong>：第一阶段入组 10 人，缓解数≤1
+时因无效停止；否则再入组 19 人，总数最多 29
+人。最终总缓解数需&gt;5，即至少 6
+人，才能拒绝零假设。两个阶段的人数是包含关系，不是另外再招募一个总样本量。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -937,7 +1088,18 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：同上条件，但希望在最坏情况下试验最大总人数尽可能少。</li>
+<strong>研究背景与人群</strong>：同样研究晚期肉瘤的单臂 II
+期治疗，但中心药物供应和可招募病例数有明确上限，研究者更关心任何情况下最多需要多少人。</li>
+<li>
+<strong>实施与主要结局</strong>：仍以统一时间窗内的客观缓解为二分类终点，在两个阶段之间按预设界值决定是否继续；不能在期中观察后切换优化标准。</li>
+<li>
+<strong>参数设定与依据</strong>：保持
+<code>p0 = 0.10</code>、<code>p1 = 0.30</code>、α=0.05、效能 80%，仅把
+<code>optimizer</code> 改为
+<code>"minimax"</code>，以便在相同错误率约束下比较资源需求。</li>
+<li>
+<strong>设计选择</strong>：minimax
+最小化最大总人数，不保证零假设下的期望人数也最小；期中评估、药物准备与中心预算应同时比较两种方案。</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_2_6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"singleArmPhaseII"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>, p0 <span class="op">=</span> <span class="fl">0.10</span>, p1 <span class="op">=</span> <span class="fl">0.30</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span>, optimizer <span class="op">=</span> <span class="st">"minimax"</span><span class="op">)</span></span>
@@ -981,8 +1143,9 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：第 1 阶段招 11 人（缓解 <span class="math inline">\(\le 0\)</span> 人停牌），第 2 阶段总人数达 25
-人，最大样本量由 29 人压缩至 25 人。</li>
+<strong>输出解读与执行规则</strong>：第一阶段 11 人，缓解数≤0
+时停止；继续时总入组最多 25 人，最终缓解数需&gt;5。该最大总人数可与
+optimal 方案的 29 人直接比较。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -990,11 +1153,21 @@ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2}
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：同上肉瘤试验，但因周期太短无法做期中分析，改用单阶段精确二项设计。</li>
+<strong>研究背景与人群</strong>：另一家中心拟回答相同的肉瘤治疗问题，但病例招募集中、终点评估滞后，无法在招募过程中实施有实际作用的期中无效性分析。</li>
 <li>
-<strong>数学公式与出处</strong>：<span class="math inline">\(P(X \ge
-r \mid p_0) \le \alpha\)</span> 且 <span class="math inline">\(P(X \ge r
-\mid p_1) \ge 1-\beta\)</span>；A’Hern, R. P. (2001). <em>Br J
+<strong>实施与主要结局</strong>：所有受试者完成预设的客观缓解评估后，只进行一次正式统计决策；病例和缓解定义应与历史对照保持一致。</li>
+<li>
+<strong>参数设定与依据</strong>：设
+<code>p0 = 0.10</code>、<code>p1 = 0.30</code>、单侧 α=0.05、效能
+80%，通过精确二项分布搜索可行的总人数及拒绝界值。</li>
+<li>
+<strong>设计选择</strong>：A’Hern 单阶段设计适合一次性决策。输出的
+<code>r_total</code>
+是“需超过”的无效界值，达到等于该界值的缓解数还不足以拒绝零假设。</li>
+<li>
+<strong>数学公式与出处</strong>：<span class="math inline">\(P(X
+&gt; r \mid p_0) \le \alpha\)</span> 且 <span class="math inline">\(P(X
+&gt; r \mid p_1) \ge 1-\beta\)</span>；A’Hern, R. P. (2001). <em>Br J
 Cancer</em>, 85(2), 223-226.</li>
 </ul>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -1038,9 +1211,10 @@ Cancer</em>, 85(2), 223-226.</li>
 <span><span class="co">#&gt; [3] "declare effective if responses &gt; r_total of n_required"</span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需入组 <strong>25
-名患者</strong>，缓解人数 <span class="math inline">\(&gt;5\)</span>
-人（<span class="math inline">\(\ge 6\)</span> 人）宣布新药有前景。</li>
+<strong>输出解读与执行规则</strong>：需 25 人，至少出现 6
+例缓解才拒绝零假设。这里使用
+<code>X &gt; r_total</code>，与部分文献把“最少成功数”直接记作 r
+的记号不同。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1048,8 +1222,20 @@ Cancer</em>, 85(2), 223-226.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：哮喘患者按随机顺序先后吸入两种沙丁胺醇制剂（清洗期
-7 天），FEV1% 预计值改善差 2 个百分点，个体内标准差 <span class="math inline">\(\sigma_w = 3\)</span>。</li>
+<strong>研究背景与人群</strong>：呼吸科拟在病情稳定、能完成重复肺功能检查的哮喘患者中，比较两种短效吸入制剂，随机分配
+AB 或 BA 给药顺序。</li>
+<li>
+<strong>实施与主要结局</strong>：每名患者在两个研究期分别接受一种制剂，按统一给药后时间测量
+FEV1
+占预计值的百分比。洗脱时间需按药效持续时间预先确定，并控制背景治疗及测试条件。</li>
+<li>
+<strong>参数设定与依据</strong>：拟检出的治疗差为
+<code>delta = 2</code> 个百分点，单次期内误差的个体内 SD 为
+<code>sigma_within = 3</code>；它与两次观测差值的 SD
+不是同一个参数。</li>
+<li>
+<strong>设计选择</strong>：采用 2×2 交叉均数设计，双侧 α=0.05、效能
+80%。稳定病情和可忽略的残留效应是交叉方案的重要前提，两个序列还需保持人数平衡。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \sigma_w^2}{\delta^2}\]</span>
@@ -1090,7 +1276,9 @@ Research</em> (2nd ed.). Wiley.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每序列需 36 人，总计 72 人。</li>
+<strong>输出解读与招募安排</strong>：本函数给出每序列 36 人、合计 72
+名患者，每人完成两个研究期。按 10% 的未完成比例预留，应为 40
+人/序列，两个时期的测量次数不能当成独立患者数。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1098,8 +1286,19 @@ Research</em> (2nd ed.). Wiley.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：<span class="math inline">\(2\times
-2\)</span> 交叉试验评价仿制药与原研药等效，个体内变异系数 <span class="math inline">\(CV = 25\%\)</span>，预期几何均数比 <span class="math inline">\(\theta_0 = 1.0\)</span>，等效限 <span class="math inline">\(80\% \sim 125\%\)</span>。</li>
+<strong>研究背景与人群</strong>：拟在符合方案要求的健康成人中，进行受试制剂与参比制剂的随机、两序列、两周期交叉药代研究，每人按顺序接受两种制剂。</li>
+<li>
+<strong>实施与主要结局</strong>：以单个已指定的药代参数（例如
+AUC）的对数值进行等效性评价，预先固定采血计划、洗脱期、分析方法及有效药代曲线判定规则。</li>
+<li>
+<strong>参数设定与依据</strong>：教学假设个体内
+CV=<code>0.25</code>、预期几何均数比
+<code>theta0 = 1.0</code>，接受范围为 0.80–1.25，单侧 α=0.05、目标效能
+80%。CV 应来自相近制剂和相同药代参数的交叉数据。</li>
+<li>
+<strong>设计选择</strong>：函数在对数尺度计算 TOST
+效能并搜索序列人数。若 Cmax
+等多个主要药代参数都需达标，应分别评价所需样本量，并在方案中选择能覆盖全部要求的规模。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[\text{Power} = F_t(-t_{1-\alpha, \nu}; \nu,
 \delta_2) - F_t(t_{1-\alpha, \nu}; \nu, \delta_1), \quad \nu = N -
@@ -1147,8 +1346,10 @@ Biopharm</em>, 18(2), 137-144; Julious (2004) Eq 13.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每序列 12 人，总计 <strong>24
-名受试者</strong>（与 PowerTOST 结果完全对齐）。</li>
+<strong>输出解读与招募安排</strong>：需每序列 12 人、共 24
+名完成两周期的受试者，模型计算的效能为 83.72%。预计 10%
+不能完成时，可招募 28 人，并保持两序列平衡；偏离 1.0
+的预期均数比需重新计算。</li>
 </ul>
 <hr>
 </div>
@@ -1161,11 +1362,17 @@ Biopharm</em>, 18(2), 137-144; Julious (2004) Eq 13.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：吸烟与冠心病发病的弗莱明翰式队列：非吸烟组
-5 年发病率 20%（<span class="math inline">\(p_0 =
-0.20\)</span>），吸烟组 30%（<span class="math inline">\(p_1 =
-0.30\)</span>），1:1 分组，预计 10%
-失访（<code>dropout = 0.10</code>）。</li>
+<strong>研究背景与人群</strong>：心血管队列拟纳入基线无冠心病、但具有一定心血管风险的成年人，按预先定义的当前吸烟与从不吸烟状态建立两组，计划随访
+5 年。</li>
+<li>
+<strong>实施与主要结局</strong>：每年随访并核实医疗记录，以首次发生预定义冠心病事件为主要结局；两组采用相同判定标准和随访强度，既往冠心病病例不进入发病率分母。</li>
+<li>
+<strong>参数设定与依据</strong>：教学设 5 年累积发病风险为 20% 与
+30%，<code>ratio = 1</code>、<code>dropout = 0.10</code>。这些是固定随访时长的风险，不能用横断面患病率或每年发病密度替换。</li>
+<li>
+<strong>设计选择</strong>：该两比例近似用于规划两组累积风险差异的样本规模，双侧
+α=0.05、效能
+80%。吸烟并非随机分配，多变量混杂控制和所需事件数还应在分析方案中另外论证。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{1}
 = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} +
@@ -1215,8 +1422,10 @@ al. (2024). <em>J Family Med Prim Care</em>, 13(7), 2559.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 327 人，全队列共需 <strong>654
-人</strong>。</li>
+<strong>输出解读与招募安排</strong>：返回每组 327 人、合计 654
+人，已经包含本次指定的 10%
+失访调整。招募计划不应再次重复膨胀，并需确保整个 5
+年随访期的维护能力。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1224,10 +1433,18 @@ al. (2024). <em>J Family Med Prim Care</em>, 13(7), 2559.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：职业流行病学：接触有机溶剂的工人发病率为
-0.20 例/人年（<span class="math inline">\(\lambda_1\)</span>），非接触工人为 0.10
-例/人年（<span class="math inline">\(\lambda_0\)</span>），1:1
-人时分配。</li>
+<strong>研究背景与人群</strong>：职业健康队列拟比较暴露与非暴露工人的呼吸道疾病发病密度，各人进入及退出队列的时间可能不同，需要用真实观察人时作分母。</li>
+<li>
+<strong>实施与主要结局</strong>：预先定义首次新发事件及在险起止时间，按同一规则登记事件和删失。本例用
+Poisson 率比较近似，假设组内事件率在观察期相对稳定。</li>
+<li>
+<strong>参数设定与依据</strong>：演示设暴露组
+<code>rate1 = 0.20</code>、非暴露组 <code>rate0 = 0.10</code>
+例/人年，两组人时比为 1；若资料单位是每千人年，必须先一致换算。</li>
+<li>
+<strong>设计选择</strong>：计算的首先是人时而非人数，双侧
+α=0.05、效能
+80%。应由实际平均可观察在险时间把人时需求转成需招募的工人数。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[T_0 =
 \frac{(Z_{\alpha/2} + Z_{\beta})^2 (\lambda_1/r + \lambda_0)}{(\lambda_1
@@ -1275,8 +1492,10 @@ et al. (2018) Chapter 6.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：两组各需随访 <strong>236
-人年</strong>，预期观察到 71 例事件。</li>
+<strong>输出解读与招募安排</strong>：非暴露与暴露组分别需要 236 和
+236 人年，预计约 71 例事件。若每人实际平均可贡献 2
+个在险人年，可粗估需要 118 名非暴露工人与 118
+名暴露工人；该平均时间应包含事件后停止计时及失访的影响。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1284,9 +1503,17 @@ et al. (2018) Chapter 6.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：熬夜与心肌梗死的医院基病例对照研究：对照组
-30% 有长期熬夜暴露（<span class="math inline">\(p_0\)</span>），预期优势比 <span class="math inline">\(\text{OR} = 2.0\)</span>，1 名对照匹配 1
-名病例。</li>
+<strong>研究背景与人群</strong>：医院联合社区登记系统拟研究长期夜班与首次心肌梗死的关联，招募研究期内新发病例，并从同一地区、同样可能成为病例的来源人群中选取对照。</li>
+<li>
+<strong>实施与主要结局</strong>：以病例发病日为索引日，按工作记录或统一问卷测量此前固定时间窗内的夜班暴露；对照也使用对应索引窗口，避免把发病后的工作改变当作暴露。</li>
+<li>
+<strong>参数设定与依据</strong>：假设对照中 30% 有夜班暴露，拟检出
+<code>OR = 2.0</code>，每例病例配 1 名对照，即
+<code>p0 = 0.30</code>、<code>m = 1</code>。<code>p0</code>
+是对照暴露率，不是心肌梗死的患病率。</li>
+<li>
+<strong>设计选择</strong>：本例为非个体配对的病例对照比较，1:1
+表示组间数量比，不表示已经按年龄逐一匹配；个体配对设计见下一节。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{cases} =
 \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} +
@@ -1333,8 +1560,9 @@ Studies</em>. Oxford University Press.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>141 例病例与 141
-例对照</strong>（总计 282 人）。</li>
+<strong>输出解读与招募安排</strong>：需要 141 例病例和 141
+例对照，共 282
+人。应分别评估病例登记量和对照入组率；增加对照人数不能自动弥补病例招募不足。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1342,8 +1570,15 @@ Studies</em>. Oxford University Press.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：年轻女性口服避孕药与缺血性卒中的按年龄
-1:1 严格配对病例对照研究：对照暴露率 30%，<span class="math inline">\(\text{OR} = 2.0\)</span>。</li>
+<strong>研究背景与人群</strong>：拟在年轻女性中研究口服避孕药使用与首次缺血性卒中的关联，每名新发卒中病例匹配一名相同来源人群、年龄接近的未卒中对照。</li>
+<li>
+<strong>实施与主要结局</strong>：两人使用同一索引日期测量此前的用药暴露，分析保留匹配关系；主要信息来自“一人暴露、另一人未暴露”的不一致配对。</li>
+<li>
+<strong>参数设定与依据</strong>：本例给定对照暴露率
+30%、<code>OR = 2</code>，函数以配对内暴露独立近似推导病例暴露率和不一致比例。真实匹配可能改变相关性，应利用匹配先导表核查这个近似。</li>
+<li>
+<strong>设计选择</strong>：采用 1:1 匹配病例对照的配对计算，双侧
+α=0.05、效能 80%。一个匹配对代表两个人，而不是同一人的前后测量。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{pairs} = \frac{\left[Z_{\alpha/2}\sqrt{\psi} +
 Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \psi =
@@ -1391,8 +1626,9 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> <em>出处</em>：Dupont, W. D. (1988).
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>144 对（288
-人）</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 144 个完整匹配对，即 288
+人。若完整配对的保留率预计为 90%，应准备 160
+对，并按成对资料安排数据核实和主要分析。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1400,8 +1636,16 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> <em>出处</em>：Dupont, W. D. (1988).
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：某社区横断面调查高血压与肥胖的关联：非肥胖人群高血压患病率
-20%，肥胖人群 30%。</li>
+<strong>研究背景与人群</strong>：社区调查拟比较肥胖与非肥胖成年人当前高血压患病率，来自同一社区抽样框，并在同一次调查中测量体型及高血压状态。</li>
+<li>
+<strong>实施与主要结局</strong>：BMI
+分组和高血压判定标准须预先固定，统一血压测量与既往用药信息收集。结局是调查时是否患病，不能解释为未来新发疾病。</li>
+<li>
+<strong>参数设定与依据</strong>：演示设非肥胖组患病率
+<code>p0 = 0.20</code>、肥胖组
+<code>p1 = 0.30</code>，按两组等量比较，双侧 α=0.05、效能 80%。</li>
+<li>
+<strong>设计选择</strong>：该样本量服务于组间关联比较。若按肥胖状态配额招募，整体患病率估计需考虑抽样权重；若按社区或家庭整群抽样，还要另计设计效应。</li>
 <li>
 <strong>数学公式与出处</strong>：与 3.1 同核（<span class="math inline">\(m = 1\)</span>）；Machin et al. (2018) Chapter
 3.</li>
@@ -1447,7 +1691,9 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> <em>出处</em>：Dupont, W. D. (1988).
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：两组各需调查 294 人，总计 588 人。</li>
+<strong>输出解读与招募安排</strong>：需要 294 人/组，共 588
+人。若抽样人群中仅 20% 为肥胖者，获得足够肥胖组成员的平均筛选规模约为
+1470 人，明显大于最终比较样本量。</li>
 </ul>
 <hr>
 </div>
@@ -1460,8 +1706,16 @@ p_1(1-p_0)+p_0(1-p_1)\]</span> <em>出处</em>：Dupont, W. D. (1988).
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：某县成人糖尿病患病率抽样调查：预期患病率
-10%，要求估计值与真值的误差不超过 ±2 个百分点（<span class="math inline">\(d = 0.02\)</span>），95% 置信水平。</li>
+<strong>研究背景与人群</strong>：县级卫生部门拟估计某年龄范围常住成年人的糖尿病患病率，使用明确的人口登记抽样框，先按独立个体随机抽样规划基本样本量。</li>
+<li>
+<strong>实施与主要结局</strong>：每名受访者按统一的既往诊断及实验室流程判为患病或未患病，避免不同乡镇使用不同判定方法；年龄范围和未应答处理需要预先写清。</li>
+<li>
+<strong>参数设定与依据</strong>：假设患病率
+<code>p = 0.10</code>，希望 95% 置信区间的绝对半宽约为
+<code>precision = 0.02</code>。这里的 2
+个百分点是绝对误差，不能误填成相对误差 20%。</li>
+<li>
+<strong>设计选择</strong>：目的为估计一个比例的精度，不需要设置组间效应或检验效能。多阶段整群抽样、有限总体修正和未应答膨胀应按实际抽样方案另外处理。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{Z_{1-\alpha/2}^2 p(1-p)}{d^2}\]</span> <em>出处</em>：Lwanga &amp;
@@ -1501,7 +1755,9 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需调查 <strong>865 名居民</strong>。</li>
+<strong>输出解读与招募安排</strong>：需 865
+名具有有效患病状态记录的受访者。若应答率预计为 90%，应邀请约 962
+人；若设计效应大于 1，还需先完成相应调整。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1509,10 +1765,17 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：建立某地健康儿童血清铁蛋白参考值：已知人群标准差
-<span class="math inline">\(\text{SD} = 10\)</span>
-μg/L，均数估计误差需控制在 <span class="math inline">\(\pm 2\)</span>
-μg/L 内。</li>
+<strong>研究背景与人群</strong>：儿保门诊拟估计一个明确年龄层健康儿童的平均血清铁蛋白水平，为后续研究提供人群均值资料；招募条件需处理急性感染等影响铁蛋白的因素。</li>
+<li>
+<strong>实施与主要结局</strong>：统一采血和检验平台，每名儿童提供一个数值。研究目标是总体均值及其置信区间，并不是建立覆盖人群
+95% 的个体参考区间。</li>
+<li>
+<strong>参数设定与依据</strong>：演示使用 <code>sigma = 10</code>
+μg/L、<code>precision = 2</code> μg/L、95% 置信水平。SD
+应来自相同年龄与测量尺度；若改用对数尺度分析，必须重新给定该尺度上的 SD
+和精度。</li>
+<li>
+<strong>设计选择</strong>：使用单均数精度设计。先导资料还应帮助判断偏态与异常值处理，避免把正态均数规划误作参考区间上下限的样本量要求。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \left(\frac{Z_{1-\alpha/2}\sigma}{d}\right)^2\]</span>
@@ -1550,7 +1813,9 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需调查 <strong>97 名儿童</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 97 名有效测量儿童。若预计
+5% 样本因前处理或检验质量无法分析，可准备 103
+人；需要分年龄或性别分别估计时，应分别规划各层人数。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1558,9 +1823,20 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：验证腰围替代体脂率的可靠性：预期 Pearson
-相关系数 <span class="math inline">\(r = 0.50\)</span>，要求 95%
-置信区间半宽不超过 <span class="math inline">\(\pm 0.10\)</span>。</li>
+<strong>研究背景与人群</strong>：营养研究拟估计成年人腰围与 DXA
+体脂率之间的 Pearson
+相关，纳入具有适当体型变异范围的目标人群，而不是只选极端肥胖与极瘦者。</li>
+<li>
+<strong>实施与主要结局</strong>：同一天由规范流程获得腰围及 DXA
+测量，每名受试者形成一对连续值；腰围重复测量的归并规则需预先固定。</li>
+<li>
+<strong>参数设定与依据</strong>：演示预期相关系数
+<code>r=0.50</code>，目标 95% 区间半宽约为 0.10，即总宽约
+0.20。<code>r</code> 不是决定系数
+R²，也不是两个测量方法的一致性指标。</li>
+<li>
+<strong>设计选择</strong>：用 Fisher z
+精度方法规划相关估计。若研究目的为证明两种测量可以互换，还需要专门的一致性终点和相应样本量。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[N_{P0} = \frac{4 z_{1-\alpha/2}^2 (1-r^2)^2}{w^2}
 + 3, \quad N_{Final} = (N_{P0}-3)\left(\frac{w_0}{w}\right)^2 +
@@ -1601,8 +1877,9 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>219
-名受试者</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 219
+名具有完整成对测量的受试者。按 5% 无效测量预留时需招募 231
+人；增加同一人的重复测量次数不能替代不同受试者数。</li>
 </ul>
 <hr>
 </div>
@@ -1615,10 +1892,17 @@ Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：验证结直肠癌早筛试剂盒的敏感度：预期
-85%，95% 置信区间半宽需控制在 <span class="math inline">\(\pm
-5\%\)</span>，门诊目标人群患病率
-20%。需多少确诊真病例？全人群需筛查多少人？</li>
+<strong>研究背景与人群</strong>：拟在因症状或高风险因素被转诊接受结肠镜的患者中验证一种粪便检测方法，连续入组时预计约
+20% 最终确认患有目标疾病；该患病率不代表一般社区筛查人群。</li>
+<li>
+<strong>实施与主要结局</strong>：在参考检查前采集待评价检测标本，按锁定阈值判读；所有受试者按统一参考流程确认疾病状态，并尽量使两种判读相互盲法。</li>
+<li>
+<strong>参数设定与依据</strong>：目标敏感度
+<code>prob = 0.85</code>，95% 区间半宽
+<code>d = 0.05</code>，<code>prevalence = 0.20</code>
+仅用于由疾病阳性病例数换算总筛查人数。</li>
+<li>
+<strong>设计选择</strong>：本步为敏感度精度规划，主要需要足够的参考标准阳性病例。若还要保证特异度精度，应对非病例另行计算并同时满足两项人数要求。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot
 p(1-p)}{d^2}, \quad N_{screen} =
@@ -1658,8 +1942,10 @@ Obuchowski, &amp; McClish (2011) §6.1.1, pp. 194-196.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：敏感度需 196
-例确诊真病例；门诊全人群筛查需 <strong>980 人</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 196
+例确诊病例，返回的平均筛查规模为 980 人。平均达到目标并不等于有 90%
+把握获得足够病例；若采用该概率要求，应继续使用第 5.15
+节的二项转换。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1667,9 +1953,19 @@ Obuchowski, &amp; McClish (2011) §6.1.1, pp. 194-196.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：验证 AI
-肺结节诊断系统的敏感度是否显著优于行业及格线 70%（<span class="math inline">\(p_0 = 0.70\)</span>），预期敏感度 85%，患病率
-20%。</li>
+<strong>研究背景与人群</strong>：影像团队拟在肺结节转诊人群中验证一个已经锁定模型和判阳阈值的
+AI，研究样本与模型开发、阈值选择样本分开。</li>
+<li>
+<strong>实施与主要结局</strong>：主要评价参考标准确认恶性者中的敏感度。每名患者预先选定一个分析结节或使用患者层面的统一判定，避免把同一人的多个结节当作独立病例。</li>
+<li>
+<strong>参数设定与依据</strong>：研究团队将 70%
+设为本方案的最低可接受敏感度，预期为 85%，即
+<code>p0 = 0.70</code>、<code>prob = 0.85</code>；这不是声称所有 AI
+的行业阈值均为 70%。</li>
+<li>
+<strong>设计选择</strong>：使用渐近单侧检验，α=0.05、效能
+80%，并用转诊人群假设患病率 20%
+作平均筛查换算。特异度的要求需另外规划。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} +
@@ -1704,7 +2000,10 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 50 例病例，筛查 250 人。</li>
+<strong>输出解读与招募安排</strong>：需 50
+例疾病阳性病例；函数按未取整需求返回 248
+人的平均筛查数。按整数病例配额再换算为 250
+人，并应另预留参考检查或检测结果无效的情况。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1712,8 +2011,20 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：同上 AI
-肺结节验证，但样本来源有限，采用精确二项法消除正态近似误差。</li>
+<strong>研究背景与人群</strong>：仍验证锁定阈值的肺结节
+AI，但计划主要检验所需的疾病阳性例数较少，希望用精确二项分布直接规定成功判读数。</li>
+<li>
+<strong>实施与主要结局</strong>：每例确诊恶性患者被判为真阳性或假阴性，参考标准及无法判读的处理预先固定；不能在观察到结果后移动
+AI 阈值以达到成功界值。</li>
+<li>
+<strong>参数设定与依据</strong>：保持预期敏感度 85%、零假设
+70%、单侧 α=0.05、效能 80%，改用
+<code>method = "exact"</code>，由离散分布搜索人数和临界真阳性数。</li>
+<li>
+<strong>设计选择</strong>：精确设计的实际 α
+与效能通常不恰好等于设定值，应记录
+<code>actual_alpha</code>、<code>actual_power</code> 和
+<code>critical_successes</code>，而不是只记录一个人数。</li>
 <li>
 <strong>数学公式与出处</strong>：<span class="math inline">\(P(X \ge
 r \mid p_0) \le \alpha\)</span> 且 <span class="math inline">\(P(X \ge r
@@ -1755,10 +2066,9 @@ r \mid p_0) \le \alpha\)</span> 且 <span class="math inline">\(P(X \ge r
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：精确法需 <strong>49
-例确诊病例</strong>，临界正确数 <span class="math inline">\(r =
-40\)</span> 例（正确判断 <span class="math inline">\(\ge 40\)</span>
-例宣布优效）。</li>
+<strong>输出解读与执行规则</strong>：需 49 例确诊病例，其中至少 40
+例判为真阳性才拒绝零假设。该设计实际 α=0.048、效能=0.8089；按 20%
+患病率的平均筛查数为 245 人。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1766,9 +2076,16 @@ r \mid p_0) \le \alpha\)</span> 且 <span class="math inline">\(P(X \ge r
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：新的乳腺病灶 AI
-需要敏感度（80%升至90%）与特异度（75%升至85%）<strong>同时</strong>较活检金标准显著提升，患病率
-40%。各端点置于 90% 效能，联合效能约 80%。</li>
+<strong>研究背景与人群</strong>：乳腺病灶 AI
+的独立验证拟同时要求敏感度和特异度达到各自目标，连续纳入拟接受参考检查的患者，每位患者只保留预定义的分析单位。</li>
+<li>
+<strong>实施与主要结局</strong>：疾病阳性者贡献敏感度终点，疾病阴性者贡献特异度终点；两项都超过各自预设阈值才判定研究成功。活检等参考标准用于判定真值，并不是被比较的敏感度阈值。</li>
+<li>
+<strong>参数设定与依据</strong>：设 Se 从零假设 80% 到预期 90%，Sp
+从 75% 到 85%，<code>dual_power = 0.90</code>。每项 90%
+的效能给联合效能至少约 80% 的规划下界，具体联合分布仍取决于设计。</li>
+<li>
+<strong>设计选择</strong>：应分别记录阳性病例和非病例的需求，再结合患病率安排招募。函数还提供两项需求较大值及其保守筛查换算，不能把两项人数都称为同一种“病例”。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \max\left(n_{Se},\, n_{Sp}\right), \quad n =
@@ -1815,7 +2132,10 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 123 例病例，全人群需筛查 308 人。</li>
+<strong>输出解读与招募安排</strong>：敏感度需 109
+例疾病阳性者，特异度需 137 例疾病阴性者；结果另返回较大需求 137 及 343
+人的保守换算。若按 40% 患病率分别检查整数配额，平均总人数至少取
+273，并另考虑两类病例数的随机波动。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1823,8 +2143,16 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两套竞争性肺炎 CT-AI
-系统在两组独立患者中验证：敏感度分别为 85% 与 75%，患病率 20%。</li>
+<strong>研究背景与人群</strong>：两套肺炎 CT-AI
+系统拟在相互独立的患者组中验证，可采用同一来源人群的随机分组，使每人仅接受分配系统的正式评价。</li>
+<li>
+<strong>实施与主要结局</strong>：两组均用同样的临床参考流程确认肺炎；主要比较确诊肺炎患者中两系统的敏感度，病例严重程度及参考标准判定不应因组别而异。</li>
+<li>
+<strong>参数设定与依据</strong>：演示预期敏感度
+<code>p1 = 0.85</code>、<code>p2 = 0.75</code>，来源人群患病率 20%，双侧
+α=0.05、效能 80%。这里不是比较所有受检者的阳性检出率。</li>
+<li>
+<strong>设计选择</strong>：使用非配对两比例方法，每组需要独立的疾病阳性病例。若两个系统实际上都评价同一患者，应使用配对设计及不一致比例参数。</li>
 <li>
 <strong>数学公式与出处</strong>：与 1.2 同核（Fleiss 1980
 渐近方差公式）。</li>
@@ -1860,8 +2188,9 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 250 例病例，两组筛查需 2500
-人。</li>
+<strong>输出解读与招募安排</strong>：每组需 250
+例确诊肺炎病例，两组的平均总筛查规模为 2500
+人。非病例可用于另外描述特异度，但本计算没有单独保证特异度的精度或比较效能。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1869,9 +2198,19 @@ Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：同一批疑似肺炎患者同时接受两套 AI
-系统判读（配对设计）：敏感度 85% vs 75%，预期不一致对比例 <span class="math inline">\(\psi =
-0.10\)</span>——配对设计大幅节省病例数。</li>
+<strong>研究背景与人群</strong>：改为在同一批患者的 CT
+影像上运行两套已锁定的
+AI，使每名患者都有两个检测结果，并由统一参考标准判定是否肺炎。</li>
+<li>
+<strong>实施与主要结局</strong>：主要敏感度比较只使用疾病阳性者的配对判读，需记录“一对都正确、仅系统
+1 正确、仅系统 2 正确、均错误”的完整表。</li>
+<li>
+<strong>参数设定与依据</strong>：预期 Se 为 85% 与 75%，假设
+<code>psi = 0.10</code>。该值恰好等于两率差的下限，相当于没有反向不一致，是较乐观假设；真实项目应根据配对先导数据评估更大的不一致比例。</li>
+<li>
+<strong>设计选择</strong>：Connor
+方法利用同一病例两个结果的相关性，双侧 α=0.05、效能
+80%。所需“对数”表示同一批病例各做两次判读，不是招募两组不同患者。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{\left[Z_{\alpha/2}\sqrt{\psi} +
@@ -1913,8 +2252,9 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：仅需 <strong>77 对病例</strong>，筛查 385
-人。</li>
+<strong>输出解读与招募安排</strong>：需 77
+例疾病阳性患者，每例提供两个系统的结果。函数返回的未取整需求换算为 381
+人；按整数病例配额和 20% 患病率规划，平均筛查数为 385 人。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1922,8 +2262,16 @@ Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：新的简便家庭自测盒（敏感度
-90%）需证實不劣于实验室金标准（88%），非劣效界值 5%，患病率 30%。</li>
+<strong>研究背景与人群</strong>：拟比较家庭采样检测方案与实验室常规方案，研究目标是在降低采样负担的同时保留可接受的敏感度；本例按两个独立患者组设计。</li>
+<li>
+<strong>实施与主要结局</strong>：两组分别完成分配的检测，并由相同参考流程确认疾病状态，主要比较各组疾病阳性者中的真阳性率；同一患者同时做两项检测的配对资料需要另行考虑协方差。</li>
+<li>
+<strong>参数设定与依据</strong>：设研究组敏感度 90%、对照组
+88%、最大可接受损失 <code>margin = 0.05</code>，单侧 α=0.05、效能
+80%。界值需结合漏诊后果、采样便利及对照性能论证。</li>
+<li>
+<strong>设计选择</strong>：此分支的 <code>n_per_group</code>
+是每个独立检测组所需疾病阳性病例数；筛查换算字段对应一个组，不能直接作为两组总招募人数。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}\]</span>
@@ -1969,7 +2317,9 @@ pp. 214-218。</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 247 例病例，筛查 824 人。</li>
+<strong>输出解读与招募安排</strong>：每组需 247
+例疾病阳性者，两组合计 494 例。对象的单组筛查换算为 823 人；按 30%
+患病率和整数病例配额，两组平均总筛查规模为 1648 人。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -1977,9 +2327,15 @@ pp. 214-218。</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两台床旁分析仪敏感度分别为 90% 与
-89%，临床可接受等效界值 <span class="math inline">\(\pm
-5\%\)</span>。</li>
+<strong>研究背景与人群</strong>：医院拟比较两台床旁分析仪的诊断敏感度是否足够接近，本例将不同受检者分配到两个独立设备组，并采用统一参考检查。</li>
+<li>
+<strong>实施与主要结局</strong>：在预设阳性阈值下分别计算疾病阳性受试者的敏感度，规定样本前处理和设备质控流程。若同一份标本在两台设备上重复测量，应按配对研究重新选择方法。</li>
+<li>
+<strong>参数设定与依据</strong>：演示
+<code>p1 = 0.90</code>、<code>p2 = 0.89</code>，双向等效限 ±0.05，单侧
+α=0.05、效能 80%。允许差异必须针对具体疾病和漏诊后果事先确定。</li>
+<li>
+<strong>设计选择</strong>：需同时排除劣于下界和优于上界的差异，采用等效性两比例计算；不能把设备间差异检验不显著当成可以互换的证据。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}\]</span>
@@ -2022,7 +2378,9 @@ pp. 214-218。</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 1006 例病例，筛查 3354 人。</li>
+<strong>输出解读与招募安排</strong>：每组需 1006 例疾病阳性者，共
+2012 例。单组筛查字段为 3353 人；按 30%
+患病率重新换算整数配额时，两组平均共需 6708 名受检者。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2030,7 +2388,19 @@ pp. 214-218。</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：预期 <span class="math inline">\(\text{AUC} = 0.80\)</span>，容许置信区间半宽 <span class="math inline">\(\pm 0.10\)</span>，病例对照比 1:1。</li>
+<strong>研究背景与人群</strong>：标志物研究拟评价一个锁定连续风险评分的区分能力，从同一拟应用临床人群中选择经参考标准确认的病例和非病例，按
+1:1 构建验证样本。</li>
+<li>
+<strong>实施与主要结局</strong>：每名患者贡献一个评分，用 ROC-AUC
+概括排序区分能力；非病例应具有与实际就诊者相近的疾病谱，而不是只选完全健康志愿者。</li>
+<li>
+<strong>参数设定与依据</strong>：预期 AUC=<code>0.80</code>，95%
+区间半宽 <code>d = 0.10</code>，<code>ratio = 1</code>，使用
+<code>var_method = "binormal"</code>。预期 AUC
+及方差模型应参考独立先导或外部验证资料。</li>
+<li>
+<strong>设计选择</strong>：这是 AUC
+精度估计，病例对照比由研究者安排；这种配额样本不能直接用于估计目标人群患病率或未经加权的阳性预测值。</li>
 <li>
 <strong>数学公式与出处</strong>：Obuchowski, N. A. (1994); Zhou et
 al. (2011) Eq 6.5.</li>
@@ -2074,8 +2444,9 @@ al. (2011) Eq 6.5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 <strong>46 例病例与 46
-例对照</strong>（总计 92 人）。</li>
+<strong>输出解读与招募安排</strong>：需要 46 例病例及同数非病例，共
+92
+人。应按两个疾病状态分别完成配额；总人数足够但病例不足时，仍不能满足本精度要求。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2083,8 +2454,21 @@ al. (2011) Eq 6.5.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：检验新标志物 <span class="math inline">\(\text{AUC} = 0.80\)</span> 是否显著高于临床及格线
-<span class="math inline">\(\text{AUC}_0 = 0.70\)</span>。</li>
+<strong>研究背景与人群</strong>：团队拟在独立的临床验证队列中评估一个
+miRNA
+风险评分，要求区分能力超过项目预设的最低实用水平，而不只是超过随机排序的
+AUC=0.5。</li>
+<li>
+<strong>实施与主要结局</strong>：冻结评分算法后收集每位受试者的连续分数及参考疾病状态，按同样流程处理病例与非病例，主要终点为整体
+ROC-AUC。</li>
+<li>
+<strong>参数设定与依据</strong>：教学设预期
+<code>auc = 0.80</code>、最低可接受
+<code>auc0 = 0.70</code>、来源队列患病率 30%，采用单侧 α=0.05、效能
+80%。最低水平应由具体用途预先论证。</li>
+<li>
+<strong>设计选择</strong>：本检验针对整个
+AUC，不自动保证某个操作阈值下的敏感度、特异度或校准表现；若这些也是主要目标，需要额外规划。</li>
 </ul>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_5_10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUC"</span>, <span class="st">"test"</span>, <span class="st">"auc"</span>, auc <span class="op">=</span> <span class="fl">0.80</span>, auc0 <span class="op">=</span> <span class="fl">0.70</span>, prevalence <span class="op">=</span> <span class="fl">0.30</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
@@ -2120,7 +2504,9 @@ al. (2011) Eq 6.5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 180 例病例，筛查 600 人。</li>
+<strong>输出解读与招募安排</strong>：需要 180
+例病例，平均总筛查规模为 600 人。其余受检者中的非病例同样用于 AUC
+估计，不能只招募疾病阳性者。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2128,7 +2514,18 @@ al. (2011) Eq 6.5.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两法 <span class="math inline">\(\text{AUC}_1 = 0.80\)</span> vs <span class="math inline">\(\text{AUC}_2 = 0.70\)</span>，两法相关系数 <span class="math inline">\(r = 0.50\)</span>。</li>
+<strong>研究背景与人群</strong>：肝脏病灶评估拟让同一批患者分别接受两种影像评分方法，并用统一参考标准确认疾病状态，以比较两条相关
+ROC 曲线的 AUC。</li>
+<li>
+<strong>实施与主要结局</strong>：每位患者有两种连续评分，正式分析保留患者层面的配对关系；参考判读尽量避免受到任一研究评分影响。</li>
+<li>
+<strong>参数设定与依据</strong>：演示 AUC 分别为 0.80 与
+0.70，<code>r=0.50</code> 表示两项 AUC
+估计量的相关性，而不是两种原始分数的普通 Pearson
+相关；应由可比配对先导数据估计。</li>
+<li>
+<strong>设计选择</strong>：双侧 α=0.05、效能 80%，人群患病率假设
+30%。同一患者完成两种检查可提供配对信息，不能把每种检查的记录数相加当成独立人数。</li>
 <li>
 <strong>数学公式与出处</strong>：Hajian-Tilaki (2014) Eq
 7.6/7.8.</li>
@@ -2162,7 +2559,9 @@ al. (2011) Eq 6.5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 223 例病例，筛查 744 人。</li>
+<strong>输出解读与招募安排</strong>：需 223
+例病例，每例接受两种方法；函数返回 743 人的筛查换算。按整数病例配额和
+30% 患病率计算，平均筛查规模为 744 人。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2170,7 +2569,19 @@ al. (2011) Eq 6.5.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：新简易设备 <span class="math inline">\(\text{AUC}_1 = 0.85\)</span> 对比金标准 <span class="math inline">\(\text{AUC}_2 = 0.82\)</span>，非劣效限 <span class="math inline">\(\text{margin} = 0.05\)</span>。</li>
+<strong>研究背景与人群</strong>：医院拟评价一种便携、成本较低的评分设备，其
+ROC-AUC 能否在预设范围内保留标准设备的区分能力；病例与非病例按 1:1
+安排，同一人使用两种设备。</li>
+<li>
+<strong>实施与主要结局</strong>：两种连续评分均按锁定算法产生，利用同一参考疾病状态构建相关
+ROC 曲线；分析单位为患者，保留配对相关性。</li>
+<li>
+<strong>参数设定与依据</strong>：假设研究设备 AUC=0.85、标准设备
+AUC=0.82、相关系数 <code>r=0.50</code>、最大允许损失
+<code>margin = 0.05</code>，单侧 α=0.05、效能 80%。</li>
+<li>
+<strong>设计选择</strong>：这个 AUC
+差异界值须结合目标用途论证。当前分支使用等量病例/非病例的方差模型，不能再把输出当作由临床患病率推导的自然队列人数。</li>
 </ul>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_5_12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUCCompare"</span>, <span class="st">"noninferiority"</span>, <span class="st">"auc"</span>, auc1 <span class="op">=</span> <span class="fl">0.85</span>, auc2 <span class="op">=</span> <span class="fl">0.82</span>, r <span class="op">=</span> <span class="fl">0.50</span>, margin <span class="op">=</span> <span class="fl">0.05</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
@@ -2207,7 +2618,9 @@ al. (2011) Eq 6.5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 80 例病例，筛查 160 人。</li>
+<strong>输出解读与招募安排</strong>：返回所需病例数
+80，总量换算字段为 159。实际按整数配额应安排同数非病例，共 160
+名患者，每人都完成两种设备检查。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2215,7 +2628,20 @@ al. (2011) Eq 6.5.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两法 <span class="math inline">\(\text{AUC}_1 = 0.85\)</span> vs <span class="math inline">\(\text{AUC}_2 = 0.84\)</span>，等效界值 <span class="math inline">\(\text{margin} = 0.05\)</span>。</li>
+<strong>研究背景与人群</strong>：两套 AI
+评分系统拟在相同的临床验证样本上评价 AUC 是否足够接近，研究者按 1:1
+招募经参考标准确认的病例与非病例。</li>
+<li>
+<strong>实施与主要结局</strong>：每位患者同时得到两套冻结系统的连续评分，并以相同参考状态计算配对
+AUC 差；不能把不同医院的独立 AUC 直接当作相关估计。</li>
+<li>
+<strong>参数设定与依据</strong>：教学设 AUC 为 0.85 与
+0.84、<code>r=0.50</code>、等效范围 ±0.05，单侧 α=0.05、效能
+80%。方差模型与相关性是影响人数的重要假设。</li>
+<li>
+<strong>设计选择</strong>：需要把 AUC 差异限制在两侧边界以内。即使
+AUC
+等效，也不能仅据此断言两个系统在所有诊断阈值或临床决策上都可以互换。</li>
 </ul>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_5_13</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUCCompare"</span>, <span class="st">"equivalence"</span>, <span class="st">"auc"</span>, auc1 <span class="op">=</span> <span class="fl">0.85</span>, auc2 <span class="op">=</span> <span class="fl">0.84</span>, r <span class="op">=</span> <span class="fl">0.50</span>, margin <span class="op">=</span> <span class="fl">0.05</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, power <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
@@ -2252,7 +2678,9 @@ al. (2011) Eq 6.5.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 317 例病例，筛查 634 人。</li>
+<strong>输出解读与招募安排</strong>：需要 416
+例病例；函数的总量换算为 831。按整数病例与非病例各一组招募时，共应安排
+832 名患者，每人提供两套系统的评分。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2260,14 +2688,25 @@ al. (2011) Eq 6.5.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：肺栓塞排除路径要求
-D-二聚体的阴性似然比（<span class="math inline">\(\text{LR}^-\)</span>）95%
-置信区间<strong>上限</strong>不能超过 0.40（<span class="math inline">\(\text{target\_lr} =
-0.40\)</span>），否则排除规则不安全。预期敏感度 90%，特异度 50%。</li>
+<strong>研究背景与人群</strong>：急诊团队拟独立验证一个已经固定阈值的
+D-二聚体检测流程，关注阴性结果能在多大程度上降低肺栓塞可能性，病例与非病例按等量配额规划。</li>
 <li>
-<strong>数学公式与出处</strong>： <span class="math display">\[\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n
-\cdot Se} + \frac{1-Sp}{n \cdot Sp}}\]</span>
-<em>出处</em>：Hajian-Tilaki (2014) Eq 6.14; Simel et al. (1991).</li>
+<strong>实施与主要结局</strong>：所有人按预先规定的参考流程确认肺栓塞状态，分别得到敏感度和特异度。主要规划量为阴性似然比
+LR−=(1−Se)/Sp 的对数置信区间上限，而不是固定宽度的敏感度区间。</li>
+<li>
+<strong>参数设定与依据</strong>：设 Se=0.90、Sp=0.50，预期
+LR−=0.20，希望在预期参数处的 95% 置信上限不超过
+<code>target_lr = 0.40</code>。阈值应结合目标临床人群的检前概率及决策用途论证。</li>
+<li>
+<strong>设计选择</strong>：等量病例/非病例下，方差系数为
+0.9/0.1+0.5/0.5=10，目标对数距离为
+log(0.4/0.2)。这是近似精度规划，不表示有 95%
+概率让每次研究得到的区间都满足阈值。</li>
+<li>
+<strong>数学公式与出处</strong>： <span class="math display">\[\log(LR^-) \pm
+Z_{1-\alpha/2}\sqrt{\frac{Se}{n(1-Se)} + \frac{1-Sp}{n\cdot
+Sp}}\]</span> <em>出处</em>：Hajian-Tilaki (2014) Eq 6.14; Simel et
+al. (1991).</li>
 </ul>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_5_14</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagLR"</span>, <span class="st">"estimate"</span>, <span class="st">"lr"</span>, sens <span class="op">=</span> <span class="fl">0.90</span>, spec <span class="op">=</span> <span class="fl">0.50</span>, target_lr <span class="op">=</span> <span class="fl">0.40</span>, lr_type <span class="op">=</span> <span class="st">"negative"</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
@@ -2275,39 +2714,42 @@ D-二聚体的阴性似然比（<span class="math inline">\(\text{LR}^-\)</span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Likelihood ratio (negative, log-CI method)"</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">9</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">9</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">18</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">80</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">80</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">160</span></span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • sens/spec = expected sensitivity/specificity (determine the observed LR)</span></span>
 <span><span class="co">#&gt; • target_lr = LR boundary the CI must not cross (precision target)</span></span>
 <span><span class="co">#&gt; • n is computed per group (equal cases and controls)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Calculates sample size ensuring the log-scale CI does not cross target_lr (threshold precision),</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Plans the approximate CI limit at the anticipated Se/Sp to reach target_lr;</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> this is a precision calculation, not a guarantee about every realized CI.</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> distinct from fixed-width CI approaches (e.g. prec_lr in presize).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
-<span><span class="co">#&gt; `log(LR) +- Z * sqrt((1-Se)/(n*Se) + (1-Sp)/(n*Sp))`</span></span>
+<span><span class="co">#&gt; `log(LR-) +- Z * sqrt(Se/(n*(1-Se)) + (1-Sp)/(n*Sp))`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
-<span><span class="co">#&gt; $$\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n \cdot Se} + \frac{1-Sp}{n \cdot Sp}}$$</span></span>
+<span><span class="co">#&gt; $$\log(LR^-) \pm Z_{1-\alpha/2}\sqrt{\frac{Se}{n(1-Se)} + \frac{1-Sp}{n \cdot Sp}}$$</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Step 1: Identify study design: Likelihood ratio (negative, log-CI method).</span></span>
 <span><span class="co">#&gt; • Step 2: Input parameters: sensitivity = 0.90, specificity = 0.50, lr_type =</span></span>
 <span><span class="co">#&gt; negative, lr_observed = 0.20, target_lr = 0.40, prevalence = 1, alpha = 0.05.</span></span>
-<span><span class="co">#&gt; • Step 3: Apply design formula: log(LR) +- Z * sqrt((1-Se)/(n*Se) +</span></span>
+<span><span class="co">#&gt; • Step 3: Apply design formula: log(LR-) +- Z * sqrt(Se/(n*(1-Se)) +</span></span>
 <span><span class="co">#&gt; (1-Sp)/(n*Sp)).</span></span>
-<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Total sample size: 18; Cases needed:</span></span>
-<span><span class="co">#&gt; 9; Controls needed: 9; Total subjects: 18.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Total sample size: 160; Cases needed:</span></span>
+<span><span class="co">#&gt; 80; Controls needed: 80; Total subjects: 160.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
-<span><span class="co">#&gt; Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.13/6.14; worked example n=80 per group).</span></span>
+<span><span class="co">#&gt; Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  CI method: Simel, D. L., Samsa, G. P., &amp; Matchar, D. B. (1991). Likelihood ratios with confidence: sample size estimation for accuracy of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：病例与对照各需 9 例，总计 18 人。</li>
+<strong>输出解读与招募安排</strong>：需要 80 例肺栓塞病例与 80
+例非病例，共 160
+人。这是两类已确认疾病状态的配额，不是连续急诊队列的总筛查量；若连续入组，还需根据本地患病率安排获得两类病例的规模。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2316,9 +2758,19 @@ D-二聚体的阴性似然比（<span class="math inline">\(\text{LR}^-\)</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：理论平均筛查 980 人才能抓够 196
-例确诊病例，但这只有 50% 的把握。筛查名单应扩大到多少人，才能以 90%
-概率保障抓满 196 例？</li>
+<strong>研究背景与人群</strong>：结直肠疾病转诊队列需要获得 196
+例参考标准阳性病例，预计入组人群患病率为
+20%，团队需要据此确定应准备多少个完整检测名额。</li>
+<li>
+<strong>实施与主要结局</strong>：连续入组受试者直到固定总人数，病例数会围绕其期望随机波动。平均筛查
+980 人对应期望 196 例病例，并不等于高概率一定达到这个数量。</li>
+<li>
+<strong>参数设定与依据</strong>：输入
+<code>n = 196</code>、<code>prevalence = 0.20</code>，并以
+<code>beta = 0.10</code> 设定病例数不足的容许概率。该 beta
+是招募数量保障参数，不是前面诊断假设检验的 II 类错误率。</li>
+<li>
+<strong>设计选择</strong>：求满足二项尾概率约束的最小总人数，需假设患者疾病状态近似独立、来源人群患病率相对稳定；病例富集或分层招募应按对应方案处理。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[P(\text{Binomial}(N, \text{prev}) \ge n) \ge 1 -
 \beta\]</span> <em>出处</em>：Zhou et al. (2011) Eq 6.3。</li>
@@ -2329,8 +2781,9 @@ D-二聚体的阴性似然比（<span class="math inline">\(\text{LR}^-\)</span>
 <span><span class="co">#&gt; 理论平均筛查数：980 人；90% 概率安全保障筛查数： 1061 人</span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：实际筛查名单需扩大至 <strong>1058
-人</strong>（多储备 78 人备荒）。</li>
+<strong>输出解读与招募安排</strong>：应准备 1061
+名完整受检者，比按期望值换算的 980 人多 81 人；在本例模型下，获得至少
+196 例病例的概率为 90.09%。无法完成参考检查者仍需另作招募预留。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2338,9 +2791,21 @@ D-二聚体的阴性似然比（<span class="math inline">\(\text{LR}^-\)</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：乳腺钼靶 AI 辅助诊断研究：8
-名放射科医生独立阅读 50 例病例，比较常规钼靶与断层合成两种技术的 AUC
-差异（<span class="math inline">\(\Delta = 0.10\)</span>）。</li>
+<strong>研究背景与人群</strong>：影像研究拟比较两种乳腺成像方法，计划由
+8 名放射科医生分别判读同一批 50
+名患者的两种影像，希望结论能够考虑患者和阅片者两类变异。</li>
+<li>
+<strong>实施与主要结局</strong>：按随机顺序分期判读、设置记忆影响的控制流程，并对参考疾病状态保持盲法。每位患者提供两种影像，每位医生均参加两种方法的判读。</li>
+<li>
+<strong>参数设定与依据</strong>：本例沿用 Zhou 教材的规划参数：AUC
+差 <code>delta = 0.10</code>，读者、场次和病例方差分别为
+0.00123、0.00087、0.05，三类相关系数分别为
+0.25、0.20、0.10；这些分量需要相容的 MRMC 先导资料，不能用单个 AUC 的 SD
+替代。</li>
+<li>
+<strong>设计选择</strong>：<code><a href="../reference/mrmc_power.html">mrmc_power()</a></code>
+在给定病例与读者数后求效能，不会自动求最小病例数。一次阅读场次下，工作量为
+50×8×2=800 次判读。</li>
 <li>
 <strong>数学公式与出处</strong>：Obuchowski-Rockette
 混合效应模型非中心 <span class="math inline">\(F\)</span> 检验，Zhou et
@@ -2388,8 +2853,9 @@ al. (2011) Eq 6.32, p.225.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：在 50 例病例、8 名阅片者下，该试验达到
-<strong>88.8% 的统计学效能</strong>（与教材报道的 89% 一致）。</li>
+<strong>输出解读与执行安排</strong>：模型效能为
+88.8%。该数值对应当前 50 名患者、8
+名读者及方差分量，若读者可用人数或病例疾病谱改变，应重新计算，而不能只按总判读次数保持不变。</li>
 </ul>
 <hr>
 </div>
@@ -2402,11 +2868,19 @@ al. (2011) Eq 6.32, p.225.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：以 ICU
-病区（而非患者）为随机单位评价新导管护理包：并发症均分由 10 降至
-12，<span class="math inline">\(\text{SD} = 3\)</span>，每病区平均 20
-张床位，组内相关系数 <span class="math inline">\(\text{ICC} =
-0.05\)</span>。</li>
+<strong>研究背景与人群</strong>：多中心 ICU
+护理研究拟按病区随机实施新护理流程，以减少同病区内医护行为相互影响造成的干预污染，各病区纳入约
+20 名患者。</li>
+<li>
+<strong>实施与主要结局</strong>：以患者层面的一个预定义连续康复评分为主要终点，数值越高越好，预期常规组均值
+10、干预组 12；统一评估时间和评分者培训。</li>
+<li>
+<strong>参数设定与依据</strong>：设患者层面 SD=3、组内相关
+<code>icc = 0.05</code>、<code>cluster_size = 20</code>，设计效应为
+1.95。ICC
+需要来自相近病区、终点及入组时期，不能直接取另一疾病研究的相关系数。</li>
+<li>
+<strong>设计选择</strong>：函数先求个体随机样本量，再按设计效应及整群人数取整。实际方案还需评估群数是否足够、群大小差异及计划的群层面或混合模型分析。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[DE =
 1 + (m - 1) \times ICC = 1.95, \quad n_{clusters} = \left\lceil
@@ -2448,8 +2922,9 @@ Ch.12。</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每个干预臂需 4 个病区（80 人），两臂共计
-<strong>8 个病区（160 人）</strong>。</li>
+<strong>输出解读与招募安排</strong>：需每臂 4 个病区、80
+名患者，两臂共 8 个病区、160
+人。病区退出应按群考虑替补或预留；在同一小部分病区内增加患者，不能等同于增加独立病区数。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2457,8 +2932,17 @@ Ch.12。</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：以行政村为单位随机化一项筛查依从性干预：筛查率由
-20% 提高至 30%，每村平均 20 名居民，<span class="math inline">\(\text{ICC} = 0.05\)</span>。</li>
+<strong>研究背景与人群</strong>：公共卫生团队拟按行政村随机实施预约提醒和健康教育，以提高符合年龄及风险条件居民完成筛查的比例，减少同村居民间的信息污染。</li>
+<li>
+<strong>实施与主要结局</strong>：每村从符合条件居民中按预定流程纳入
+20 人，在固定 6
+个月窗口核实是否完成一次有效筛查，每名居民贡献一个二分类结局。</li>
+<li>
+<strong>参数设定与依据</strong>：演示常规组筛查率 20%、干预组
+30%，<code>icc = 0.05</code>、<code>cluster_size = 20</code>，双侧
+α=0.05、效能 80%；居民资格及随访窗口需与参数资料一致。</li>
+<li>
+<strong>设计选择</strong>：两比例基础样本量经设计效应膨胀，再取整为完整村数。自然村规模不等或分层随机时，仍需按最终分析设计核查近似的适用性。</li>
 <li>
 <strong>数学公式与出处</strong>：设计效应同 6.1（<span class="math inline">\(DE = 1 +
 (m-1)ICC\)</span>），基础样本量用两比例核（Fleiss 1980）。</li>
@@ -2503,8 +2987,9 @@ Ch.12。</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每臂需 29 个社区（580 人），共计
-<strong>58 个社区（1160 人）</strong>。</li>
+<strong>输出解读与招募安排</strong>：需每臂 29 个村、580 人，共 58
+个村、1160
+人。应分别预算村级协调资源和居民随访资源，并说明无法达到每村目标人数时的处理。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2512,10 +2997,21 @@ Ch.12。</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：24 个县分 4
-批阶梯交叉推行手卫生干预（基线 + 4 个阶梯，每步 6 县，每县每期 100
-名新生儿）。感染风险的治疗效应 <span class="math inline">\(\theta =
--0.016\)</span>。</li>
+<strong>研究背景与人群</strong>：24
+个县拟分批推行手卫生项目，所有县最终均实施干预，但切换时间随机安排；每批
+6 县，共 4 个切换阶梯，加上基线形成 5 个观察时期。</li>
+<li>
+<strong>实施与主要结局</strong>：每县每期抽取约 100
+名新生儿，评估预定义时间窗内的感染状态；这是重复横断面抽样，不是同一批新生儿随访
+5 次。二分类结局在此以加性风险差近似规划。</li>
+<li>
+<strong>参数设定与依据</strong>：设绝对风险变化
+<code>theta = -0.016</code>，县间方差
+<code>tau2 = 2.25e-4</code>，个体方差
+<code>sigma2_ind = 0.0475</code>，后者对应约 5%
+的基础风险，且每期抽样规模 <code>m = 100</code>。</li>
+<li>
+<strong>设计选择</strong>：给定群数、阶梯与每期人数后计算模型效能。当前简化公式没有显式拟合完整的日历时间趋势，实际部署存在季节或长期趋势时，应使用包含相应时间效应的模型核查。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[Var(\hat{\theta}) = \frac{I \tau^2 (\tau^2 +
 T\sigma^2)}{(IU - W)\tau^2 + (U^2 + ITU - TW - IV)\sigma^2}, \quad
@@ -2563,8 +3059,9 @@ Clin Trials</em>, 28(2), 182-191 (Eq 8).</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：该阶梯楔形方案实现 <strong>90.8%
-的检验效能</strong>。</li>
+<strong>输出解读与执行安排</strong>：该配置下模型效能为
+90.8%。按每县每期 100 名不同新生儿估计，需安排 24×5×100=12000
+人次观察，并同步规划切换培训、时期划分及各县数据完整性。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2572,8 +3069,20 @@ Clin Trials</em>, 28(2), 182-191 (Eq 8).</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：膝骨关节炎疼痛缓解程度分轻度/中度/重度三级（预期分布
-20%/50%/30%），新的关节腔注射疗法预期使更高级别缓解的比值比 <span class="math inline">\(\text{OR} = 1.5\)</span>。</li>
+<strong>研究背景与人群</strong>：骨关节炎试验拟比较研究注射方案与对照方案，在第
+12 周把患者疼痛改善分成“改善小、中等、改善大”三个有序等级，按 1:1
+随机分组。</li>
+<li>
+<strong>实施与主要结局</strong>：各等级边界须在研究前确定，终点评估按同一量表形成一个患者层面的有序结局。类别顺序应与预期治疗作用的方向保持一致。</li>
+<li>
+<strong>参数设定与依据</strong>：设总体平均类别分布
+<code>prop_bar = c(0.2, 0.5, 0.3)</code>，共同优势比
+<code>or = 1.5</code>，双侧 α=0.05、效能
+80%。这里输入的是两组合并的规划分布，不是随意指定的一个治疗组比例。</li>
+<li>
+<strong>设计选择</strong>：采用 Whitehead
+比例优势模型近似，要求一个共同 OR
+能合理描述各切点的效应。若效应主要集中于某个等级，应按更合适的备择分布核查。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[N =
 \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum
@@ -2615,8 +3124,9 @@ Med</em>, 12(24), 2257-2271.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：每组需 86 人，总计 <strong>171
-人</strong>。</li>
+<strong>输出解读与招募安排</strong>：公式总人数下界为
+171，每组向上取整为 86 人。若严格按 1:1 分配，实际应安排 172
+人，之后再按组考虑终点缺失预留。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2624,14 +3134,25 @@ Med</em>, 12(24), 2257-2271.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：开发 ICU 住院死亡预测模型：10
-个候选预测变量，结局发生率 30%，预期 Cox-Snell <span class="math inline">\(R^2_{CS} = 0.10\)</span>，目标收缩因子 <span class="math inline">\(S =
-0.90\)</span>，新增参数需多少患者与事件数？</li>
+<strong>研究背景与人群</strong>：ICU
+团队拟开发入院时预测住院死亡的二分类模型，连续纳入符合条件的首次入院患者，候选预测信息必须在实际使用模型的时间点已经可获得。</li>
+<li>
+<strong>实施与主要结局</strong>：每位患者一个住院结局，候选参数数目应计入分类变量展开、样条与交互项所占的自由度；10
+个参数不一定等于 10 个原始变量。</li>
+<li>
+<strong>参数设定与依据</strong>：演示
+<code>prev = 0.30</code>、<code>n_parameters = 10</code>、预期 Cox–Snell
+R²=<code>0.10</code>、目标收缩因子 <code>0.90</code>、总体风险估计精度
+<code>0.05</code>。R² 应来自相关外部资料并考虑乐观偏倚。</li>
+<li>
+<strong>设计选择</strong>：当前分支以总体风险精度 B1 和收缩 B3
+两项要求的较大值确定人数，并提供其他辅助量；它不自动完成 Riley
+全部准则、机器学习调参或外部验证研究的规划。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{B1} = \left(\frac{z}{\delta}\right)^2
 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n =
 \max(n_{B1}, n_{B3})\]</span> <em>出处</em>：Riley et al. (2020).
-<em>BMJ</em>, 368, m441 (Box 1 准则 B1 与 B3; 与 pmsampsize 一致)。</li>
+<em>BMJ</em>, 368, m441（本例对应 B1 与 B3 准则）。</li>
 </ul>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_6_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"predictiveModel"</span>, <span class="st">"plan"</span>, <span class="st">"binary"</span>, prev <span class="op">=</span> <span class="fl">0.30</span>, n_parameters <span class="op">=</span> <span class="fl">10</span>, r2_cs <span class="op">=</span> <span class="fl">0.10</span>, shrinkage <span class="op">=</span> <span class="fl">0.90</span>, precision_delta <span class="op">=</span> <span class="fl">0.05</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
@@ -2677,9 +3198,9 @@ Med</em>, 12(24), 2257-2271.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需纳入 <strong>850 名患者，其中包含 255
-例事件</strong>（有效事件参数比 EPP=25.5，与 <code>pmsampsize</code>
-结果完全一致）。</li>
+<strong>输出解读与招募安排</strong>：需 850 名患者，按 30%
+结局率预期约 255
+例死亡。正式方案应记录哪些准则已被覆盖，并安排内部验证和缺失预测因子的处理，不能再把这批开发样本简单拆分后声称获得独立外部验证。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2687,8 +3208,19 @@ Med</em>, 12(24), 2257-2271.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：开发 10
-年心血管死亡预测模型：队列年发病率 0.10/年，要求 10 年累计发病率 <span class="math inline">\(F(10)\)</span> 的估计误差不超过 <span class="math inline">\(\pm 5\%\)</span>，需要多少随访人年？</li>
+<strong>研究背景与人群</strong>：心血管队列拟开发固定 10
+年时点的死亡风险预测模型，先规划总体基线累积发病风险估计需要积累多少观察人时。</li>
+<li>
+<strong>实施与主要结局</strong>：记录从入组至死亡或删失的在险时间，本例把总体事件发生过程近似为常数风险率，10
+年风险为 1−exp(−rate×10)。</li>
+<li>
+<strong>参数设定与依据</strong>：设 <code>rate = 0.10</code>
+例/人年、<code>timepoint = 10</code> 年，95% 区间两侧误差均希望不超过
+<code>precision_delta = 0.05</code>。风险率、时间单位和目标时点必须一致。</li>
+<li>
+<strong>设计选择</strong>：当前计算是 Riley 时间结局中的总体风险精度
+T1 要求，不包含所有模型开发准则。较短随访外推至 10
+年尤其依赖常数风险等模型假设。</li>
 <li>
 <strong>数学公式与出处</strong>：<span class="math inline">\(F(t) =
 1 - e^{-\lambda t}\)</span>；求解使人年数 <span class="math inline">\(T\)</span> 满足 <span class="math inline">\(F(t)\)</span> 双侧置信限误差均 <span class="math inline">\(\le \delta\)</span>（准则 T1）。Riley et
@@ -2727,8 +3259,9 @@ al. (2020). <em>BMJ</em>, 368, m441 (Figure 1)。</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需随访累计 <strong>2366
-人年</strong>。</li>
+<strong>输出解读与招募安排</strong>：需要 2366
+个在险人年。如果预计每名患者实际可贡献平均 5 个在险人年，可作 474
+人的初步资源估计；实际人数还取决于事件、删失、入组进度及其他模型开发要求。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2736,9 +3269,18 @@ al. (2020). <em>BMJ</em>, 368, m441 (Figure 1)。</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：标书快速粗算：10 个候选预测变量的
-logistic 回归模型，结局事件发生率 30%，按经典每变量 10
-事件规则需要多少样本？</li>
+<strong>研究背景与人群</strong>：研究者希望在申请书早期估计一个二分类死亡预测模型的大致样本规模，预计候选模型共有
+10 个需估计的预测参数。</li>
+<li>
+<strong>实施与主要结局</strong>：每位患者有一个完整的住院结局，事件数指死亡人数；分类变量的多个系数、交互项及非线性项都应纳入参数计数。</li>
+<li>
+<strong>参数设定与依据</strong>：用
+<code>epv = 10</code>、<code>n_parameters = 10</code>、<code>event_prevalence = 0.30</code>
+演示，先求事件需求，再按预期事件比例换算人数。</li>
+<li>
+<strong>设计选择</strong>：EPV
+是粗略资源估算规则，不是针对检验效能或预测误差的完整计算。方案深化时可结合第
+6.5 节的性能假设与收缩要求进一步规划。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n_{events} = EPV \times k, \quad n_{subjects} =
 n_{events} / \pi\]</span> <em>出处</em>：Peduzzi et al. (1996). <em>J
@@ -2778,7 +3320,9 @@ Clin Epidemiol</em>, 49(12), 1373-1379.</li>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需 100 例事件，总共需调查 334 人。</li>
+<strong>输出解读与招募安排</strong>：目标至少 100
+个事件，按事件率换算为 334
+名患者。该人数只使预期事件数接近目标；实际观察到的事件数仍可能不足，应在招募和随访计划中予以考虑。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2786,10 +3330,18 @@ Clin Epidemiol</em>, 49(12), 1373-1379.</li>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：两位放射科医生独立判读同一批乳腺钼靶片：预期一致性
-<span class="math inline">\(\kappa = 0.70\)</span>，要求 95%
-置信区间半宽不超过 <span class="math inline">\(\pm
-0.10\)</span>，需多少受试者/标本？</li>
+<strong>研究背景与人群</strong>：两位放射科医生拟在一套预先构建、阳性与阴性判读比例接近平衡的乳腺影像评估样本中，估计二分类判读的一致性。</li>
+<li>
+<strong>实施与主要结局</strong>：两位医生相互盲法独立判读同一批影像，每名患者形成一对分类结果；κ
+描述超出偶然一致的一致程度，不是敏感度或特异度。</li>
+<li>
+<strong>参数设定与依据</strong>：本例使用平衡边际比例
+<code>pi1 = pi2 = 0.50</code>、预期 <code>kappa = 0.70</code>、95%
+区间半宽
+<code>d = 0.10</code>。正式研究的边际比例应来自拟应用人群或明确的样本富集方案。</li>
+<li>
+<strong>设计选择</strong>：这是单个 κ
+的精度规划，分析单位是被判读的患者/标本。读者人数固定为两名，增加同一图像的重复判读不能替代更多独立标本。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q =
@@ -2797,12 +3349,12 @@ Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q =
 (1996). <em>Psychol Methods</em>, 1(2), 150-153.</li>
 </ul>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res_6_8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"kappa"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>, pi1 <span class="op">=</span> <span class="fl">0.30</span>, pi2 <span class="op">=</span> <span class="fl">0.30</span>, kappa <span class="op">=</span> <span class="fl">0.70</span>, d <span class="op">=</span> <span class="fl">0.10</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">res_6_8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"kappa"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>, pi1 <span class="op">=</span> <span class="fl">0.50</span>, pi2 <span class="op">=</span> <span class="fl">0.50</span>, kappa <span class="op">=</span> <span class="fl">0.70</span>, d <span class="op">=</span> <span class="fl">0.10</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_6_8</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Cohen's kappa estimation (CI precision)"</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Required sample size</span>: <span style="color: #0000BB;">165</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Required sample size</span>: <span style="color: #0000BB;">196</span></span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • pi1/pi2 = expected Rating-1 proportions for rater 1 / rater 2</span></span>
@@ -2815,19 +3367,20 @@ Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q =
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Step 1: Identify study design: Cohen's kappa estimation (CI precision).</span></span>
-<span><span class="co">#&gt; • Step 2: Input parameters: pi1 = 0.30, pi2 = 0.30, kappa = 0.70, d = 0.10,</span></span>
-<span><span class="co">#&gt; alpha = 0.05, Q = 0.4272.</span></span>
+<span><span class="co">#&gt; • Step 2: Input parameters: pi1 = 0.50, pi2 = 0.50, kappa = 0.70, d = 0.10,</span></span>
+<span><span class="co">#&gt; alpha = 0.05, Q = 0.51.</span></span>
 <span><span class="co">#&gt; • Step 3: Apply design formula: n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2.</span></span>
-<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Required sample size: 165; Total</span></span>
-<span><span class="co">#&gt; sample size: 165.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculated sample size metrics: Required sample size: 196; Total</span></span>
+<span><span class="co">#&gt; sample size: 196.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
 <span><span class="co">#&gt; Primary: Cantor, A. B. (1996). Sample-size calculations for Cohen's kappa. Psychological Methods, 1(2), 150-153 (Fleiss-Cohen-Everitt 1969 asymptotic variance; worked examples N=165 and N=214).</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：需调查 <strong>165
-名受试者</strong>。</li>
+<strong>输出解读与招募安排</strong>：需 196
+个独立标本，每个由两位读者各判读一次，共 392
+次判读。这一结果对应本例的平衡判读样本，不能把同一精度要求直接套用于边际比例明显不同的人群。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2835,8 +3388,18 @@ Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q =
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：比较新结构化报告清单（预期 <span class="math inline">\(\kappa_1 = 0.70\)</span>）与传统阅片（预期 <span class="math inline">\(\kappa_2 =
-0.50\)</span>）在两组独立阅片者中的一致性是否显著提升，每组各需多少阅片者/标本？</li>
+<strong>研究背景与人群</strong>：影像科拟比较结构化报告清单与常规判读流程的一致性，将两组独立的患者影像分别用于两种流程，每个组内由两位读者形成配对判读。</li>
+<li>
+<strong>实施与主要结局</strong>：分别估计两组
+κ，再比较其差异；两组标本来源与疾病谱应可比。相同影像被两种流程重复判读时，两个
+κ 不再独立，不能直接套用本例。</li>
+<li>
+<strong>参数设定与依据</strong>：设 κ 为 0.70 与 0.50，边际比例均为
+0.50，双侧 α=0.05、效能
+80%。所需人数指每组被判读的标本数，不是需要招募同样数量的放射科医生。</li>
+<li>
+<strong>设计选择</strong>：采用两个独立 κ
+的差异检验，读者培训和阳性判定标准需保持可比，避免流程间系统性地改变分类定义。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[n =
 \frac{\left[z_{\alpha}\sqrt{2Q_1} +
@@ -2876,8 +3439,8 @@ z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}\]</span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：两组各需评估 <strong>214
-例标本</strong>。</li>
+<strong>输出解读与执行安排</strong>：每组需 214 个标本，两组合计 428
+个；每个标本由两位读者评价，因此合计约 856 次判读。</li>
 </ul>
 </div>
 <div class="section level3">
@@ -2885,8 +3448,19 @@ z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}\]</span>
 </h3>
 <ul>
 <li>
-<strong>临床场景</strong>：某市对含糖饮料征收“糖税”的政策评估：干预前后各监测
-12 个月度消费量时点，预期政策产生 2 个结局标准差的水平跃升（<span class="math inline">\(\delta = 2\)</span>），月度数据自相关系数 <span class="math inline">\(\rho = 0.30\)</span>。</li>
+<strong>研究背景与人群</strong>：医院拟在明确的日期实施抗菌药管理政策，利用实施前
+12 个月和实施后 12 个月的月度抗菌药使用强度监测其即时水平变化。</li>
+<li>
+<strong>实施与主要结局</strong>：每个时间点为全院月度汇总指标，例如每百住院患者日的用药强度；时间点之间可能相关，月内患者数不是本计算的独立样本量。</li>
+<li>
+<strong>参数设定与依据</strong>：设即时变化为结局残差 SD 的 2 倍，即
+<code>effect_sd = 2</code>，AR(1) 相关系数
+<code>rho = 0.30</code>，<code>n_pre = n_post = 12</code>。该标准化效应是较强的演示假设，不能读成下降
+2%。</li>
+<li>
+<strong>设计选择</strong>：给定时间点数后计算近似效能，仅描述水平跃变及简化
+AR(1)
+调整。季节性、原有趋势、渐进斜率变化或同时发生的其他政策，需要在正式分段回归或模拟中处理。</li>
 <li>
 <strong>数学公式与出处</strong>： <span class="math display">\[\text{power} = \Phi\left(\frac{\delta}{SE} -
 z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} +
@@ -2931,8 +3505,9 @@ z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} +
 <span><span class="co">#&gt; </span></span></code></pre></div>
 <ul>
 <li>
-<strong>输出解读</strong>：在该序列配置下，可实现 <strong>94.9%
-的检验效能</strong>。</li>
+<strong>输出解读与执行安排</strong>：24
+个月度时间点在本近似下的效能为 94.9%。结果不表示需要 24
+名患者，也不保证已充分控制季节与时间趋势；需结合预计月度数据质量安排监测长度和分析。</li>
 </ul>
 <hr>
 </div>
@@ -2941,12 +3516,129 @@ z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} +
 <h2 id="第七章结果解读标书撰写模板与实战图表展示">第七章：结果解读、标书撰写模板与实战图表展示<a class="anchor" aria-label="anchor" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0%E7%BB%93%E6%9E%9C%E8%A7%A3%E8%AF%BB%E6%A0%87%E4%B9%A6%E6%92%B0%E5%86%99%E6%A8%A1%E6%9D%BF%E4%B8%8E%E5%AE%9E%E6%88%98%E5%9B%BE%E8%A1%A8%E5%B1%95%E7%A4%BA"></a>
 </h2>
 <div class="section level3">
+<h3 id="两份完整方案如何落地">两份完整方案如何落地<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E4%BB%BD%E5%AE%8C%E6%95%B4%E6%96%B9%E6%A1%88%E5%A6%82%E4%BD%95%E8%90%BD%E5%9C%B0"></a>
+</h3>
+<div class="section level4">
+<h4 id="方案-a降压-rct-的参数依据与预算敏感性">方案 A：降压 RCT 的参数依据与预算敏感性<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%A1%88-a%E9%99%8D%E5%8E%8B-rct-%E7%9A%84%E5%8F%82%E6%95%B0%E4%BE%9D%E6%8D%AE%E4%B8%8E%E9%A2%84%E7%AE%97%E6%95%8F%E6%84%9F%E6%80%A7"></a>
+</h4>
+<p>第 1.1 节的入组人群、12
+周降幅终点、独立患者分析单位需要同时写进方案。参数依据应具体到研究编号、样本规模、降幅均值及
+SD；若文献只报告基线血压或标准误，先完成适当转换或获取所需资料，再代入计算。</p>
+<p>下表保留对照组均值 10、双侧 α=0.05、效能 80%，比较 SD 从 3 增至
+4、真实组间差从 2 缩小至 1.5 的影响。每组招募数另按 10%
+缺失膨胀，适合用于评估招募预算是否能覆盖合理的不确定性。</p>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rct_plan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"基准假设"</span>, <span class="st">"变异更大"</span>, <span class="st">"差异更小"</span>, <span class="st">"两项同时变化"</span><span class="op">)</span>,</span>
+<span>  mean2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">12</span>, <span class="fl">11.5</span>, <span class="fl">11.5</span><span class="op">)</span>,</span>
+<span>  sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rct_plan</span><span class="op">$</span><span class="va">complete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rct_plan</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>,</span>
+<span>    mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="va">rct_plan</span><span class="op">$</span><span class="va">mean2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, sd <span class="op">=</span> <span class="va">rct_plan</span><span class="op">$</span><span class="va">sd</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">)</span><span class="op">$</span><span class="va">n_per_group</span></span>
+<span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rct_plan</span><span class="op">$</span><span class="va">recruit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">rct_plan</span><span class="op">$</span><span class="va">complete</span> <span class="op">/</span> <span class="fl">0.9</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rct_plan</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"情景"</span>, <span class="st">"研究组均值"</span>, <span class="st">"降幅 SD"</span>, <span class="st">"可分析人数/组"</span>, <span class="st">"招募人数/组"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">情景</th>
+<th align="right">研究组均值</th>
+<th align="right">降幅 SD</th>
+<th align="right">可分析人数/组</th>
+<th align="right">招募人数/组</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">基准假设</td>
+<td align="right">12.0</td>
+<td align="right">3</td>
+<td align="right">37</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">变异更大</td>
+<td align="right">12.0</td>
+<td align="right">4</td>
+<td align="right">64</td>
+<td align="right">72</td>
+</tr>
+<tr class="odd">
+<td align="left">差异更小</td>
+<td align="right">11.5</td>
+<td align="right">3</td>
+<td align="right">64</td>
+<td align="right">72</td>
+</tr>
+<tr class="even">
+<td align="left">两项同时变化</td>
+<td align="right">11.5</td>
+<td align="right">4</td>
+<td align="right">113</td>
+<td align="right">126</td>
+</tr>
+</tbody>
+</table>
+<p>方案中应明确最终采用哪一行、原因是什么、能否按期获得这些独立患者及完整终点评估。不能以“所有参数都来自文献”为概括，省略不同研究人群和测量定义的差异。</p>
+</div>
+<div class="section level4">
+<h4 id="方案-b敏感度研究的病例配额与筛查容量">方案 B：敏感度研究的病例配额与筛查容量<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%A1%88-b%E6%95%8F%E6%84%9F%E5%BA%A6%E7%A0%94%E7%A9%B6%E7%9A%84%E7%97%85%E4%BE%8B%E9%85%8D%E9%A2%9D%E4%B8%8E%E7%AD%9B%E6%9F%A5%E5%AE%B9%E9%87%8F"></a>
+</h4>
+<p>第 5.1
+节需要的是疾病阳性病例，而医院最初接触的是尚未确诊的受检者。先确定 196
+例可评价确诊病例的目标，再依据拟入组门诊的患病率估计总检查容量；患病率应来自同样转诊条件下的连续病例登记。</p>
+<p>下表比较 10%、20%、30% 患病率时的平均换算与 90%
+病例数量保障。它把“估计敏感度的 95% 置信水平”和“得到足够病例的 90%
+概率”分开，二者服务于不同的规划问题。</p>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">diag_plan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prevalence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">diag_plan</span><span class="op">$</span><span class="va">expected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span></span>
+<span>  <span class="va">res_5_1</span><span class="op">$</span><span class="va">target_state_cases_needed</span> <span class="op">/</span> <span class="va">diag_plan</span><span class="op">$</span><span class="va">prevalence</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">diag_plan</span><span class="op">$</span><span class="va">guaranteed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">diag_plan</span><span class="op">$</span><span class="va">prevalence</span>, <span class="kw">function</span><span class="op">(</span><span class="va">prev</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/screen_required.html">screen_required</a></span><span class="op">(</span><span class="va">res_5_1</span><span class="op">$</span><span class="va">target_state_cases_needed</span>, <span class="va">prev</span>, beta <span class="op">=</span> <span class="fl">0.10</span><span class="op">)</span></span>
+<span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">diag_plan</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"门诊患病率"</span>, <span class="st">"按期望值换算"</span>, <span class="st">"90% 概率保障人数"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">门诊患病率</th>
+<th align="right">按期望值换算</th>
+<th align="right">90% 概率保障人数</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.1</td>
+<td align="right">1960</td>
+<td align="right">2132</td>
+</tr>
+<tr class="even">
+<td align="right">0.2</td>
+<td align="right">980</td>
+<td align="right">1061</td>
+</tr>
+<tr class="odd">
+<td align="right">0.3</td>
+<td align="right">654</td>
+<td align="right">704</td>
+</tr>
+</tbody>
+</table>
+<p>这些人数对应完成待评价检测和参考标准的受检者。临床流程还需确定谁承担参考检查、无效标本如何补采、每月能完成多少套检查；如果只有约
+95%
+的预约者完成两项检查，单纯把表中人数当作邀请人数并不能保留原来的病例数量保障。</p>
+</div>
+</div>
+<div class="section level3">
 <h3 id="论文与标书方法学撰写填空模板">论文与标书方法学撰写填空模板<a class="anchor" aria-label="anchor" href="#%E8%AE%BA%E6%96%87%E4%B8%8E%E6%A0%87%E4%B9%A6%E6%96%B9%E6%B3%95%E5%AD%A6%E6%92%B0%E5%86%99%E5%A1%AB%E7%A9%BA%E6%A8%A1%E6%9D%BF"></a>
 </h3>
 <p>默认 <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> 已包含纯文本公式、LaTeX
 源码、计算过程和参考文献。 调用 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>
 可进一步查看全部输入参数、设计分类及已记录的调整：</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">res_1_1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Summary</span></span>
@@ -2996,23 +3688,31 @@ z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} +
 </h4>
 <blockquote>
 <p><strong>【RCT 方案填空示例】</strong>
-本研究为两臂平行、双盲、随机对照优效性试验。根据既往预试验（Author et
-al., Year），对照组主要终点均值预计为 10 mmHg，试验组预计为 12
-mmHg，两组联合标准差为 3 mmHg。设定双侧检验水准 <span class="math inline">\(\alpha = 0.05\)</span>，检验效能 <span class="math inline">\(1 - \beta = 80\%\)</span>。采用两独立样本 <span class="math inline">\(t\)</span> 检验样本量估算公式（Chow et al.,
-2017），每组需 37 例受试者。考虑 10%
-随访脱落率，最终两组共计划招募受试者 84 例（每组 42 例）。上述计算采用 R
-语言 <code>sampleSizeCalc</code> 程序包完成。</p>
+本研究为两臂平行、双盲、随机对照试验，主要结局为基线至第 12
+周的收缩压降幅。根据【填写参数来源及其人群与测量定义】，预期两组平均降幅分别为
+10 和 12 mmHg，降幅合并标准差为 3 mmHg。采用双侧 α=0.05、效能 80%
+的两独立样本 t 检验规划，每组需 37 名可分析患者。按 10%
+的主要结局缺失预留，每组计划招募 42 人，合计 84 人。计算使用 R 包
+sampleSizeCalc，公式及方法学来源详见输出报告；缺失结局和主要分析集按预先制定的统计分析计划处理。</p>
+</blockquote>
+<blockquote>
+<p><strong>【诊断研究方案填空示例】</strong>
+本研究拟在【填写拟应用的转诊人群】中连续验证锁定阈值的检测方法，所有受检者按统一参考标准确定疾病状态。基于【填写敏感度和患病率资料来源】，预期敏感度为
+85%，计划以 95% 置信区间半宽约 0.05 估计敏感度，需 196
+例可评价疾病阳性病例。假设该人群患病率为
+20%，为使获得足够病例的概率至少为 90%，计划完成 1061
+名受检者的全套检测。该数量保障不涵盖未完成参考检查者，具体补充招募流程另行规定。</p>
 </blockquote>
 </div>
 </div>
 <div class="section level3">
 <h3 id="统计效能曲线与敏感性分析图绘制">统计效能曲线与敏感性分析图绘制<a class="anchor" aria-label="anchor" href="#%E7%BB%9F%E8%AE%A1%E6%95%88%E8%83%BD%E6%9B%B2%E7%BA%BF%E4%B8%8E%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90%E5%9B%BE%E7%BB%98%E5%88%B6"></a>
 </h3>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 样本量 vs 统计效能曲线</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_1_1</span>, type <span class="op">=</span> <span class="st">"power"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sampleSizeCalc-guide-zh_files/figure-html/plot-power-1.png" class="r-plt" alt="" width="691.2"></p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 样本量 vs 效应量敏感性曲线</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_1_1</span>, type <span class="op">=</span> <span class="st">"sample_size"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sampleSizeCalc-guide-zh_files/figure-html/plot-effect-1.png" class="r-plt" alt="" width="691.2"></p>

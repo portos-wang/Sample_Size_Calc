@@ -1,4 +1,4 @@
-# Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.13/6.14)
+# Likelihood ratio sample size via log(LR) CI (Hajian-Tilaki Eq 6.10-6.14)
 
 Solves the CI-width equation for a target LR: given expected Se and Sp,
 the LR+ (or LR-) is determined; n per group is found such that the

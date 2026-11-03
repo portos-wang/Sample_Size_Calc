@@ -23,23 +23,37 @@ devtools::install_github("portos-wang/sampleSizeCalc")
 devtools::install_local("path/to/Sample_Size_Calc")
 ```
 
-## Quick start: real clinical scenarios
+## Quick start: clinical study planning
 
-**Scenario 1 — Antihypertensive RCT (continuous endpoint).** A
-cardiology trial compares a new drug with placebo for systolic blood
-pressure reduction. Based on a phase-2 study, the placebo arm is
-expected to drop 10 mmHg and the new drug 12 mmHg, with a pooled SD of 3
-mmHg (two-sided \\\alpha = 0.05\\, 80% power). How many patients per
-arm?
+These are teaching protocols with illustrative clinical inputs. In a
+real study, document compatible evidence for the expected effects,
+variability, prevalence, and margins; a citation for the formula does
+not establish those clinical assumptions. The
+[English](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
+and
+[Chinese](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html)
+guides expand 52 scenarios into population, endpoint, parameter, design,
+and recruitment decisions.
+
+**Scenario 1 — Antihypertensive RCT (continuous endpoint).** A blinded,
+1:1 parallel trial enrolls adults aged 40–75 with stable background
+therapy. The primary endpoint is baseline minus week-12 systolic BP,
+using the same averaged seated-reading protocol at both visits. Assume
+mean reductions of 10 mmHg with placebo and 12 mmHg with study
+treatment, with change-score SD 3 mmHg, two-sided alpha 0.05, and power
+80%. The relevant SD is for the change score, not baseline BP. The
+decision is how many independent patients with complete endpoints are
+required.
 
 ``` r
 
 library(sampleSizeCalc)
 
 # design x task x outcome
-calculate("rct", "test", "mean",
+trial_mean <- calculate("rct", "test", "mean",
   mean1 = 10, mean2 = 12, sd = 3
 )
+trial_mean
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Two independent samples, mean comparison"
@@ -69,15 +83,25 @@ calculate("rct", "test", "mean",
 #> 
 ```
 
-**Scenario 2 — *H. pylori* eradication RCT (binary endpoint).** Standard
-triple therapy eradicates 70% of infections; a new bismuth quadruple
-regimen is expected to reach 85%.
+This requires 37 complete patients per arm. If 10% are expected to lack
+the primary endpoint, plan 42 recruits per arm (84 total); this
+additional allowance is not included in the displayed RCT result.
+
+**Scenario 2 — *H. pylori* eradication RCT (binary endpoint).** Adults
+with confirmed infection are randomized to two 14-day regimens. Define
+eradication by a standardized post-treatment breath test in a fixed
+follow-up window, with prespecified rules for invalid tests, rescue
+treatment, and missing assessments. Assume cure rates of 85% and 70%,
+with independent groups, two-sided alpha 0.05, and power 80%. Evidence
+for these rates should match treatment history and local resistance
+patterns; symptomatic improvement is not the eradication endpoint.
 
 ``` r
 
-calculate("rct", "test", "proportion",
+trial_prop <- calculate("rct", "test", "proportion",
   p1 = 0.85, p2 = 0.70
 )
+trial_prop
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Two independent proportions"
@@ -111,15 +135,23 @@ calculate("rct", "test", "proportion",
 #> 
 ```
 
-**Scenario 3 — Generic vs originator antihypertensive
-(bioequivalence).** A \\2\times2\\ crossover study in healthy
-volunteers, intra-subject CV = 25%, expected geometric mean ratio
-\\\theta_0 = 1.0\\, standard 80–125% acceptance range (Philips 1990
-exact TOST).
+The result is 121 patients per arm, 242 total. Endpoint completeness of
+90% would require 135 recruits per arm, alongside the prespecified
+analysis and missing-data strategy.
+
+**Scenario 3 — Test versus reference formulation (bioequivalence).**
+Eligible healthy adults are randomized to AB or BA in a two-period
+crossover study. Evaluate one prespecified log-transformed PK endpoint,
+such as AUC, with standardized sampling and a justified washout period.
+Assume within-subject CV 25%, expected geometric mean ratio 1.0,
+acceptance limits 0.80–1.25, one-sided alpha 0.05, and target power 80%.
+CV should come from compatible crossover data for the same PK endpoint;
+additional co-primary PK endpoints require their own planning.
 
 ``` r
 
-calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
+be_trial <- calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
+be_trial
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Bioequivalence (2x2 crossover, exact TOST noncentral t)"
@@ -158,15 +190,26 @@ calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
 #> 
 ```
 
-**Scenario 4 — Colorectal cancer screening kit (diagnostic accuracy).**
-Expected sensitivity 85%, required CI half-width \\\pm 5\\\\, clinic
-prevalence 20%: how many confirmed cases and how many screens?
+This needs 12 complete subjects per sequence, 24 total, each completing
+both periods. With 10% incomplete follow-up, a balanced recruitment plan
+is 28 subjects.
+
+**Scenario 4 — Diagnostic sensitivity in a colorectal referral clinic.**
+Consecutively enroll symptomatic or high-risk patients referred for
+colonoscopy, collect the index-test specimen before reference
+assessment, and keep the positive threshold fixed. Assume sensitivity
+85%, a 95% CI half-width of 0.05, and disease prevalence 20% in this
+referral setting. Prevalence converts confirmed-case requirements into
+screening capacity; it is not the test sensitivity and need not match
+community prevalence. Plan specificity separately if it is also a
+primary objective.
 
 ``` r
 
-calculate("diagAccuracy", "estimate", "proportion",
+diag_precision <- calculate("diagAccuracy", "estimate", "proportion",
   prob = 0.85, d = 0.05, prevalence = 0.2
 )
+diag_precision
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic accuracy (single)"
@@ -197,13 +240,25 @@ calculate("diagAccuracy", "estimate", "proportion",
 #> 
 ```
 
-**Scenario 5 — Diabetes prevalence survey (single proportion).**
-Anticipated prevalence 30%, absolute precision \\\pm 5\\\\, 95% CI
-(Bhardwaj 2024 worked example).
+The requirement is 196 confirmed cases, with an expectation-based
+screening total of 980. A 90% probability of enough cases instead
+requires 1061 complete participants under the binomial prevalence
+assumption. Incomplete reference examinations need additional
+operational allowance.
+
+**Scenario 5 — Diabetes prevalence in a defined older population.** A
+district survey samples eligible residents aged 65 years or older from
+an explicit population frame. Apply the same disease-ascertainment
+protocol to each participant. For teaching, assume prevalence 30% and
+seek a 95% CI absolute half-width of 5 percentage points; this is
+precision estimation, so no between-group difference or target power is
+specified. Cluster sampling and nonresponse require separate
+adjustments.
 
 ``` r
 
-calculate("singleProportion", p = 0.30, precision = 0.05) # -> 323
+survey <- calculate("singleProportion", p = 0.30, precision = 0.05)
+survey
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single proportion estimation (precision)"
@@ -235,38 +290,61 @@ calculate("singleProportion", p = 0.30, precision = 0.05) # -> 323
 #> 
 ```
 
-Unambiguous designs allow omitting `task`/`outcome`:
+Obtain 323 valid records; at a 90% response rate, invite about 359
+people before any design-effect adjustment.
+
+**Scenario 6 — Precision of a continuous biomarker’s AUC.** Select
+reference-confirmed cases and clinically comparable non-cases in equal
+numbers, using a frozen score and one observation per patient. Assume
+AUC 0.80 and a 95% CI half-width of 0.10 under a binormal variance
+model. The quota sample estimates discrimination; it does not directly
+estimate population prevalence. Because this design is unambiguous,
+`task` and `outcome` can be omitted:
 
 ``` r
 
-calculate("diagAUC", auc = 0.80, d = 0.05)
+auc_precision <- calculate("diagAUC", auc = 0.80, d = 0.10,
+  ratio = 1, var_method = "binormal"
+)
+auc_precision
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
+#> • Cases needed: 46
+#> • Total subjects to screen: 92
+#> • Total subjects: 92
+#> Parameter roles
+#> 
+#> • auc = anticipated area under the ROC curve
+#> • precision = desired CI half-width L
+#> • ratio = case:control ratio R (cases:non-cases; default 1)
+#> • var_method = binormal variance function
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * Var(AUC)`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot Var(AUC)$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,
-#> prevalence = 1 (alpha = 0.05).
-#> • Step 2: Hanley-McNeil variance components: Q1 = AUC/(2-AUC) = 0.6667, Q2 =
-#> 2*AUC^2/(1+AUC) = 0.7111.
-#> • Step 3: Compute variance factor: V(AUC) = Inf.
-#> • Step 4: Calculate cases needed: n_cases = (Z_(1-alpha/2) / d)^2 * V(AUC) =
-#> (1.96 / 0.05)^2 * Inf = Inf.
-#> • Step 5: Adjust for prevalence: screening total = n_cases / prevalence = Inf /
-#> 1 = Inf.
-#> • Step 6: Round up to integer: Target cases needed = Inf, Total subjects to
-#> screen = Inf.
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
+#> 1, alpha = 0.05.
+#> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
+#> = 0.1195.
+#> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
+#> (1.96/0.10)^2 * 0.1195 = 45.89.
+#> • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =
+#> 45.89*(1+1) = 91.78.
+#> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
 #> Reference:
-#> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
-#> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
+#>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
+#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
+
+Plan 46 cases and the same number of non-cases, each contributing a
+complete score and reference result.
 
 Illegal combinations error with the list of legal ones. The [English
 guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
@@ -431,12 +509,11 @@ for an executed example and instructions in English and Chinese.
 
 | Family | Designs |
 |----|----|
-| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/rate/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A’Hern) |
+| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A’Hern) |
 | Observational | `cohort` (proportion/rate), `caseControl`, `caseControlMatched`, `crosstab` |
 | Diagnostic | `diagAccuracy` (estimate/test/dual-endpoint), `diagAccuracyCompare` (test/NI/equivalence), `diagAUC`, `diagAUCCompare` (test/NI/equivalence), `diagLR` |
 | Estimation | `singleProportion`, `singleMean`, `singleCorrelation` |
-| Complex | `clusterRCT`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
-| Deferred | `kappa`, `steppedWedge` (formula sources under verification) |
+| Complex | `clusterRCT`, `steppedWedge`, `kappa`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
 
 ## Literature
 
@@ -472,7 +549,7 @@ along with the package:
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
-  version = {3.1.0},
+  version = {3.1.1},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
