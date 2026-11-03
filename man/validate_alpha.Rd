@@ -7,12 +7,18 @@
 validate_alpha(alpha)
 }
 \arguments{
-\item{alpha}{Type I error rate}
+\item{alpha}{Type I error rate; single numeric strictly inside (0, 1).
+Convention: 0.05 for two-sided tests; 0.025 or 0.05 for one-sided
+non-inferiority/superiority tests. Values outside (0, 1) abort.}
 }
 \value{
-Validated alpha value
+Validated alpha value (invisible numeric scalar)
 }
 \description{
 Validate alpha (type I error) parameter
+}
+\examples{
+validate_alpha(0.05)   # OK
+try(validate_alpha(1.5))  # structured error
 }
 \keyword{internal}

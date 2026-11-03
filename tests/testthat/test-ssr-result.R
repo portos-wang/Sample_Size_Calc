@@ -73,3 +73,33 @@ test_that("sample_size_calculator output remains valid under the validator", {
   # them because it only checks the required core fields.
   expect_error(validate_sample_size_result(res), NA)
 })
+
+test_that("new_sample_size_result sets and auto-derives calculation steps", {
+  # Auto-derivation
+  res_auto <- new_sample_size_result(
+    design = "rct",
+    task = "test",
+    outcome = "mean",
+    design_type = "Two independent samples, mean comparison",
+    parameters = list(mean1 = 10, mean2 = 12, sd = 3),
+    legacy = list(n_per_group = 37L, total_n = 74L)
+  )
+  expect_true(is.character(res_auto$calculation_steps))
+  expect_gt(length(res_auto$calculation_steps), 0)
+  expect_identical(res_auto$calculation, res_auto$calculation_steps)
+
+  # Custom calculation steps
+  custom_steps <- c("Step 1: Custom step", "Step 2: Custom calculation")
+  res_custom <- new_sample_size_result(
+    design = "rct",
+    task = "test",
+    outcome = "mean",
+    design_type = "Two independent samples, mean comparison",
+    parameters = list(mean1 = 10, mean2 = 12, sd = 3),
+    legacy = list(n_per_group = 37L, total_n = 74L),
+    calculation = custom_steps
+  )
+  expect_identical(res_custom$calculation, custom_steps)
+  expect_identical(res_custom$calculation_steps, custom_steps)
+})
+

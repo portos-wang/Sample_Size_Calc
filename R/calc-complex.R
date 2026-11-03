@@ -170,7 +170,7 @@ calculate_simon_two_stage <- function(p0, p1, alpha, power, optimizer) {
       p0 = p0, p1 = p1, alpha = alpha, power = power, optimizer = optimizer
     ),
     formula = "exact binomial: P(effective|p0) <= alpha and P(effective|p1) >= power",
-    formula_latex = NULL,
+    formula_latex = "$$P(\\text{reject } H_0 \\mid p_0) \\le \\alpha \\quad \\text{and} \\quad P(\\text{reject } H_0 \\mid p_1) \\ge 1-\\beta$$",
     reference = paste(
       "Primary: Simon, R. (1989). Optimal two-stage designs for phase II",
       "clinical trials. Controlled Clinical Trials, 10(1), 1-10.\n\n",
@@ -212,7 +212,7 @@ calculate_ahern <- function(p0, p1, alpha, power) {
           r_total = as.integer(r),
           parameters = list(p0 = p0, p1 = p1, alpha = alpha, power = power),
           formula = "P(X > r | p0) <= alpha and P(X > r | p1) >= power",
-          formula_latex = NULL,
+          formula_latex = "$$P(X > r \\mid p_0) \\le \\alpha \\quad \\text{and} \\quad P(X > r \\mid p_1) \\ge 1-\\beta$$",
           reference = paste(
             "Primary: A'Hern, R. P. (2001). Single stage and double sampling",
             "phase II trials. British Journal of Cancer, 85(2), 223-226."
@@ -391,10 +391,32 @@ calculate_predictive_epv <- function(n_parameters, epv, event_prevalence) {
 #' @param sigma_c2 Patient-sampling variance component
 #' @param rho1 Correlation, same reader different tests
 #' @param rho2 Correlation, different readers same test
-#' @param rho3 Correlation, different readers different tests
-#' @param alpha Type I error (two-sided F test)
-#' @param n_repeats Reading occasions per reader-test (Q, usually 1)
-#' @return Numeric power (0-1), invisible
+#' @param n Cases per test; number >= 1. In the paired-patient design this
+#'   is the total number of patients, each imaged under both tests.
+#' @param J Number of readers per test; integer >= 2 (the F test needs J-1 df).
+#' @param delta Difference in accuracy to detect; number > 0 (on the AUC or
+#'   accuracy metric scale, e.g. 0.10).
+#' @param sigma_b2 Between-reader variance component; number >= 0. Planning
+#'   heuristic: (accuracy range / 4)^2 (Zhou p. 223, Beam 1996).
+#' @param sigma_w2 Within-reader (occasion) variance component; number >= 0.
+#' @param sigma_c2 Patient-sampling (case) variance component; number >= 0
+#'   (e.g. 0.05 in the Zhou mammography example).
+#' @param rho1 Correlation, same reader different tests; in [0, 1).
+#' @param rho2 Correlation, different readers same test; in [0, 1).
+#' @param rho3 Correlation, different readers different tests; in [0, 1).
+#'   The paired-patient, paired-reader parameterisation expects
+#'   rho1 > rho2 > rho3 > 0 (Zhou Table 6.4); violated orderings warn.
+#' @param alpha Type I error of the two-sided F test; in (0, 1), default 0.05.
+#' @param n_repeats Reading occasions per reader-test (Q); integer >= 1,
+#'   usually 1.
+#' @return Numeric power (0-1), invisible. The full result object (parameters,
+#'   formula, noncentrality) is attached as a `sample_size_result`.
+#' @examples
+#' # Mammography MRMC planning (Zhou 2011 p. 225): 50 cases, 8 readers,
+#' # detect an AUC difference of 0.10 between two imaging techniques
+#' mrmc_power(n = 50, J = 8, delta = 0.10,
+#'   sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05,
+#'   rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
 #' @export
 mrmc_power <- function(n, J, delta, sigma_b2, sigma_w2, sigma_c2,
                        rho1, rho2, rho3, alpha = 0.05, n_repeats = 1) {
@@ -453,7 +475,7 @@ mrmc_power <- function(n, J, delta, sigma_b2, sigma_w2, sigma_c2,
         noncentrality_lambda = round(lambda, 4)
       ),
       formula = "lambda = J*delta^2/(2*[sb2(1-r1) + sw2/Q + sc2(1-r1)/n + r2*sb2*((1-r1)+(J-1)(r2-r3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha})",
-      formula_latex = NULL,
+      formula_latex = "$$\\lambda = \\frac{J \\cdot \\delta^2}{2\\left[\\sigma_b^2(1-r_1) + \\frac{\\sigma_w^2}{Q} + \\frac{\\sigma_c^2(1-r_1)}{n} + r_2 \\sigma_b^2((1-r_1)+(J-1)(r_2-r_3))\\right]}, \\quad \\text{Power} = P(F_{1,J-1}(\\lambda) > F_{1-\\alpha})$$",
       reference = paste(
         "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
         "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
@@ -673,7 +695,7 @@ calculate_stepped_wedge <- function(theta, tau2, sigma2_ind, m, n_clusters,
       alpha = alpha
     ),
     formula = "Var = I*t2*(t2+T*s2)/((I*U-W)*t2 + (U^2+I*T*U-T*W-I*V)*s2); power = Phi(|theta|/se - z)",
-    formula_latex = NULL,
+    formula_latex = "$$\\text{Var}(\\hat{\\theta}) = \\frac{I \\tau^2(\\tau^2+T\\sigma^2)}{(IU-W)\\tau^2 + (U^2+ITU-TW-IV)\\sigma^2}, \\quad \\sigma^2 = \\sigma_{ind}^2/m, \\quad \\text{Power} = \\Phi\\left(\\frac{|\\theta|}{\\text{SE}} - z_{1-\\alpha/2}\\right)$$",
     reference = paste(
       "Primary: Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of",
       "stepped wedge cluster randomized trials. Contemporary Clinical Trials,",
@@ -773,7 +795,7 @@ calculate_predictive_riley_binary <- function(prev, n_parameters, r2_cs,
       mape = mape, precision_delta = precision_delta, alpha = alpha
     ),
     formula = "B1: n=(z/d)^2*p(1-p); B3: n=P/((S-1)*ln(1-R2cs/S)); n = max(B1, B3)",
-    formula_latex = NULL,
+    formula_latex = "$$n_{B1} = \\left(\\frac{z_{1-\\alpha/2}}{\\delta}\\right)^2 \\phi(1-\\phi), \\quad n_{B3} = \\frac{p}{(S-1)\\ln(1 - R_{CS}^2/S)}, \\quad n = \\max(n_{B1}, n_{B3})$$",
     reference = paste(
       "Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020).",
       "Calculating the sample size required for developing a clinical prediction",
@@ -840,7 +862,7 @@ calculate_predictive_timetoevent <- function(rate, timepoint, precision_delta,
       n_parameters = n_parameters, epv = epv
     ),
     formula = "F(t) = 1-exp(-rate*t); CI: 1-exp(-(rate +- z*sqrt(rate/T))*t); find T with margins <= delta",
-    formula_latex = NULL,
+    formula_latex = "$$F(t) = 1 - e^{-\\lambda t}, \\quad \\text{CI: } 1 - \\exp\\left(-\\left(\\lambda \\pm z_{1-\\alpha/2}\\sqrt{\\frac{\\lambda}{T}}\\right)t\\right)$$",
     reference = paste(
       "Primary: Riley, R. D., Ensor, J., Snell, K. I. E., et al. (2020).",
       "Calculating the sample size required for developing a clinical prediction",

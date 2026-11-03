@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7.2,
   fig.height = 4.8,
-  message = FALSE,
+  message = TRUE,
   warning = FALSE
 )
 
@@ -33,27 +33,29 @@ For clinical investigators, calculating sample size is often the most critical s
 
 Underpowered trials risk false-negative findings ($P > 0.05$), wasting research grants and patient effort. Conversely, overpowered trials waste resources and expose unnecessary subjects to experimental risks.
 
-The `sampleSizeCalc` package provides complete support for **42 specific clinical scenarios**, delivering publication-grade LaTeX formulas, primary citations with chapter/page numbers, and clear parameter roles.
+The `sampleSizeCalc` package provides support for **42 specific clinical scenarios**. Default printed results include the plain-text formula, LaTeX source, calculation process, and literature references, with parameter roles where available. **Every executable example below runs when the site is built**, so its output comes from the package.
 
 ---
 
 # Plain-English Glossary of Statistical Terms
 
-- **$\alpha$ (Type I Error / False Positive)**: The probability of declaring a treatment effective when it truly is not (conventionally **0.05**).
-- **$\text{Power} = 1 - \beta$ (True Positive Detection)**: The probability of catching a true effect (routinely **0.80** or **0.90**).
-- **Continuous vs. Binary Endpoints**: Continuous measures numerical values (mean reduction in SBP, mmHg); binary measures event status (cured vs. not cured).
-- **Two-Sided vs. One-Sided**: Two-sided tests for differences in either direction; one-sided tests are used for non-inferiority and directional superiority.
+- **$\alpha$ (Type I Error / False Positive)**: The probability of declaring a treatment effective when it truly is not — the "probability of convicting an innocent drug" (conventionally **0.05**).
+- **$\text{Power} = 1 - \beta$ (True Positive Detection)**: The probability of catching a true effect when it exists — the "probability of catching the real culprit" (routinely **0.80** or **0.90**).
+- **Continuous vs. Binary Endpoints**: Continuous measures numerical values (systolic BP drop in mmHg, fasting glucose in mmol/L); binary measures event status (eradicated vs. not, cured vs. not).
+- **Two-Sided vs. One-Sided**: Two-sided tests for differences in either direction (classical RCTs); one-sided tests for non-inferiority and directional superiority.
 - **Dropout Rate ($d$)**: Inflation formula $N_{\text{screen}} = \lceil N / (1 - d) \rceil$.
 
 ---
 
 # Unified Syntax: The Three-Axis Function `calculate()`
 
-$$\Large \texttt{calculate(design, task, outcome, ...)}$$
+$$\texttt{calculate(design, task, outcome, ...)}$$
 
-- **Axis 1 `design`**: `"rct"`, `"paired"`, `"cohort"`, `"caseControl"`, `"diagAccuracy"`, `"diagAUC"`, `"singleArmPhaseII"`, `"bioequivalence"`, etc.
-- **Axis 2 `task`**: `"test"`, `"estimate"`, `"noninferiority"`, `"superiority"`, `"equivalence"`.
-- **Axis 3 `outcome`**: `"mean"`, `"proportion"`, `"survival"`, `"auc"`, `"rate"`, `"ordinal"`.
+- **Axis 1 `design`**: what type of study? (`"rct"`, `"paired"`, `"cohort"`, `"caseControl"`, `"diagAccuracy"`, `"diagAUC"`, `"singleArmPhaseII"`, `"bioequivalence"`, `"clusterRCT"`, ...)
+- **Axis 2 `task`**: what scientific question? (`"test"` hypothesis testing, `"estimate"` CI precision, `"noninferiority"`, `"superiority"`, `"equivalence"`)
+- **Axis 3 `outcome`**: how is the endpoint measured? (`"mean"`, `"proportion"`, `"survival"`, `"auc"`, `"rate"`, `"ordinal"`, `"lr"`, `"correlation"`, `"events"`)
+
+Printing a result shows the formula in plain text and LaTeX, the calculation process, and references. `summary()` also lists all inputs, design axes, and recorded adjustments.
 
 ---
 
@@ -61,20 +63,45 @@ $$\Large \texttt{calculate(design, task, outcome, ...)}$$
 
 ## 1.1 Two Independent Means (Continuous Endpoint)
 
-- **Scenario**: Antihypertensive trial; control SBP reduction 10 mmHg, experimental 12 mmHg ($\Delta = 2$ mmHg), $\text{SD} = 3$ mmHg. Two-sided $\alpha = 0.05, \text{Power} = 80\%$.
-- **Formula**: $n = 2 \left( \frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2} \right)^2$ (Chow et al., 2017).
+- **Clinical scenario**: A cardiology group runs a phase-III antihypertensive trial of a new ACE-inhibitor vs. placebo. The phase-II data showed a mean systolic BP reduction of 10 mmHg on placebo and 12 mmHg on the new drug, with a pooled SD of 3 mmHg. Two-sided $\alpha = 0.05$, power 80%.
+- **Formula**:
+$$n = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
+  Chow, Shao, Wang & Lokhnygina (2017), *Sample Size Calculations in Clinical Research* (3rd ed.), CRC Press.
 
 ```{r rct-mean-en}
 res_1_1 <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8)
 print(res_1_1)
 ```
 
-- **Output**: 37 patients per arm, 74 total.
+- **Output**: 37 patients per arm, 74 total. The calculation process shows the normal approximation (about 35.32 per arm), then explains the noncentral t power calculation used by `stats::power.t.test()` and rounding to 37.
 
-## 1.2 Two Independent Proportions (Binary Cure Rate)
+### The four report components
 
-- **Scenario**: *H. pylori* eradication rate 85% vs. 70%. Two-sided $\alpha = 0.05, \text{Power} = 80\%$.
-- **Formula**: Fleiss (1980) asymptotic variance formula.
+| Component | Console label | Result field |
+|---|---|---|
+| Plain-text formula | `Formula (plain text)` | `formula` |
+| LaTeX source | `Formula (LaTeX)` | `formula_latex` |
+| Calculation process | `Calculation process` | `calculation_steps` (alias `calculation`) |
+| References | `Reference` | `reference` |
+
+```{r report-fields-en, eval = FALSE}
+res_1_1$formula
+cat(res_1_1$formula_latex)
+cat(res_1_1$calculation_steps, sep = "\n")
+cat(res_1_1$reference)
+```
+
+The R console displays copyable LaTeX source. To typeset it in R Markdown,
+use `cat(res_1_1$formula_latex)` in a chunk with `results = "asis"`.
+The [reporting guide](result-reporting.html) includes an executed example
+and instructions for saving the report.
+
+## 1.2 Two Independent Proportions (Binary Endpoint)
+
+- **Clinical scenario**: Gastroenterology trial of *H. pylori* eradication: 14-day bismuth quadruple therapy is expected to eradicate 85% of infections vs. 70% with standard triple therapy. Two-sided $\alpha = 0.05$, power 80%.
+- **Formula** (Fleiss asymptotic):
+$$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+p_2(1-p_2)}\right]^2}{(p_1-p_2)^2}$$
+  Fleiss, Tytun & Ury (1980), *Biometrics* 36(2), 343-346.
 
 ```{r rct-prop-en}
 res_1_2 <- calculate("rct", "test", "proportion", p1 = 0.85, p2 = 0.70, alpha = 0.05, power = 0.8)
@@ -85,8 +112,10 @@ print(res_1_2)
 
 ## 1.3 Survival Analysis (Log-Rank Test Events)
 
-- **Scenario**: NSCLC trial comparing immunotherapy vs. chemo (HR = 0.70, 1:1 allocation, 80% power).
-- **Formula**: Schoenfeld (1983) equation $E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1 - p_E) [\ln(HR)]^2}$.
+- **Clinical scenario**: Oncology trial of first-line immunotherapy vs. chemotherapy in non-small-cell lung cancer; the anticipated hazard ratio is HR = 0.70 with 1:1 allocation. How many deaths/progressions must accrue?
+- **Formula** (Schoenfeld):
+$$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1 - p_E)[\ln(HR)]^2}$$
+  Schoenfeld (1983), *Biometrics* 39(2), 499-503.
 
 ```{r rct-surv-en}
 res_1_3 <- calculate("rct", "test", "survival", hr = 0.70, pE = 0.50, alpha = 0.05, power = 0.8)
@@ -97,7 +126,10 @@ print(res_1_3)
 
 ## 1.4 Non-Inferiority Trial (Continuous Mean)
 
-- **Scenario**: Generic vs. reference antidiabetic; $\mu_1 = 10, \mu_2 = 9.5, \text{SD} = 3, \text{margin} = 1.0$.
+- **Clinical scenario**: A domestic generic antidiabetic must show it is not worse than the originator by more than the prespecified margin. On a 0-30 neuropathy symptom score the improvement is expected to be 10 vs. 9.5 points (SD = 3); the margin is $\Delta = 1.0$. One-sided $\alpha = 0.05$.
+- **Formula**:
+$$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 + \Delta}\right)^2$$
+  Chow et al. (2017), Chapter 4.
 
 ```{r rct-ni-mean-en}
 res_1_4 <- calculate("rct", "noninferiority", "mean", mean1 = 10, mean2 = 9.5, sd = 3, margin = 1, alpha = 0.05, power = 0.8)
@@ -106,9 +138,12 @@ print(res_1_4)
 
 - **Output**: 50 per arm, 100 total.
 
-## 1.5 Non-Inferiority Trial (Binary Proportion)
+## 1.5 Non-Inferiority Trial (Binary Endpoint)
 
-- **Scenario**: Generic antimicrobial cure rate 85% vs. 85%, margin 5% ($\Delta = 0.05$).
+- **Clinical scenario**: A generic antibiotic must show non-inferior cure rates vs. the originator: both anticipated at 85%, with a clinically acceptable margin of 5% ($\Delta = 0.05$). One-sided $\alpha = 0.05$.
+- **Formula**:
+$$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}$$
+  Chow et al. (2017); Machin et al. (2018) Ch. 11.
 
 ```{r rct-ni-prop-en}
 res_1_5 <- calculate("rct", "noninferiority", "proportion", p1 = 0.85, p2 = 0.85, margin = 0.05, alpha = 0.05, power = 0.8)
@@ -119,7 +154,10 @@ print(res_1_5)
 
 ## 1.6 Superiority Trial (Continuous Mean)
 
-- **Scenario**: Superiority margin 1 mmHg over active comparator; $\mu_1 = 12, \mu_2 = 10, \text{SD} = 3, \text{margin} = 1$.
+- **Clinical scenario**: Knee osteoarthritis trial: a new NSAID gel must beat the active comparator on the WOMAC pain subscale (0-20) by more than 1 point. Anticipated reductions: 12 vs. 10 points, SD = 3. One-sided $\alpha = 0.05$.
+- **Formula**:
+$$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 - \Delta}\right)^2$$
+  Chow et al. (2017).
 
 ```{r rct-sup-mean-en}
 res_1_6 <- calculate("rct", "superiority", "mean", mean1 = 12, mean2 = 10, sd = 3, margin = 1, alpha = 0.05, power = 0.8)
@@ -128,9 +166,12 @@ print(res_1_6)
 
 - **Output**: 112 per arm, 224 total.
 
-## 1.7 Superiority Trial (Binary Proportion)
+## 1.7 Superiority Trial (Binary Endpoint)
 
-- **Scenario**: Antifungal cure rate 30% vs. 20%, superiority margin 5%.
+- **Clinical scenario**: Onychomycosis trial: complete cure rate 30% with the new oral antifungal vs. 20% with terbinafine, and the sponsor requires the difference to exceed a 5% superiority margin.
+- **Formula**:
+$$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2-\Delta)^2}$$
+  Chow et al. (2017).
 
 ```{r rct-sup-prop-en}
 res_1_7 <- calculate("rct", "superiority", "proportion", p1 = 0.30, p2 = 0.20, margin = 0.05, alpha = 0.05, power = 0.8)
@@ -141,7 +182,10 @@ print(res_1_7)
 
 ## 1.8 Equivalence Trial (Continuous Mean)
 
-- **Scenario**: Mean difference 0.2 mmol/L, equivalence margin $\pm 1.0$ mmol/L, $\text{SD} = 3$.
+- **Clinical scenario**: Two formulations of levothyroxine must be shown therapeutically equivalent: mean serum thyroxine 10 vs. 10.2 $\mu$g/dL (SD = 3), equivalence corridor $\pm 1.0$ $\mu$g/dL.
+- **Formula** (TOST):
+$$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 - \mu_2|}\right)^2$$
+  Chow et al. (2017).
 
 ```{r rct-equiv-mean-en}
 res_1_8 <- calculate("rct", "equivalence", "mean", mean1 = 10, mean2 = 10.2, sd = 3, margin = 1, alpha = 0.05, power = 0.8)
@@ -150,9 +194,12 @@ print(res_1_8)
 
 - **Output**: 241 per arm, 482 total.
 
-## 1.9 Equivalence Trial (Binary Proportion)
+## 1.9 Equivalence Trial (Binary Endpoint)
 
-- **Scenario**: Analgesic response 50% vs. 52%, equivalence bounds $\pm 10\%$.
+- **Clinical scenario**: Two analgesics for post-operative pain: response rates 50% vs. 52%; regulators accept equivalence within $\pm 10$ percentage points.
+- **Formula**:
+$$n = \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}$$
+  Chow et al. (2017).
 
 ```{r rct-equiv-prop-en}
 res_1_9 <- calculate("rct", "equivalence", "proportion", p1 = 0.50, p2 = 0.52, margin = 0.10, alpha = 0.05, power = 0.8)
@@ -167,7 +214,10 @@ print(res_1_9)
 
 ## 2.1 Paired Means (Pre- vs. Post-Treatment)
 
-- **Scenario**: Pre-post FVC improvement mean difference 2 L, $\text{SD}_{\text{diff}} = 3$ L.
+- **Clinical scenario**: Asthma cohort: the same patients are measured before and after 12 weeks of inhaled corticosteroids. Mean FVC improvement is 2 L with SD of the within-patient differences 3 L.
+- **Formula**:
+$$n = \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma_d}{\mu_d}\right)^2$$
+  Rosner (2015), *Fundamentals of Biostatistics* (8th ed.).
 
 ```{r paired-mean-en}
 res_2_1 <- calculate("paired", "test", "mean", meanDiff = 2, sdDiff = 3, alpha = 0.05, power = 0.8)
@@ -178,7 +228,10 @@ print(res_2_1)
 
 ## 2.2 Paired Binary Outcomes (McNemar / Connor)
 
-- **Scenario**: Paired sensitivities 80% vs. 60%, discordant pair proportion $\psi = 0.25$.
+- **Clinical scenario**: The same patients receive two SARS-CoV-2 assays: a rapid antigen test (positive 80%) and RT-PCR (positive 60%). The expected proportion of discordant pairs is $\psi = 0.25$.
+- **Formula** (Connor):
+$$n = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \delta = |p_1-p_2|$$
+  Connor (1987), *Biometrics* 43(1), 207-211.
 
 ```{r paired-prop-en}
 res_2_2 <- calculate("paired", "test", "proportion", p1 = 0.80, p2 = 0.60, psi = 0.25, alpha = 0.05, power = 0.8)
@@ -189,7 +242,10 @@ print(res_2_2)
 
 ## 2.3 Single-Arm Mean vs. Historical Benchmark
 
-- **Scenario**: Rare disease survival 12 vs. historical 10 months, $\text{SD} = 3$.
+- **Clinical scenario**: A rare-disease trial (no control arm feasible): historical median-based mean survival is 10 months; the new targeted therapy is expected to reach 12 months (SD = 3).
+- **Formula**:
+$$n = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}$$
+  Machin et al. (2018), Chapter 5.
 
 ```{r singlearm-mean-en}
 res_2_3 <- calculate("rctSingleArm", "test", "mean", mu0 = 10, mu1 = 12, sigma = 3, alpha = 0.05, power = 0.8)
@@ -200,7 +256,10 @@ print(res_2_3)
 
 ## 2.4 Single-Arm Proportion vs. Historical Benchmark
 
-- **Scenario**: Oncology response 80% vs. historical 70%.
+- **Clinical scenario**: Relapsed/refractory lymphoma: historical best response rate is 70%; the new CAR-T protocol is anticipated to reach 80%.
+- **Formula**:
+$$n = \frac{\left[Z_{\alpha/2}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p_1(1-p_1)}\right]^2}{(p_1-p_0)^2}$$
+  Hajian-Tilaki (2014), Eq 6.8.
 
 ```{r singlearm-prop-en}
 res_2_4 <- calculate("rctSingleArm", "test", "proportion", p0 = 0.70, p1 = 0.80, alpha = 0.05, power = 0.8)
@@ -211,7 +270,11 @@ print(res_2_4)
 
 ## 2.5 Phase II Simon's Optimal Two-Stage Design
 
-- **Scenario**: $p_0 = 0.10, p_1 = 0.30$. Minimizes expected sample size under null.
+- **Clinical scenario**: A single-arm phase-II trial of a new sarcoma regimen: unacceptable response rate $p_0 = 0.10$, target $p_1 = 0.30$. The *optimal* design minimises the expected sample size when the drug is ineffective.
+- **Formula**: exact binomial enumeration (Simon 1989). The design $(r_1/n_1, r/n)$ satisfies
+$$\underbrace{P(X_1 \le r_1 \mid p_0)}_{\text{early stop}} + \sum_{x_1=r_1+1}^{n_1}\binom{n_1}{x_1}p_0^{x_1}(1-p_0)^{n_1-x_1}\,\underbrace{P(X_2 > r - x_1 \mid p_0)}_{\text{stage 2}} \le \alpha$$
+  and the analogous expression under $p_1$ must reach the target power.
+  Simon (1989), *Controlled Clinical Trials* 10(1), 1-10.
 
 ```{r simon-opt-en}
 res_2_5 <- calculate("singleArmPhaseII", "test", "proportion", p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8, optimizer = "optimal")
@@ -222,7 +285,7 @@ print(res_2_5)
 
 ## 2.6 Phase II Simon's Minimax Two-Stage Design
 
-- **Scenario**: Minimizes maximum sample size.
+- **Clinical scenario**: Same sarcoma trial, but the sponsor needs to cap the *worst-case* enrollment (budget/facility constraints).
 
 ```{r simon-mini-en}
 res_2_6 <- calculate("singleArmPhaseII", "test", "proportion", p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8, optimizer = "minimax")
@@ -233,16 +296,22 @@ print(res_2_6)
 
 ## 2.7 A'Hern Exact Single-Stage Binomial Design
 
+- **Clinical scenario**: The same phase-II question answered with a single-stage design (no interim futility analysis possible).
+
 ```{r ahern-en}
 res_2_7 <- sampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)
 print(res_2_7)
 ```
 
 - **Output**: 25 patients, reject null if responses $>5$ ($\ge 6$).
+- **Formula**: exact binomial — $P(X \ge r \mid p_0) \le \alpha$ and $P(X \ge r \mid p_1) \ge 1-\beta$ (A'Hern 2001).
 
 ## 2.8 2x2 Crossover Trial (Continuous Mean)
 
-- **Scenario**: Within-subject SD $\sigma_w = 3$, mean difference 2.
+- **Clinical scenario**: Asthma patients receive two inhaled salbutamol formulations in random order (washout 7 days); FEV1 % predicted improvement differs by 2 percentage points, within-subject SD $\sigma_w = 3$.
+- **Formula**:
+$$n = \frac{2(Z_{\alpha/2}+Z_{\beta})^2\sigma_w^2}{\delta^2}$$
+  Senn (2002), *Cross-over Trials in Clinical Research* (2nd ed.).
 
 ```{r crossover-en}
 res_2_8 <- calculate("crossover", "test", "mean", delta = 2, sigma_within = 3, alpha = 0.05, power = 0.8)
@@ -253,8 +322,9 @@ print(res_2_8)
 
 ## 2.9 Bioequivalence (BE) Exact TOST
 
-- **Scenario**: 2x2 crossover BE, intra-subject $CV = 25\%$, true GMR $\theta_0 = 1.0$, bounds $80\% \sim 125\%$.
-- **Formula**: Exact noncentral $t$ distribution (Phillips, 1990; Julious, 2004).
+- **Clinical scenario**: Generic amlodipine vs. originator in healthy volunteers, $2\times2$ crossover, intra-subject CV = 25%, expected geometric mean ratio $\theta_0 = 1.0$, acceptance range 80-125%.
+- **Formula** (exact noncentral $t$, Phillips 1990):
+$$\text{Power} = F_t(-t_{1-\alpha, \nu}; \nu, \delta_2) - F_t(t_{1-\alpha, \nu}; \nu, \delta_1), \quad \nu = N-2$$
 
 ```{r be-en}
 res_2_9 <- calculate("bioequivalence", cv = 0.25, theta0 = 1.0, alpha = 0.05, power = 0.8)
@@ -269,7 +339,10 @@ print(res_2_9)
 
 ## 3.1 Prospective Cohort Study (Cumulative Incidence & RR)
 
-- **Scenario**: 5-year incidence 20% vs. 30%, 10% dropout (`dropout = 0.10`).
+- **Clinical scenario**: Framingham-style cohort on smoking and coronary heart disease: 5-year incidence 20% in non-smokers vs. 30% in smokers, 1:1 allocation, planning for 10% loss to follow-up.
+- **Formula**:
+$$n_{1} = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+\frac{p_0(1-p_0)}{m}}\right]^2}{(p_1-p_0)^2}, \quad n = \frac{n_1}{1-d}$$
+  Bhardwaj et al. (2024), *J Family Med Prim Care* 13(7), 2559.
 
 ```{r cohort-prop-en}
 res_3_1 <- calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, ratio = 1, dropout = 0.10, alpha = 0.05, power = 0.8)
@@ -280,7 +353,10 @@ print(res_3_1)
 
 ## 3.2 Cohort Study (Person-Time Incidence Rate Ratio)
 
-- **Scenario**: Incidence 0.10 vs. 0.20 per person-time.
+- **Clinical scenario**: Occupational epidemiology: workers exposed to a solvent develop disease at 0.20 events per person-year vs. 0.10 in unexposed workers; 1:1 person-time allocation.
+- **Formula**:
+$$T_{0} = \frac{(Z_{\alpha/2}+Z_{\beta})^2(\lambda_1/r+\lambda_0)}{(\lambda_1-\lambda_0)^2}, \quad T_1 = r \cdot T_0$$
+  Machin et al. (2018), Chapter 6.
 
 ```{r cohort-rate-en}
 res_3_2 <- calculate("cohort", "test", "rate", rate0 = 0.10, rate1 = 0.20, ratio = 1, alpha = 0.05, power = 0.8)
@@ -291,7 +367,10 @@ print(res_3_2)
 
 ## 3.3 Case-Control Study (Odds Ratio)
 
-- **Scenario**: Control exposure rate 30%, anticipated $\text{OR} = 2.0$.
+- **Clinical scenario**: Hospital-based case-control study of late-night screen exposure and myocardial infarction: 30% of controls are exposed, anticipated OR = 2.0, 1 control per case.
+- **Formula** (Schlesselman):
+$$n_{cases} = \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}$$
+  Schlesselman (1982), *Case-Control Studies*, Oxford University Press.
 
 ```{r cc-en}
 res_3_3 <- calculate("caseControl", p0 = 0.30, OR = 2.0, m = 1, alpha = 0.05, power = 0.8)
@@ -302,6 +381,11 @@ print(res_3_3)
 
 ## 3.4 1:1 Matched Case-Control Study
 
+- **Clinical scenario**: Oral contraceptive use and ischaemic stroke in young women, individually matched 1:1 by age; control exposure rate 30%, OR = 2.0.
+- **Formula** (Dupont discordant-pairs):
+$$n_{pairs} = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \psi = p_1(1-p_0)+p_0(1-p_1)$$
+  Dupont (1988), *Biometrics* 44(4), 1157-1168.
+
 ```{r cc-matched-en}
 res_3_4 <- calculate("caseControlMatched", p0 = 0.30, OR = 2.0, alpha = 0.05, power = 0.8)
 print(res_3_4)
@@ -310,6 +394,9 @@ print(res_3_4)
 - **Output**: 144 pairs (288 total).
 
 ## 3.5 Cross-Sectional Association Survey
+
+- **Clinical scenario**: A community cross-sectional survey of hypertension: prevalence 20% in unexposed vs. 30% in exposed (obese) participants.
+- **Formula**: same two-proportion kernel as 3.1 with $m = 1$ (Machin et al. 2018, Ch. 3).
 
 ```{r crosstab-en}
 res_3_5 <- calculate("crosstab", p0 = 0.20, p1 = 0.30, alpha = 0.05, power = 0.8)
@@ -324,7 +411,10 @@ print(res_3_5)
 
 ## 4.1 Single Proportion Estimation (Prevalence Survey)
 
-- **Scenario**: Anticipated prevalence 10%, margin of error $\pm 2\%$ ($d = 0.02$).
+- **Clinical scenario**: A county diabetes prevalence survey: anticipated prevalence 10%, the estimate must lie within $\pm 2$ percentage points of the truth with 95% confidence.
+- **Formula**:
+$$n = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
+  Lwanga & Lemeshow (1991), WHO; Bhardwaj et al. (2024), p. 2558.
 
 ```{r single-prop-en}
 res_4_1 <- calculate("singleProportion", p = 0.10, precision = 0.02, alpha = 0.05)
@@ -335,7 +425,10 @@ print(res_4_1)
 
 ## 4.2 Single Mean Estimation
 
-- **Scenario**: Population $\text{SD} = 10$, margin of error $\pm 2$.
+- **Clinical scenario**: Establishing a paediatric serum ferritin reference value: population SD = 10 $\mu$g/L, the mean must be estimated within $\pm 2$ $\mu$g/L.
+- **Formula**:
+$$n = \left(\frac{Z_{1-\alpha/2} \cdot \sigma}{d}\right)^2$$
+  Machin et al. (2018), Ch. 9.
 
 ```{r single-mean-en}
 res_4_2 <- calculate("singleMean", sigma = 10, precision = 2, alpha = 0.05)
@@ -346,7 +439,10 @@ print(res_4_2)
 
 ## 4.3 Pearson Correlation Coefficient Precision (Fisher-z)
 
-- **Scenario**: Anticipated correlation $r = 0.50$, 95% CI half-width $\pm 0.10$.
+- **Clinical scenario**: Validating waist circumference as a proxy for body-fat percentage: anticipated $r = 0.50$, the 95% CI half-width must not exceed $\pm 0.10$.
+- **Formula** (Machin Eqs 19.5-19.8):
+$$N_{P0} = \frac{4 z_{1-\alpha/2}^2 (1-r^2)^2}{w^2} + 3, \quad N_{Final} = (N_{P0}-3)\left(\frac{w_0}{w}\right)^2 + 3$$
+  Machin et al. (2018), Ch. 19, pp. 307-308 (matches `presize::prec_cor`).
 
 ```{r single-cor-en}
 res_4_3 <- calculate("singleCorrelation", r = 0.50, precision = 0.10, alpha = 0.05)
@@ -361,7 +457,10 @@ print(res_4_3)
 
 ## 5.1 Sensitivity/Specificity Precision & Screening Size
 
-- **Scenario**: Sensitivity 85%, margin $\pm 5\%$, prevalence 20%.
+- **Clinical scenario**: Validating a colorectal cancer screening kit: expected sensitivity 85%, CI half-width $\pm 5\%$, clinic prevalence 20%. How many confirmed cases and how many total screens?
+- **Formula** (Zhou Eq 6.2):
+$$n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}, \quad N_{screen} = \frac{n_{cases}}{\text{prevalence}}$$
+  Zhou, Obuchowski & McClish (2011), Section 6.1.1, pp. 194-196.
 
 ```{r diag-acc-en}
 res_5_1 <- calculate("diagAccuracy", "estimate", "proportion", prob = 0.85, d = 0.05, prevalence = 0.20, alpha = 0.05)
@@ -372,6 +471,10 @@ print(res_5_1)
 
 ## 5.2 Diagnostic Superiority Test (Asymptotic Method)
 
+- **Clinical scenario**: An AI lung-nodule system must demonstrate sensitivity significantly above the 70% industry pass mark; anticipated sensitivity 85%, prevalence 20%.
+- **Formula** (Hajian-Tilaki Eq 6.8):
+$$n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}$$
+
 ```{r diag-test-asym-en}
 res_5_2 <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, alpha = 0.05, power = 0.8)
 print(res_5_2)
@@ -380,6 +483,9 @@ print(res_5_2)
 - **Output**: 50 cases, 250 screened.
 
 ## 5.3 Diagnostic Superiority Test (A'Hern Exact Method)
+
+- **Clinical scenario**: The same AI validation, but with a small sample where the normal approximation is unsafe; the exact binomial method removes the approximation error.
+- **Formula**: exact binomial — $P(X \ge r \mid p_0) \le \alpha$, $P(X \ge r \mid p) \ge 1-\beta$ (A'Hern 2001).
 
 ```{r diag-test-exact-en}
 res_5_3 <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, method = "exact", alpha = 0.05, power = 0.8)
@@ -390,6 +496,10 @@ print(res_5_3)
 
 ## 5.4 Dual-Endpoint Diagnostic Trial (Se + Sp Co-Primary)
 
+- **Clinical scenario**: A new breast-lesion AI must improve BOTH sensitivity (80% $\to$ 90%) and specificity (75% $\to$ 85%) against biopsy truth, prevalence 40%. Each endpoint is powered at 90% so joint power is ~80% (Akoglu 2022).
+- **Formula**:
+$$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$
+
 ```{r diag-dual-en}
 res_5_4 <- calculate("diagAccuracy", "test", "proportion", prob = 0.90, p0 = 0.80, prob_spec = 0.85, p0_spec = 0.75, prevalence = 0.40, dual = TRUE)
 print(res_5_4)
@@ -398,6 +508,10 @@ print(res_5_4)
 - **Output**: 123 cases, 308 screened.
 
 ## 5.5 Unpaired Comparison of Two Diagnostic Tests
+
+- **Clinical scenario**: Two independent cohorts receive two competing pneumonia CT-AI systems: sensitivity 85% vs. 75%, prevalence 20%.
+- **Formula** (Fleiss kernel):
+$$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+p_2(1-p_2)}\right]^2}{(p_1-p_2)^2}$$
 
 ```{r diag-compare-unpaired-en}
 res_5_5 <- calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = FALSE, alpha = 0.05, power = 0.8)
@@ -408,6 +522,10 @@ print(res_5_5)
 
 ## 5.6 Paired Comparison of Two Diagnostic Tests (Connor Kernel)
 
+- **Clinical scenario**: The same patients undergo both assays (paired design): sensitivities 85% vs. 75%, expected discordant-pair proportion $\psi = 0.10$ — dramatically fewer cases needed.
+- **Formula** (Connor):
+$$n = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}$$
+
 ```{r diag-compare-paired-en}
 res_5_6 <- calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = TRUE, psi = 0.10, alpha = 0.05, power = 0.8)
 print(res_5_6)
@@ -416,6 +534,10 @@ print(res_5_6)
 - **Output**: 77 pairs of cases, 385 screened.
 
 ## 5.7 Diagnostic Non-Inferiority (Proportions)
+
+- **Clinical scenario**: A simplified rapid test (sensitivity 90%) must be non-inferior to the laboratory reference (88%) within a 5% margin, prevalence 30%.
+- **Formula**:
+$$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}$$
 
 ```{r diag-compare-ni-en}
 res_5_7 <- calculate("diagAccuracyCompare", "noninferiority", "proportion", p1 = 0.90, p2 = 0.88, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8)
@@ -426,6 +548,10 @@ print(res_5_7)
 
 ## 5.8 Diagnostic Equivalence (Proportions)
 
+- **Clinical scenario**: Two benchtop analysers: sensitivity 90% vs. 89%, equivalence corridor $\pm 5\%$.
+- **Formula**:
+$$n = \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}$$
+
 ```{r diag-compare-equiv-en}
 res_5_8 <- calculate("diagAccuracyCompare", "equivalence", "proportion", p1 = 0.90, p2 = 0.89, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8)
 print(res_5_8)
@@ -434,6 +560,10 @@ print(res_5_8)
 - **Output**: 1006 cases, 3354 screened.
 
 ## 5.9 ROC Area Under the Curve (AUC) Precision (Binormal Model)
+
+- **Clinical scenario**: Planning a biomarker validation cohort: anticipated AUC = 0.80, 95% CI half-width $\pm 0.10$, cases:controls 1:1.
+- **Formula** (Obuchowski 1994 binormal variance, Zhou Eq 6.5):
+$$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad V = 0.0099\,e^{-a^2/2}\left[(5a^2+8) + \frac{a^2+8}{R}\right],\ a = \sqrt{2}\,\Phi^{-1}(A)$$
 
 ```{r diag-auc-est-en}
 res_5_9 <- calculate("diagAUC", "estimate", "auc", auc = 0.80, d = 0.10, ratio = 1, var_method = "binormal", alpha = 0.05)
@@ -444,6 +574,10 @@ print(res_5_9)
 
 ## 5.10 ROC-AUC Superiority Test
 
+- **Clinical scenario**: A new miRNA panel must show AUC significantly above the 0.70 clinical pass line; anticipated AUC 0.80, prevalence 30%.
+- **Formula**:
+$$n_{cases} = \frac{\left(Z_{\alpha}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
+
 ```{r diag-auc-test-en}
 res_5_10 <- calculate("diagAUC", "test", "auc", auc = 0.80, auc0 = 0.70, prevalence = 0.30, alpha = 0.05, power = 0.8)
 print(res_5_10)
@@ -452,6 +586,11 @@ print(res_5_10)
 - **Output**: 180 cases, 600 screened.
 
 ## 5.11 Two ROC-AUC Comparison
+
+- **Clinical scenario**: CT vs. MRI for liver lesion characterisation: anticipated AUCs 0.80 vs. 0.70, correlation between the two AUC estimates $r = 0.50$ (same patients).
+- **Formula**:
+$$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
+  Hajian-Tilaki (2014), Eqs 7.6/7.8.
 
 ```{r diag-auc-compare-en}
 res_5_11 <- calculate("diagAUCCompare", "test", "auc", auc1 = 0.80, auc2 = 0.70, r = 0.50, prevalence = 0.30, alpha = 0.05, power = 0.8)
@@ -462,6 +601,10 @@ print(res_5_11)
 
 ## 5.12 Two ROC-AUC Non-Inferiority
 
+- **Clinical scenario**: A portable low-cost device (AUC 0.85) must be non-inferior to the standard platform (AUC 0.82) within margin 0.05.
+- **Formula**:
+$$n = \frac{2(Z_{\alpha}+Z_{\beta})^2 V(1-r)}{(AUC_1-AUC_2+\Delta)^2}$$
+
 ```{r diag-auc-ni-en}
 res_5_12 <- calculate("diagAUCCompare", "noninferiority", "auc", auc1 = 0.85, auc2 = 0.82, r = 0.50, margin = 0.05, alpha = 0.05, power = 0.8)
 print(res_5_12)
@@ -470,6 +613,10 @@ print(res_5_12)
 - **Output**: 80 cases, 160 screened.
 
 ## 5.13 Two ROC-AUC Equivalence
+
+- **Clinical scenario**: Two AI vendors claim interchangeable performance: AUC 0.85 vs. 0.84, equivalence margin 0.05.
+- **Formula**:
+$$n = \frac{2(Z_{\alpha}+Z_{\beta/2})^2 V(1-r)}{(\Delta-|AUC_1-AUC_2|)^2}$$
 
 ```{r diag-auc-equiv-en}
 res_5_13 <- calculate("diagAUCCompare", "equivalence", "auc", auc1 = 0.85, auc2 = 0.84, r = 0.50, margin = 0.05, alpha = 0.05, power = 0.8)
@@ -480,6 +627,11 @@ print(res_5_13)
 
 ## 5.14 Negative Likelihood Ratio Threshold Precision
 
+- **Clinical scenario**: A D-dimer rule-out pathway requires the upper 95% CI limit of LR$^-$ to stay below 0.40; expected sensitivity 90%, specificity 50%.
+- **Formula** (Simel 1991 log-CI):
+$$\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n \cdot Se} + \frac{1-Sp}{n \cdot Sp}}$$
+  Hajian-Tilaki (2014), Section 6.4, Eqs 6.13/6.14.
+
 ```{r diag-lr-en}
 res_5_14 <- calculate("diagLR", "estimate", "lr", sens = 0.90, spec = 0.50, target_lr = 0.40, lr_type = "negative", alpha = 0.05)
 print(res_5_14)
@@ -488,6 +640,11 @@ print(res_5_14)
 - **Output**: 9 cases, 9 controls (18 total).
 
 ## 5.15 Guaranteed Screening Target (`screen_required`)
+
+- **Clinical scenario**: On average, screening 980 patients yields the 196 confirmed cases needed for Section 5.1 — but that only holds with 50% probability. To *guarantee* enough cases with 90% probability, inflate the screening list.
+- **Formula**:
+$$P(\text{Binomial}(N, \text{prevalence}) \ge n) \ge 1-\beta$$
+  Zhou et al. (2011), Eq 6.3.
 
 ```{r screen-req-en}
 safe_n <- screen_required(n = 196, prevalence = 0.20, beta = 0.10)
@@ -498,18 +655,28 @@ cat("Average screening target: 980; 90% guaranteed enrollment target:", safe_n, 
 
 ## 5.16 Multi-Reader Multi-Case (MRMC) Power Analysis
 
+- **Clinical scenario**: A mammography study where 8 radiologists independently read 50 cases with two imaging techniques; detect an AUC difference of 0.10 using the Obuchowski-Rockette mixed model.
+- **Formula** (non-central $F$, Zhou Eq 6.32):
+$$\lambda = \frac{J\delta^2}{2\left[\sigma_b^2(1-\rho_1) + \sigma_w^2/Q + \frac{\sigma_c^2(1-\rho_1)}{n} + \rho_2\sigma_b^2\left((1-\rho_1)+(J-1)(\rho_2-\rho_3)\right)\right]}, \quad \text{power} = P(F_{1,J-1}(\lambda) > F_{1-\alpha})$$
+  Zhou et al. (2011), Section 6.5, p. 225.
+
 ```{r mrmc-en}
 res_5_16 <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
 print(res_5_16)
 ```
 
-- **Output**: 88.8% statistical power.
+- **Output**: 88.8% statistical power (the textbook reports ~89%).
 
 ---
 
 # Chapter 6: Complex and Modern Trial Designs
 
 ## 6.1 Cluster Randomized Trial (Continuous Outcome)
+
+- **Clinical scenario**: ICUs (not patients) are randomized to a new catheter-care bundle: complication score 10 $\to$ 12, SD = 3, average 20 beds per ICU, intra-cluster correlation ICC = 0.05.
+- **Formula** (design effect):
+$$DE = 1 + (m-1) \times ICC = 1.95, \quad n_{clusters} = \left\lceil \frac{n_{individual} \times DE}{m} \right\rceil$$
+  Donner & Klar (2000); Machin et al. (2018), Ch. 12.
 
 ```{r cluster-mean-en}
 res_6_1 <- calculate("clusterRCT", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8)
@@ -520,6 +687,9 @@ print(res_6_1)
 
 ## 6.2 Cluster Randomized Trial (Binary Outcome)
 
+- **Clinical scenario**: Village-level randomization of a screening-uptake intervention: uptake 20% $\to$ 30%, 20 residents per village, ICC = 0.05.
+- **Formula**: same design effect applied to the two-proportion kernel.
+
 ```{r cluster-prop-en}
 res_6_2 <- calculate("clusterRCT", "test", "proportion", p1 = 0.30, p2 = 0.20, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8)
 print(res_6_2)
@@ -528,6 +698,11 @@ print(res_6_2)
 - **Output**: 29 clusters per arm, 58 clusters (1160 patients) total.
 
 ## 6.3 Stepped-Wedge Cluster Randomized Trial
+
+- **Clinical scenario**: 24 counties sequentially adopt a hand-hygiene program (6 counties per step, baseline + 4 steps, 100 births per county per period); treatment effect $\theta = -0.016$ on infection risk.
+- **Formula** (Hussey & Hughes Eq 8):
+$$Var(\hat{\theta}) = \frac{I \tau^2 (\tau^2 + T\sigma^2)}{(IU - W)\tau^2 + (U^2 + ITU - TW - IV)\sigma^2}, \quad \text{power} = \Phi\left(|\theta|/SE - z_{1-\alpha/2}\right)$$
+  Hussey & Hughes (2007), *Contemp Clin Trials* 28(2), 182-191.
 
 ```{r stepped-wedge-en}
 res_6_3 <- calculate("steppedWedge", "test", "mean", theta = -0.016, tau2 = 2.25e-4, sigma2_ind = 0.0475, m = 100, n_clusters = 24, clusters_per_step = 6, alpha = 0.05)
@@ -538,6 +713,10 @@ print(res_6_3)
 
 ## 6.4 Ordered Categorical Outcome (Whitehead Model)
 
+- **Clinical scenario**: Knee osteoarthritis pain graded mild/moderate/severe with expected distribution 20%/50%/30%; the new intra-articular therapy is anticipated to shift the odds of a better category by OR = 1.5.
+- **Formula** (Whitehead 1993):
+$$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$
+
 ```{r ordinal-en}
 res_6_4 <- calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2, 0.5, 0.3), alpha = 0.05, power = 0.8)
 print(res_6_4)
@@ -546,6 +725,11 @@ print(res_6_4)
 - **Output**: 86 per arm, 171 total.
 
 ## 6.5 Clinical Prediction Model Development (Riley 2020 BMJ Binary)
+
+- **Clinical scenario**: Developing an ICU mortality prediction model with 10 candidate predictors, outcome proportion 30%, anticipated Cox-Snell $R^2_{CS} = 0.10$, target shrinkage $S = 0.90$.
+- **Formula** (Riley 2020, criteria B1 & B3):
+$$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n = \max(n_{B1}, n_{B3})$$
+  Riley et al. (2020), *BMJ* 368, m441 (matches `pmsampsize`).
 
 ```{r riley-bin-en}
 res_6_5 <- calculate("predictiveModel", "plan", "binary", prev = 0.30, n_parameters = 10, r2_cs = 0.10, shrinkage = 0.90, precision_delta = 0.05, alpha = 0.05)
@@ -556,6 +740,9 @@ print(res_6_5)
 
 ## 6.6 Clinical Prediction Model Development (Riley 2020 Rate)
 
+- **Clinical scenario**: A 10-year cardiovascular death prediction model: annual event rate 0.10, the cumulative incidence at 10 years must be estimated within $\pm 5\%$.
+- **Formula** (criterion T1): $F(t) = 1 - e^{-\lambda t}$; find person-years $T$ such that both CI margins of $F(t)$ stay within $\delta$.
+
 ```{r riley-rate-en}
 res_6_6 <- calculate("predictiveModel", "plan", "rate", rate = 0.10, timepoint = 10, precision_delta = 0.05, alpha = 0.05)
 print(res_6_6)
@@ -564,6 +751,11 @@ print(res_6_6)
 - **Output**: 2366 person-years.
 
 ## 6.7 Prediction Model Development (Classic EPV)
+
+- **Clinical scenario**: Quick grant-proposal rule of thumb for a 10-predictor logistic model in a population with 30% event prevalence.
+- **Formula**:
+$$n_{events} = EPV \times k, \quad n_{subjects} = n_{events} / \pi$$
+  Peduzzi et al. (1996), *J Clin Epidemiol* 49(12), 1373-1379.
 
 ```{r epv-en}
 res_6_7 <- calculate("predictiveModel", "plan", "events", n_parameters = 10, epv = 10, event_prevalence = 0.30)
@@ -574,6 +766,10 @@ print(res_6_7)
 
 ## 6.8 Inter-Rater Reliability: Cohen's Kappa Precision
 
+- **Clinical scenario**: Two radiologists independently grade 2-view mammograms; anticipated $\kappa = 0.70$, the 95% CI half-width must not exceed $\pm 0.10$.
+- **Formula** (Cantor 1996):
+$$n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q = \frac{p_o(1-p_o)}{(1-p_e)^2}$$
+
 ```{r kappa-est-en}
 res_6_8 <- calculate("kappa", "estimate", "proportion", pi1 = 0.30, pi2 = 0.30, kappa = 0.70, d = 0.10, alpha = 0.05)
 print(res_6_8)
@@ -583,6 +779,11 @@ print(res_6_8)
 
 ## 6.9 Inter-Rater Reliability: Two Independent Kappa Test
 
+- **Clinical scenario**: Does a new structured reporting checklist improve agreement over the old one? Anticipated $\kappa_1 = 0.70$ vs. $\kappa_2 = 0.50$ in two independent reader groups.
+- **Formula**:
+$$n = \frac{\left[z_{\alpha}\sqrt{2Q_1} + z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}$$
+  Cantor (1996), *Psychological Methods* 1(2), 150-153.
+
 ```{r kappa-test-en}
 res_6_9 <- calculate("kappa", "test", "proportion", pi1 = 0.50, pi2 = 0.50, kappa1 = 0.70, kappa2 = 0.50, alpha = 0.05, power = 0.8)
 print(res_6_9)
@@ -591,6 +792,11 @@ print(res_6_9)
 - **Output**: 214 participants per group.
 
 ## 6.10 Interrupted Time Series (ITS Level Change)
+
+- **Clinical scenario**: A sugar-sweetened beverage tax: monthly consumption monitored 12 months before and 12 months after the policy; anticipated level jump of 2 outcome-SDs, AR(1) autocorrelation $\rho = 0.30$.
+- **Formula** (AR(1)-adjusted approximation):
+$$\text{power} = \Phi\left(\frac{\delta}{SE} - z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} + \tfrac{1}{n_{eff}^{post}}}, \quad n_{eff} = \frac{n(1-\rho)}{1+\rho}$$
+  Bernal, Cummins & Gasparrini (2017), *Int J Epidemiol* 46(1), 348-355 (experimental approximation).
 
 ```{r its-en}
 res_6_10 <- calculate("its", "test", "rate", effect_sd = 2, n_pre = 12, n_post = 12, rho = 0.3, alpha = 0.05, power = 0.8)
@@ -602,6 +808,8 @@ print(res_6_10)
 ---
 
 # Chapter 7: Protocol Boilerplate & Visual Diagnostics
+
+Default `print()` output includes both formula formats, the calculation process, and references. Use `summary()` to additionally display all input parameters, design axes, and recorded adjustments:
 
 ```{r summary-demo-en}
 summary(res_1_1)

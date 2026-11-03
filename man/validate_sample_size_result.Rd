@@ -7,12 +7,18 @@
 validate_sample_size_result(x)
 }
 \arguments{
-\item{x}{Object to validate}
+\item{x}{Object to validate; must inherit "sample_size_result" and carry
+at least \code{design}, \code{design_type}, and \code{parameters} fields; \code{task} and
+\code{outcome} (if present) must be character scalars.}
 }
 \value{
 Invisible TRUE, or aborts with a structured error
 }
 \description{
 Validate a sample_size_result object
+}
+\examples{
+r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+validate_sample_size_result(r)  # invisible TRUE
 }
 \keyword{internal}

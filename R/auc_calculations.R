@@ -71,6 +71,7 @@ calculate_auc_superiority <- function(auc, auc0, prevalence, alpha, power) {
       alpha = alpha,
       power = power
     ),
+    formula = "n_cases = (Z_alpha * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC - AUC0)^2",
     formula_latex = "$$n_{cases} = \\frac{\\left(Z_{\\alpha}\\sqrt{V(AUC_0)} + Z_{\\beta}\\sqrt{V(AUC)}\\right)^2}{(AUC - AUC_0)^2}$$",
     reference = "Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.\n\nReview: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204."
   )
@@ -113,6 +114,7 @@ calculate_auc_comparison <- function(auc1, auc2, r, prevalence, alpha, power) {
       alpha = alpha,
       power = power
     ),
+    formula = "n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2",
     formula_latex = "$$n_{cases} = \\frac{2(Z_{\\alpha/2} + Z_{\\beta})^2 \\cdot V(AUC) \\cdot (1-r)}{(AUC_1 - AUC_2)^2}$$",
     reference = "Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013"
   )

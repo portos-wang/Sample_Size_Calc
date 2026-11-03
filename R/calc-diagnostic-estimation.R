@@ -46,6 +46,7 @@ calculate_diagnostic_accuracy_v2 <- function(prob, d, prevalence, alpha, power,
       precision = d_val,
       prevalence = prev_val,
       alpha = alpha,
+      power = if (ci_method == "ci_width_power") power,
       ci_method = ci_method
     ),
     formula = formula_ascii,
@@ -240,10 +241,21 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
 #' Given a required number of cases n and a disease prevalence, compute the
 #' total enrollment needed so that, with probability 1-beta, at least n
 #' cases are captured: N satisfies P(Binomial(N, prev) >= n) >= 1-beta.
-#' @param n Required number of cases
-#' @param prevalence Disease prevalence in the screening population
-#' @param beta Acceptable probability of falling short (default 0.10, i.e. 90% guarantee)
-#' @return Integer total enrollment N
+#' @param n Required number of cases; positive integer (e.g. the
+#'   `target_state_cases_needed` from a diagnostic accuracy calculation).
+#' @param prevalence Disease prevalence in the screening population; scalar
+#'   in (0, 1) (e.g. 0.20 for a 20 percent clinic prevalence).
+#' @param beta Acceptable probability of falling short; scalar in (0, 1).
+#'   Default 0.10, i.e. a 90 percent guarantee of capturing at least `n` cases.
+#' @return Integer total enrollment N (screening list size).
+#' @examples
+#' # A colon-cancer screening validation needs 196 confirmed cases;
+#' # clinic prevalence is 20%. Enroll enough patients to capture
+#' # 196 cases with 90% probability:
+#' screen_required(n = 196, prevalence = 0.20, beta = 0.10)
+#'
+#' # More stringent 95% guarantee:
+#' screen_required(n = 196, prevalence = 0.20, beta = 0.05)
 #' @export
 screen_required <- function(n, prevalence, beta = 0.10) {
   if (!is.numeric(n) || length(n) != 1 || n < 1) {

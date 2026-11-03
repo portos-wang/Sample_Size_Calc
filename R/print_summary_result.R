@@ -26,6 +26,7 @@ ssr_metric_labels <- c(
   total_subjects = "Total subjects",
   person_time_exposed = "Person-time, exposed group",
   person_time_unexposed = "Person-time, unexposed group",
+  person_time_required = "Required person-time",
   expected_events = "Expected events",
   recommended_cases = "Recommended cases",
   power_achieved = "Power achieved"
@@ -67,9 +68,17 @@ ssr_render_meta <- function(x, verbose = FALSE) {
 
 #' Print method for sample_size_result objects
 #'
+#' Displays the study design, sample size metrics, plain-text formula,
+#' LaTeX source, calculation process, and literature references. Parameter
+#' roles and methodological hints are included where available.
+#'
 #' @param x A sample_size_result object
 #' @param ... Additional arguments (ignored)
 #' @return Invisibly returns the input object
+#' @examples
+#' # Antihypertensive RCT: 37 patients per arm with these assumptions
+#' res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' print(res)   # sample sizes, both formulas, calculation process, references
 #' @export
 print.sample_size_result <- function(x, ...) {
   cli::cli_rule()
@@ -77,15 +86,55 @@ print.sample_size_result <- function(x, ...) {
   cli::cli_li("Design type: {.val {x$design_type}}")
   ssr_render_metrics(x)
   ssr_render_meta(x, verbose = FALSE)
+
+  # 1. Formula (plain text)
+  if (!is.null(x$formula) && nzchar(x$formula)) {
+    cli::cli_par()
+    cli::cli_text("{.strong Formula (plain text)}:")
+    cli::cli_text("{.code {x$formula}}")
+  }
+
+  # 2. Formula (LaTeX)
+  if (!is.null(x$formula_latex) && nzchar(x$formula_latex)) {
+    cli::cli_par()
+    cli::cli_text("{.strong Formula (LaTeX)}:")
+    cat(x$formula_latex, "\n")
+  }
+
+  # 3. Calculation process
+  calc_proc <- ssr_get_calculation(x)
+  if (!is.null(calc_proc) && length(calc_proc) > 0) {
+    cli::cli_par()
+    cli::cli_text("{.strong Calculation process}:")
+    for (step in calc_proc) {
+      cli::cli_li("{step}")
+    }
+  }
+
+  # 4. Reference
+  if (!is.null(x$reference) && nzchar(x$reference)) {
+    cli::cli_par()
+    cli::cli_text("{.strong Reference}:")
+    cat(x$reference, "\n")
+  }
+
   cli::cli_rule()
   invisible(x)
 }
 
 #' Summary method for sample_size_result objects
 #'
+#' Includes the plain-text formula, LaTeX source, calculation process, and
+#' references shown by [print.sample_size_result()], with all input
+#' parameters, design axes, and recorded adjustments.
+#'
 #' @param object A sample_size_result object
 #' @param ... Additional arguments (ignored)
 #' @return Invisibly returns the input object
+#' @examples
+#' # Full protocol-ready report for the antihypertensive RCT:
+#' res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' summary(res)  # also lists all inputs, design axes, and adjustments
 #' @export
 summary.sample_size_result <- function(object, ...) {
   cli::cli_rule()
@@ -119,11 +168,21 @@ summary.sample_size_result <- function(object, ...) {
   ssr_render_meta(object, verbose = TRUE)
 
   cli::cli_h3("Formula")
-  if (!is.null(object$formula)) {
+  if (!is.null(object$formula) && nzchar(object$formula)) {
+    cli::cli_text("{.strong Plain text}:")
     cli::cli_text("{.code {object$formula}}")
   }
-  if (!is.null(object$formula_latex)) {
+  if (!is.null(object$formula_latex) && nzchar(object$formula_latex)) {
+    cli::cli_text("{.strong LaTeX}:")
     cat(object$formula_latex, "\n")
+  }
+
+  cli::cli_h3("Calculation Process")
+  calc_proc <- ssr_get_calculation(object)
+  if (!is.null(calc_proc) && length(calc_proc) > 0) {
+    for (step in calc_proc) {
+      cli::cli_li("{step}")
+    }
   }
 
   cli::cli_h3("Reference")

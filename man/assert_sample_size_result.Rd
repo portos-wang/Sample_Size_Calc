@@ -7,12 +7,17 @@
 assert_sample_size_result(x)
 }
 \arguments{
-\item{x}{Object to assert}
+\item{x}{Object to assert; see \code{\link[=validate_sample_size_result]{validate_sample_size_result()}} for the
+required structure.}
 }
 \value{
 Invisibly returns x
 }
 \description{
 Assert an object is a valid sample_size_result
+}
+\examples{
+r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+assert_sample_size_result(r)
 }
 \keyword{internal}

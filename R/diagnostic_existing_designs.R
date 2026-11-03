@@ -142,7 +142,16 @@ calculate_diagnostic_comparison_two <- function(p1, p2, prevalence, paired, psi,
       alpha = alpha,
       power = power
     ),
-    formula_latex = "$$n = \\frac{\\left[Z_{\\alpha/2}\\sigma_{paired} + Z_{\\beta}\\sqrt{\\sigma_{paired}^2 - (p_1-p_2)^2/4}\\right]^2}{(p_1-p_2)^2}$$",
+    formula = if (paired_val) {
+      "n = [Za/2 * psi + Zb * sqrt(psi^2 - (p1-p2)^2/4)]^2 / (p1-p2)^2"
+    } else {
+      "n = [Za/2 * sqrt(2*p_bar*(1-p_bar)) + Zb * sqrt(p1*(1-p1)+p2*(1-p2))]^2 / (p1-p2)^2"
+    },
+    formula_latex = if (paired_val) {
+      "$$n = \\frac{\\left[Z_{\\alpha/2}\\sigma_{paired} + Z_{\\beta}\\sqrt{\\sigma_{paired}^2 - (p_1-p_2)^2/4}\\right]^2}{(p_1-p_2)^2}$$"
+    } else {
+      "$$n = \\frac{\\left[Z_{\\alpha/2}\\sqrt{2\\bar{p}(1-\\bar{p})} + Z_{\\beta}\\sqrt{p_1(1-p_1)+p_2(1-p_2)}\\right]^2}{(p_1-p_2)^2}$$"
+    },
     reference = "Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.\n\nReview: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204."
   )
 }
@@ -179,6 +188,7 @@ calculate_likelihood_ratio_test <- function(sens, spec, prevalence, precision, a
       precision = precision_val,
       alpha = alpha
     ),
+    formula = "n_cases = max(Z_1-a/2^2 * Se*(1-Se)/d^2, Z_1-a/2^2 * Sp*(1-Sp)/d^2 * (P/(1-P)))",
     formula_latex = sprintf("$$n_{cases} = \\max\\left\\{\\frac{Z_{1-\\alpha/2}^2 \\cdot Se(1-Se)}{%.2f^2}, \\frac{Z_{1-\\alpha/2}^2 \\cdot Sp(1-Sp)}{%.2f^2} \\cdot \\frac{P}{1-P}\\right\\}$$", precision_val, precision_val),
     reference = "Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013"
   )

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 4.5,
-  message = FALSE,
+  message = TRUE,
   warning = FALSE
 )
 
@@ -36,16 +36,28 @@ The `sampleSizeCalc` package provides a comprehensive, rigorous toolkit for samp
 
 ## The Three-Axis API (v3.0+)
 
-```{r three-axis, message = FALSE}
+**Scenario A — Antihypertensive RCT:** Placebo 10 mmHg vs new ACE-inhibitor 12 mmHg reduction, pooled SD 3 mmHg (two-sided $\alpha = 0.05$, 80% power).
+
+```{r three-axis-mean}
 calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+```
+
+**Scenario B — Framingham-style Cohort:** 5-year coronary disease risk 20% in non-smokers vs 30% in smokers, 10% anticipated dropout.
+
+```{r three-axis-cohort}
 calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, dropout = 0.10)
+```
+
+**Scenario C — Diagnostic ROC-AUC validation:** Anticipated AUC = 0.80, CI half-width $\pm 0.10$, 1:1 case:control, binormal model.
+
+```{r three-axis-auc}
 calculate("diagAUC", "estimate", "auc",
   auc = 0.80, d = 0.10,
   ratio = 1, var_method = "binormal"
 )
 ```
 
-Every result prints the role of each parameter under the chosen design (e.g. `p0` is the unexposed incidence in a cohort but the control-group exposure rate in a case-control study), plus methodological hints where relevant. See `docs/DESIGN_MATRIX.md` for the full combination table and `docs/NUMERIC_ANCHORS.md` for the published worked examples used as automated test benchmarks.
+Every result displays the plain-text formula, LaTeX source, calculation process, and literature references. Parameter roles (for example, `p0` is unexposed incidence in a cohort but control-group exposure in a case-control study) and methodological hints are included where available. See the [reporting guide](result-reporting.html) for field extraction and a rendered formula example.
 
 ## Introduction (legacy examples)
 
@@ -96,7 +108,7 @@ print(result)
 - The effect size (Cohen's d): `r round(abs(result$parameters$mean1 - result$parameters$mean2) / result$parameters$sd, 2)`
 
 **Formula**:
-$$n = 2\\left(\\frac{(Z_{\\alpha/2} + Z_{\\beta}) \\cdot \\sigma}{\\mu_1 - \\mu_2}\\right)^2$$
+$$n = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
 
 **Reference**: Chow et al. (2017). *Sample Size Calculations in Clinical Research* (3rd ed.). CRC Press.
 
@@ -183,7 +195,7 @@ print(result)
 - For example, if event rate is 50%, total sample size needed: `r ceiling(result$target_events_needed / 0.5)` subjects
 
 **Formula**:
-$$E = \\frac{(Z_{\\alpha/2} + Z_{\\beta})^2}{p_E(1-p_E)[\\ln(HR)]^2}$$
+$$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$
 
 **Reference**: Schoenfeld (1983). Sample-size formula for the proportional-hazards regression model. *Biometrics*, 39(2), 499-503.
 
@@ -300,7 +312,7 @@ print(result)
 - With 20% prevalence, need to screen `r result$total_subjects_to_screen` to get `r result$target_state_cases_needed` cases
 
 **Formula**:
-$$n_{cases} = \\frac{Z_{1-\\alpha/2}^2 \\cdot p(1-p)}{d^2}$$
+$$n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
 
 **Reference**: Hajian-Tilaki (2014). Sample size determination in diagnostic test studies. *Journal of Biomedical Informatics*, 48, 193-204.
 
@@ -417,7 +429,11 @@ plot(result, type = "power")
 plot(result, type = "sample_size")
 ```
 
-### Using `summary()` for Complete Information
+### Using `summary()` for Parameters and Adjustments
+
+Default `print()` output already includes the four report components.
+`summary()` expands the report with all input parameters, design axes where
+available, and recorded adjustments.
 
 ```{r summary-example}
 result <- sample_size_calculator(
@@ -431,11 +447,26 @@ summary(result)
 ```
 
 The summary includes:
+
 - Study design description
 - All parameters used
 - Sample size results
-- Formula in LaTeX format
-- Complete literature citations
+- Formula in plain text and LaTeX source
+- Calculation process
+- Literature references
+- Parameter roles and recorded adjustments where available
+
+### Extracting the Report Components
+
+```{r report-fields-overview, eval = FALSE}
+result$formula
+cat(result$formula_latex)
+cat(result$calculation_steps, sep = "\n")
+cat(result$reference)
+```
+
+`calculation` is an alias for `calculation_steps`. Both the three-axis API
+and `sample_size_calculator()` provide these report fields.
 
 ---
 

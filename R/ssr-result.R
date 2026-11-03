@@ -19,19 +19,36 @@ ssr_canonical_map <- list(
 #' Internal constructor for sample_size_result objects
 #'
 #' @param design Design keyword (e.g. "rct", "cohort", "diagAccuracy")
-#' @param task Statistical task: estimate/test/noninferiority/superiority/equivalence
-#' @param outcome Outcome type: mean/proportion/rate/survival/auc/lr/correlation
+#' @param task Statistical task: "estimate", "test", "noninferiority",
+#'   "superiority", "equivalence", or "plan"
+#' @param outcome Outcome type: "mean", "proportion", "rate", "survival",
+#'   "auc", "lr", "correlation", "ordinal", or "events"
 #' @param design_type Human-readable design description
-#' @param parameters Named list of input parameters
+#' @param parameters Named list of input parameters. Each entry must be finite
+#'   numeric scalar (or vector for `prop_bar`); e.g. `mean1 = 10`, `sd = 3`.
 #' @param legacy Legacy result fields (n_per_group, total_n, pairs_count,
 #'   target_events_needed, target_state_cases_needed, cases_needed, ...)
-#' @param formula_ascii Plain-text formula
-#' @param formula_latex LaTeX formula
+#' @param formula_ascii Plain-text formula (single string, e.g.
+#'   "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2")
+#' @param formula_latex LaTeX formula wrapped in $$...$$
+#' @param calculation Step-by-step calculation explanation (character vector)
 #' @param reference Literature reference (section/page precision)
 #' @param roles Character vector documenting parameter roles for the design
 #' @param adjustments Named list of applied adjustments (dropout, nonresponse)
+#' @param hints Character vector of methodological warnings/tips
+#' @param calculation_steps Alias for `calculation`
 #' @return A sample_size_result object
 #' @keywords internal
+#' @examples
+#' r <- new_sample_size_result(
+#'   design = "rct", task = "test", outcome = "mean",
+#'   design_type = "Two independent samples, mean comparison",
+#'   parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),
+#'   legacy = list(n_per_group = 37L, total_n = 74L),
+#'   formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2",
+#'   reference = "Chow et al. (2017)"
+#' )
+#' stopifnot(inherits(r, "sample_size_result"))
 new_sample_size_result <- function(design,
                                    task,
                                    outcome,
@@ -40,10 +57,12 @@ new_sample_size_result <- function(design,
                                    legacy = list(),
                                    formula_ascii = NULL,
                                    formula_latex = NULL,
+                                   calculation = NULL,
                                    reference = NULL,
                                    roles = character(),
                                    adjustments = list(),
-                                   hints = character()) {
+                                   hints = character(),
+                                   calculation_steps = NULL) {
   results <- legacy
 
   # Derive canonical fields from the first matching legacy field
@@ -57,6 +76,24 @@ new_sample_size_result <- function(design,
     }
   }
 
+  calc_steps <- calculation %||% calculation_steps
+  if (is.null(calc_steps)) {
+    calc_steps <- generate_calculation_steps(list(
+      design = design,
+      task = task,
+      outcome = outcome,
+      design_type = design_type,
+      parameters = parameters,
+      results = results,
+      formula = formula_ascii,
+      formula_latex = formula_latex,
+      adjustments = adjustments,
+      legacy = legacy,
+      reference = reference,
+      roles = roles
+    ))
+  }
+
   structure(
     list(
       design = design,
@@ -67,6 +104,8 @@ new_sample_size_result <- function(design,
       results = results,
       formula = formula_ascii,
       formula_latex = formula_latex,
+      calculation = calc_steps,
+      calculation_steps = calc_steps,
       reference = reference,
       roles = roles,
       adjustments = adjustments,
@@ -112,9 +151,14 @@ new_sample_size_result <- function(design,
 
 #' Validate a sample_size_result object
 #'
-#' @param x Object to validate
+#' @param x Object to validate; must inherit "sample_size_result" and carry
+#'   at least `design`, `design_type`, and `parameters` fields; `task` and
+#'   `outcome` (if present) must be character scalars.
 #' @return Invisible TRUE, or aborts with a structured error
 #' @keywords internal
+#' @examples
+#' r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' validate_sample_size_result(r)  # invisible TRUE
 validate_sample_size_result <- function(x) {
   if (!inherits(x, "sample_size_result")) {
     cli::cli_abort(c(
@@ -155,8 +199,13 @@ validate_sample_size_result <- function(x) {
 
 #' Assert an object is a valid sample_size_result
 #'
-#' @param x Object to assert
+#' @param x Object to assert; see [validate_sample_size_result()] for the
+#'   required structure.
 #' @return Invisibly returns x
+#' @keywords internal
+#' @examples
+#' r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' assert_sample_size_result(r)
 #' @keywords internal
 assert_sample_size_result <- function(x) {
   validate_sample_size_result(x)

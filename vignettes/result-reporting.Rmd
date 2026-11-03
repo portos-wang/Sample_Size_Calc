@@ -1,0 +1,135 @@
+---
+title: "Formulas, calculation steps, and references / 公式、计算过程与参考文献"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Formulas, calculation steps, and references / 公式、计算过程与参考文献}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(sampleSizeCalc)
+```
+
+## Default output / 默认输出
+
+`calculate()` and `sample_size_calculator()` return a `sample_size_result`
+object. Printing it displays the study design, required sample size, and
+four report components. Assigning the result to a variable stores it;
+`print(res)` or entering `res` in the R console displays the report.
+
+`calculate()` 和 `sample_size_calculator()` 返回 `sample_size_result` 对象。
+默认打印会显示研究设计、所需样本量，以及以下四项内容。赋值仅保存结果；
+输入对象名称或调用 `print(res)` 即可查看完整输出。
+
+| Content / 内容 | Console label / 控制台标签 | Field / 对象字段 |
+|---|---|---|
+| Plain-text formula / 纯文本公式 | `Formula (plain text)` | `formula` |
+| LaTeX source / LaTeX 公式源码 | `Formula (LaTeX)` | `formula_latex` |
+| Calculation process / 计算过程 | `Calculation process` | `calculation_steps` |
+| Literature sources / 参考文献 | `Reference` | `reference` |
+
+The following example runs when this page is built. Its calculation
+process shows the normal approximation of about 35.32 per arm, followed
+by the noncentral t power calculation and rounding to 37 per arm (74 total).
+Intermediate calculations and rounding depend on the chosen method.
+
+以下示例在构建页面时实际运行。计算过程先列出每组约 35.32 人的正态近似，
+再说明非中心 t 分布效能求解和取整，最终为每组 37 人、合计 74 人。
+不同设计采用的中间计算与取整规则有所不同。
+
+```{r default-report}
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+print(res)
+```
+
+## Extract the four components / 提取四项内容
+
+The report fields are available without parsing console output.
+`calculation` and `calculation_steps` contain the same character vector.
+`cat()` prints character values without R's quotes and vector indices.
+
+可以直接从对象提取报告内容。`calculation` 与 `calculation_steps` 保存相同的
+步骤文本向量；用 `cat()` 可避免 R 的引号和向量下标，便于复制到方案或论文。
+
+```{r plain-text-formula}
+cat(res$formula, "\n")
+```
+
+```{r latex-source}
+cat(res$formula_latex, "\n")
+```
+
+```{r calculation-steps}
+cat(res$calculation_steps, sep = "\n")
+```
+
+```{r references}
+cat(res$reference, "\n")
+```
+
+## Typeset the LaTeX formula / 排版 LaTeX 公式
+
+The R console displays LaTeX as copyable source. For an HTML or PDF report
+in R Markdown, set the chunk option `results = "asis"` and use
+`cat(res$formula_latex, "\n\n")`. This page uses that approach below; the
+formula comes directly from the result object.
+
+R 控制台显示可复制的 LaTeX 源码。在 R Markdown 的 HTML 或 PDF 文档中，
+可在 `results = "asis"` 代码块中使用 `cat(res$formula_latex, "\n\n")`
+来排版公式。下方公式直接来自计算结果对象。
+
+```{r rendered-formula, results = "asis"}
+cat(res$formula_latex, "\n\n")
+```
+
+## Additional parameters and adjustments / 参数与调整明细
+
+`summary()` includes the four report components and additionally lists all
+input parameters, classification axes, and recorded adjustments.
+
+`summary()` 同样包含四项报告内容，并进一步列出全部输入参数、设计分类轴和
+已记录的调整。
+
+```{r summary-report}
+summary(res)
+```
+
+The legacy entry point provides the same four report components:
+
+旧入口也包含相同的四项报告内容：
+
+```{r legacy-report}
+legacy_res <- sample_size_calculator(
+  "twoProportions", p1 = 0.85, p2 = 0.70
+)
+print(legacy_res)
+```
+
+## Save a text report / 保存文本报告
+
+This example writes the stored report components to a UTF-8 text file in
+your R working directory. It is shown without execution so building the
+website does not create a report file.
+
+以下代码会将对象中的报告内容保存为 R 工作目录下的 UTF-8 文本文件。
+网页展示代码供使用者运行，构建网站时不会创建该文件。
+
+```{r save-report, eval = FALSE}
+report <- c(
+  res$design_type,
+  paste("Sample size per group:", res$n_per_group),
+  paste("Total sample size:", res$total_n),
+  "", "Formula (plain text)", res$formula,
+  "", "Formula (LaTeX)", res$formula_latex,
+  "", "Calculation process", res$calculation_steps,
+  "", "Reference", res$reference
+)
+writeLines(enc2utf8(report), "sample-size-report.txt", useBytes = TRUE)
+```
+
+See the [English guide](sampleSizeCalc-guide-en.html) or
+[中文完整指南](sampleSizeCalc-guide-zh.html) for examples across study designs.

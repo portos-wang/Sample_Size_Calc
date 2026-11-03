@@ -13,40 +13,63 @@ new_sample_size_result(
   legacy = list(),
   formula_ascii = NULL,
   formula_latex = NULL,
+  calculation = NULL,
   reference = NULL,
   roles = character(),
   adjustments = list(),
-  hints = character()
+  hints = character(),
+  calculation_steps = NULL
 )
 }
 \arguments{
 \item{design}{Design keyword (e.g. "rct", "cohort", "diagAccuracy")}
 
-\item{task}{Statistical task: estimate/test/noninferiority/superiority/equivalence}
+\item{task}{Statistical task: "estimate", "test", "noninferiority",
+"superiority", "equivalence", or "plan"}
 
-\item{outcome}{Outcome type: mean/proportion/rate/survival/auc/lr/correlation}
+\item{outcome}{Outcome type: "mean", "proportion", "rate", "survival",
+"auc", "lr", "correlation", "ordinal", or "events"}
 
 \item{design_type}{Human-readable design description}
 
-\item{parameters}{Named list of input parameters}
+\item{parameters}{Named list of input parameters. Each entry must be finite
+numeric scalar (or vector for \code{prop_bar}); e.g. \code{mean1 = 10}, \code{sd = 3}.}
 
 \item{legacy}{Legacy result fields (n_per_group, total_n, pairs_count,
 target_events_needed, target_state_cases_needed, cases_needed, ...)}
 
-\item{formula_ascii}{Plain-text formula}
+\item{formula_ascii}{Plain-text formula (single string, e.g.
+"n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2")}
 
-\item{formula_latex}{LaTeX formula}
+\item{formula_latex}{LaTeX formula wrapped in $$...$$}
+
+\item{calculation}{Step-by-step calculation explanation (character vector)}
 
 \item{reference}{Literature reference (section/page precision)}
 
 \item{roles}{Character vector documenting parameter roles for the design}
 
 \item{adjustments}{Named list of applied adjustments (dropout, nonresponse)}
+
+\item{hints}{Character vector of methodological warnings/tips}
+
+\item{calculation_steps}{Alias for \code{calculation}}
 }
 \value{
 A sample_size_result object
 }
 \description{
 Internal constructor for sample_size_result objects
+}
+\examples{
+r <- new_sample_size_result(
+  design = "rct", task = "test", outcome = "mean",
+  design_type = "Two independent samples, mean comparison",
+  parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),
+  legacy = list(n_per_group = 37L, total_n = 74L),
+  formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2",
+  reference = "Chow et al. (2017)"
+)
+stopifnot(inherits(r, "sample_size_result"))
 }
 \keyword{internal}

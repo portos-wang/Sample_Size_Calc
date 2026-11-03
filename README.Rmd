@@ -1,0 +1,203 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# sampleSizeCalc
+
+> Sample Size Calculator for Clinical Research
+
+A comprehensive R package for sample size determination across **39 design
+combinations**: experimental trials (superiority / non-inferiority /
+equivalence), observational studies (cohort, case-control, cross-sectional),
+diagnostic accuracy studies (estimation, testing, comparison, AUC), and
+complex designs (cluster RCT, Simon two-stage, bioequivalence, ordered
+outcomes, prediction models, interrupted time series).
+
+Every result displays the formula in plain text and LaTeX, a calculation
+process, and literature references in the default R console output.
+Parameter roles and methodological hints are included where available.
+
+## Installation
+
+```{r installation, eval = FALSE}
+devtools::install_github("portos-wang/sampleSizeCalc")
+# or from a local source
+devtools::install_local("path/to/Sample_Size_Calc")
+```
+
+## Quick start: real clinical scenarios
+
+**Scenario 1 — Antihypertensive RCT (continuous endpoint).** A cardiology
+trial compares a new drug with placebo for systolic blood pressure
+reduction. Based on a phase-2 study, the placebo arm is expected to drop
+10 mmHg and the new drug 12 mmHg, with a pooled SD of 3 mmHg
+(two-sided $\alpha = 0.05$, 80% power). How many patients per arm?
+
+```{r scenario-1}
+library(sampleSizeCalc)
+
+# design x task x outcome
+calculate("rct", "test", "mean",
+  mean1 = 10, mean2 = 12, sd = 3
+)
+```
+
+**Scenario 2 — *H. pylori* eradication RCT (binary endpoint).** Standard
+triple therapy eradicates 70% of infections; a new bismuth quadruple
+regimen is expected to reach 85%.
+
+```{r scenario-2}
+calculate("rct", "test", "proportion",
+  p1 = 0.85, p2 = 0.70
+)
+```
+
+**Scenario 3 — Generic vs originator antihypertensive (bioequivalence).**
+A $2\times2$ crossover study in healthy volunteers, intra-subject
+CV = 25%, expected geometric mean ratio $\theta_0 = 1.0$, standard
+80–125% acceptance range (Philips 1990 exact TOST).
+
+```{r scenario-3}
+calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
+```
+
+**Scenario 4 — Colorectal cancer screening kit (diagnostic accuracy).**
+Expected sensitivity 85%, required CI half-width $\pm 5\%$, clinic
+prevalence 20%: how many confirmed cases and how many screens?
+
+```{r scenario-4}
+calculate("diagAccuracy", "estimate", "proportion",
+  prob = 0.85, d = 0.05, prevalence = 0.2
+)
+```
+
+**Scenario 5 — Diabetes prevalence survey (single proportion).**
+Anticipated prevalence 30%, absolute precision $\pm 5\%$, 95% CI
+(Bhardwaj 2024 worked example).
+
+```{r scenario-5}
+calculate("singleProportion", p = 0.30, precision = 0.05) # -> 323
+```
+
+Unambiguous designs allow omitting `task`/`outcome`:
+
+```{r scenario-6}
+calculate("diagAUC", auc = 0.80, d = 0.05)
+```
+
+Illegal combinations error with the list of legal ones. The
+[English guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
+and [Chinese guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html)
+cover design choices, parameters, formulas, and worked clinical examples.
+The [regression tests](https://github.com/portos-wang/Sample_Size_Calc/tree/master/tests/testthat)
+check sample sizes against published examples.
+
+## Legacy API (silently compatible)
+
+All 17 pre-3.0 keywords keep working with identical results:
+
+```{r legacy-api}
+sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)  # 37/group
+sample_size_calculator("survival", hr = 0.7)                        # 247 events
+```
+
+## Result object
+
+`calculate()` returns a `sample_size_result` S3 object. Printing the object
+(or calling `print()`) displays the design, sample size, and all four
+report components:
+
+| Report component | Console label | Result field |
+|---|---|---|
+| Plain-text formula | `Formula (plain text)` | `formula` |
+| LaTeX source | `Formula (LaTeX)` | `formula_latex` |
+| Calculation process | `Calculation process` | `calculation_steps` (also `calculation`) |
+| Literature sources | `Reference` | `reference` |
+
+The same reporting components are available through
+`sample_size_calculator()`. Assigning a result to a variable stores it;
+print that variable to display the report. `summary()` additionally shows
+all input parameters, classification axes, and recorded adjustments.
+`plot()` provides the supported visual diagnostics.
+
+```{r result-object}
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+summary(res)
+```
+
+You can also extract the report components for a protocol or manuscript:
+
+```{r report-fields, eval = FALSE}
+res$formula
+cat(res$formula_latex)
+cat(res$calculation_steps, sep = "\n")
+cat(res$reference)
+```
+
+The R console displays LaTeX as copyable source. In an R Markdown document,
+use `cat(res$formula_latex)` in a chunk with `results = "asis"` to typeset it.
+See the [reporting guide](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.html) for an executed
+example and instructions in English and Chinese.
+
+## Study designs (family overview)
+
+| Family | Designs |
+|---|---|
+| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/rate/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A'Hern) |
+| Observational | `cohort` (proportion/rate), `caseControl`, `caseControlMatched`, `crosstab` |
+| Diagnostic | `diagAccuracy` (estimate/test/dual-endpoint), `diagAccuracyCompare` (test/NI/equivalence), `diagAUC`, `diagAUCCompare` (test/NI/equivalence), `diagLR` |
+| Estimation | `singleProportion`, `singleMean`, `singleCorrelation` |
+| Complex | `clusterRCT`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
+| Deferred | `kappa`, `steppedWedge` (formula sources under verification) |
+
+## Literature
+
+Methods are anchored to primary sources, with worked examples from the
+reference literature used as automated numeric test benchmarks:
+
+- Zhou, Obuchowski & McClish (2011). *Statistical Methods in Diagnostic
+  Medicine* (2nd ed.), Wiley - diagnostic module.
+- Machin, Campbell, Tan & Tan (2018). *Sample Sizes for Clinical, Laboratory
+  and Epidemiology Studies* (4th ed.), Wiley - trial/complex designs.
+- Hajian-Tilaki (2014). *J Biomed Informatics* 48:193-204 - diagnostic
+  formulas.
+- Akoglu (2022). *Turkish J Emergency Medicine* 22(4):177-185 - diagnostic
+  comparisons and dual-endpoint strategy.
+- Bhardwaj et al. (2024). *J Family Med Prim Care* 13(7):2555-2561 -
+  prevalence studies and dropout adjustment.
+- Plus the original methods: Schoenfeld (1983), Fleiss et al. (1980),
+  Casagrande et al. (1978), Schlesselman (1982), Dupont (1988), Connor
+  (1987), Hanley & McNeil (1982/1983), Buderer (1996), Simon (1989),
+  A'Hern (2001), Whitehead (1993), Peduzzi et al. (1996), Schuirmann (1987).
+
+## Citation
+
+If you use the package in research, please cite the original methodology
+papers for each design (listed in every result's `reference` field) along
+with the package:
+
+```bibtex
+@software{sampleSizeCalc,
+  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
+  author = {Portos (Yishan) Wang and Bingxin Cai},
+  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
+  year = {2026},
+  version = {3.1.0},
+  url = {https://github.com/portos-wang/sampleSizeCalc}
+}
+```
+
+## License
+
+MIT (see [LICENSE](https://github.com/portos-wang/Sample_Size_Calc/blob/master/LICENSE)).

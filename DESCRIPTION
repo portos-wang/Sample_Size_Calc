@@ -53,6 +53,7 @@ Language: en-US
 ByteCompile: true
 Collate:
     'utils-z.R'
+    'calculation_steps.R'
     'ssr-result.R'
     'validate_parameters.R'
     'validate_design_args.R'

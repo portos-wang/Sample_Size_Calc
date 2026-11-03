@@ -1,5 +1,20 @@
 # sampleSizeCalc 3.1.1 (Development)
 
+## Output & Reporting Enhancements
+
+- **Comprehensive Output Display**: Default `print()` and `summary()` methods now
+  consistently output:
+  1. Plain-text mathematical formula (`Formula (plain text)`)
+  2. LaTeX mathematical formula (`Formula (LaTeX)`)
+  3. Step-by-step calculation process (`Calculation process`), documenting
+     hypotheses, input parameters, critical values, intermediate components, and rounding
+  4. Literature references (`Reference`)
+- Calculation reports now respect the selected AUC variance model and
+  allocation, retain non-default power for diagnostic CI-width planning,
+  and show the rounding used before cohort dropout inflation.
+- **Calculation Steps In S3 Object**: All `sample_size_result` objects now carry
+  `calculation` and `calculation_steps` fields documenting the intermediate steps.
+
 ## Numerical Enhancements & Cross-Package Alignments
 
 - `singleCorrelation`: Fixed implementation to strictly match Machin et al.

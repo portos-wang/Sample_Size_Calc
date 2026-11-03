@@ -19,16 +19,48 @@ sample_size_calculator(
 sampleSizeCalculator(design, alpha = 0.05, power = 0.8, ...)
 }
 \arguments{
-\item{design}{Study design type (see list in usage).}
+\item{design}{Study design keyword. One of:\tabular{lll}{
+   Keyword \tab Design \tab Key parameters \cr
+   \code{twoMeans} \tab two-arm superiority RCT, continuous \tab \code{mean1}, \code{mean2}, \code{sd} \cr
+   \code{twoProportions} \tab two-arm RCT, binary \tab \code{p1}, \code{p2} \cr
+   \code{pairedMeans} \tab pre-post / matched pairs, continuous \tab \code{meanDiff}, \code{sdDiff} \cr
+   \code{survival} \tab log-rank events \tab \code{hr}, \code{pE} \cr
+   \code{nonInferiorityMeans} \tab NI trial, continuous \tab \code{mean1}, \code{mean2}, \code{sd}, \code{margin} \cr
+   \code{superiorityMeans} \tab superiority, continuous \tab \code{mean1}, \code{mean2}, \code{sd}, \code{margin} \cr
+   \code{equivalenceMeans} \tab equivalence, continuous \tab \code{mean1}, \code{mean2}, \code{sd}, \code{margin} \cr
+   \code{diagnosticAccuracySingle} \tab Se/Sp precision \tab \code{prob}, \code{d}, \code{prevalence} \cr
+   \code{caseControl} \tab unmatched case-control \tab \code{p0}, \code{OR}, \code{m} \cr
+   \code{superiorityProportions} \tab superiority, binary \tab \code{p1}, \code{p2}, \code{margin} \cr
+   \code{diagnosticSuperioritySingle} \tab Se vs null \tab \code{prob}, \code{p0}, \code{prevalence} \cr
+   \code{diagnosticComparisonTwo} \tab two tests \tab \code{p1}, \code{p2}, \code{prevalence}, \code{paired}, \code{psi} \cr
+   \code{likelihoodRatioTest} \tab LR precision \tab \code{sens}, \code{spec}, \code{prevalence}, \code{precision} \cr
+   \code{auc_single} \tab AUC CI precision \tab \code{auc}, \code{d}, \code{prevalence} \cr
+   \code{aucSuperiority} \tab AUC vs null \tab \code{auc}, \code{auc0}, \code{prevalence} \cr
+   \code{aucComparison} \tab two AUCs \tab \code{auc1}, \code{auc2}, \code{r}, \code{prevalence} \cr
+   \code{equivalenceProportions} \tab equivalence, binary \tab \code{p1}, \code{p2}, \code{margin} \cr
+}
 
-\item{alpha}{Type I error (default 0.05).}
 
-\item{power}{Target power (default 0.8).}
+New code should prefer the three-axis \code{\link[=calculate]{calculate()}} API.}
 
-\item{...}{Design-specific arguments (e.g. mean1, mean2, sd for twoMeans).}
+\item{alpha}{Type I error; scalar in (0, 1). Default 0.05 (two-sided
+designs). Non-inferiority designs interpret alpha as one-sided (use 0.025
+to spend a full two-sided 0.05).}
+
+\item{power}{Target power; scalar in (0, 1), typically 0.8 or 0.9. Default 0.8.}
+
+\item{...}{Design-specific arguments (see the table in \code{design} and
+\code{?calculate} for domains; e.g. \code{mean1}, \code{mean2}, \code{sd} for twoMeans).
+Parameters outside their validated domain abort with a structured
+\code{cli} error naming the offending argument.}
 }
 \value{
-Object of class \code{sample_size_result} with \code{print}, \code{summary}, \code{plot} methods.
+Object of class \code{sample_size_result} with print, summary, and
+plot methods. Default printing includes the plain-text formula
+(\code{formula}), LaTeX source (\code{formula_latex}), calculation process
+(\code{calculation_steps}, alias \code{calculation}), and literature references
+(\code{reference}). These fields can also be extracted directly from the
+object. See \code{\link[=print.sample_size_result]{print.sample_size_result()}} and \code{\link[=summary.sample_size_result]{summary.sample_size_result()}}.
 }
 \description{
 Computes sample size (or events) for two-group or single-group designs:
@@ -48,6 +80,12 @@ mapping. Results are identical between the two entry points.
 
 }}
 \examples{
+# Antihypertensive RCT: 10 vs 12 mmHg SBP reduction, SD 3 -> 37 per arm
 sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
+
+# NSCLC immunotherapy trial: HR = 0.70, 1:1 allocation -> 247 events
 sample_size_calculator("survival", hr = 0.7, alpha = 0.05, power = 0.8)
+
+# H. pylori eradication: quadruple 85\% vs triple 70\% -> 121 per arm
+sample_size_calculator("twoProportions", p1 = 0.85, p2 = 0.70)
 }

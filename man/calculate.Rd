@@ -7,24 +7,137 @@
 calculate(...)
 }
 \arguments{
-\item{...}{Control and design arguments, resolved by EXACT name (partial
+\item{...}{...
+Control and design arguments, resolved by EXACT name (partial
 matching is deliberately avoided so that design-specific arguments such
-as \code{d} cannot be swallowed by the \code{design} slot). Recognised control
-arguments: \code{design} (e.g. "rct", "caseControl", "diagAccuracy"; may be
-the first positional argument), \code{task} ("estimate", "test",
-"noninferiority", "superiority", "equivalence"; optional for
-unambiguous designs, may be the second positional argument), \code{outcome}
-("mean", "proportion", "rate", "survival", "auc", "lr",
-"correlation", "ordinal", "events"; optional for unambiguous designs,
-may be the third positional argument), \code{alpha} (type I error, default
-0.05), and \code{power} (target power, default 0.8). All remaining named
-arguments are design-specific parameters, identical to the names used
-by the legacy \code{\link[=sample_size_calculator]{sample_size_calculator()}} API.}
+as \code{d} cannot be swallowed by the \code{design} slot).
+
+\strong{Control arguments}
+\itemize{
+\item \code{design} (first positional argument): one of \code{"rct"}, \code{"paired"},
+\code{"rctSingleArm"}, \code{"crossover"}, \code{"bioequivalence"},
+\code{"singleArmPhaseII"}, \code{"cohort"}, \code{"caseControl"},
+\code{"caseControlMatched"}, \code{"crosstab"}, \code{"singleProportion"},
+\code{"singleMean"}, \code{"singleCorrelation"}, \code{"diagAccuracy"},
+\code{"diagAccuracyCompare"}, \code{"diagAUC"}, \code{"diagAUCCompare"}, \code{"diagLR"},
+\code{"clusterRCT"}, \code{"steppedWedge"}, \code{"twoOrdinal"}, \code{"predictiveModel"},
+\code{"kappa"}, \code{"its"} - the study-design axis.
+\item \code{task} (second positional argument): \code{"test"}, \code{"estimate"},
+\code{"noninferiority"}, \code{"superiority"}, \code{"equivalence"}, or \code{"plan"};
+optional for unambiguous designs.
+\item \code{outcome} (third positional argument): \code{"mean"}, \code{"proportion"},
+\code{"rate"}, \code{"survival"}, \code{"auc"}, \code{"lr"}, \code{"correlation"}, \code{"ordinal"},
+or \code{"events"}; optional for unambiguous designs.
+\item \code{alpha}: scalar in (0, 1), default 0.05. Use 0.025 for one-sided
+non-inferiority trials spending a full two-sided 0.05.
+\item \code{power}: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
+confirmatory trials.
+}
+
+\strong{Design-specific parameters} (all validated; ranges shown):
+\itemize{
+\item \emph{RCT, test, mean}: \code{mean1}, \code{mean2} real-valued group means (e.g.
+mmHg); \code{sd} > 0 pooled standard deviation.
+\item \emph{RCT, test, proportion}: \code{p1}, \code{p2} in (0, 1) response rates, must
+differ.
+\item \emph{RCT, test, survival}: \code{hr} in (0, 1) anticipated hazard ratio
+(<1 = benefit); \code{pE} in (0, 1) experimental-arm share (default 0.5).
+Returns \strong{events} required.
+\item \emph{RCT, noninferiority/superiority, mean or proportion}: same inputs as
+above plus \code{margin} > 0 (NI margin Delta, one-sided alpha; or the
+minimal clinically important difference for superiority).
+\item \emph{RCT, equivalence, mean or proportion}: \code{margin} = corridor
+half-width; must exceed |mean1 - mean2| (or |p1 - p2|); uses
+Z_(beta/2).
+\item \emph{paired, mean}: \code{meanDiff} != 0 within-subject mean difference;
+\code{sdDiff} > 0 SD of the differences (NOT the pooled SD).
+\item \emph{paired, proportion}: \code{p1}, \code{p2} in (0, 1); \code{psi} in (0, 1) expected
+discordant-pair proportion, psi >= |p1-p2|; output in pairs.
+\item \emph{rctSingleArm, mean}: \code{mu0} historical mean, \code{mu1} anticipated mean,
+\code{sigma} > 0.
+\item \emph{rctSingleArm, proportion}: \code{p0} historical rate, \code{p1} anticipated
+rate, both in (0, 1).
+\item \emph{crossover, mean}: \code{delta} > 0 treatment difference; \code{sigma_within} > 0
+within-subject SD.
+\item \emph{bioequivalence}: \code{cv} in (0, 1) intra-subject CV; \code{theta0} GMR inside
+the acceptance range (default 1.0); \code{margin_low}/\code{margin_high} default
+0.8/1.25 (80-125 rule).
+\item \emph{singleArmPhaseII}: \code{p0} unacceptable rate; \code{p1} > p0 target rate;
+\code{optimizer} = "optimal" or "minimax".
+\item \emph{cohort, proportion}: \code{p0}, \code{p1} in (0, 1); \code{ratio} >= 1
+unexposed:exposed; optional \code{dropout} in [0, 1) inflates by 1/(1-d).
+\item \emph{cohort, rate}: \code{rate0}, \code{rate1} > 0 events per person-time; \code{ratio}
+at least  1 person-time ratio.
+\item \emph{caseControl}: \code{p0} in (0, 1) control exposure rate; \code{OR} > 0, != 1;
+\code{m} >= 1 controls per case (default 1).
+\item \emph{caseControlMatched}: \code{p0}, \code{OR} as above; 1:1 matching built in.
+\item \emph{crosstab}: \code{p0}, \code{p1} in (0, 1) prevalence in unexposed/exposed.
+\item \emph{singleProportion}: \code{p} in (0, 1); \code{precision} > 0; \code{precision_type} =
+"absolute" (default) or "relative".
+\item \emph{singleMean}: \code{sigma} > 0; \code{precision} > 0 margin of error.
+\item \emph{singleCorrelation}: \code{r} in (0, 1); exactly one of \code{precision}
+(absolute CI half-width in (0, 1)) or \code{epsilon} (relative).
+\item \emph{diagAccuracy, estimate}: \code{prob} in (0, 1) expected Se/Sp; \code{d} in
+(0, 1) CI half-width; \code{prevalence} in (0, 1]; optional \code{ci_method} =
+"precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses \code{power}).
+\item \emph{diagAccuracy, test}: \code{prob}, \code{p0} in (0, 1); \code{method} = "asymptotic"
+or "exact" (A'Hern); dual-endpoint adds \code{prob_spec}, \code{p0_spec},
+\code{dual = TRUE}, \code{dual_power} (default 0.90).
+\item \emph{diagAccuracyCompare}: \code{p1}, \code{p2} in (0, 1); \code{paired} = TRUE requires
+\code{psi} in (0, 1); margin tasks add \code{margin} in (0, 1).
+\item \emph{diagAUC, estimate}: \code{auc} in (0, 1); \code{d} > 0; \code{ratio} >= 1
+case:control (default 1); \code{var_method} = "binormal" (recommended),
+"exponential", or "conservative".
+\item \emph{diagAUC, test}: \code{auc}, \code{auc0} in (0, 1), auc > auc0.
+\item \emph{diagAUCCompare}: \code{auc1}, \code{auc2} in (0, 1); \code{r} in [0, 1) (default
+0.5); margin tasks add \code{margin} in (0, 1).
+\item \emph{diagLR, estimate}: \code{sens}, \code{spec} in (0, 1); \code{lr_type} = "positive"
+or "negative"; \code{target_lr} > 0 the boundary the CI must not cross.
+\item \emph{clusterRCT}: base two-group args plus \code{icc} in [0, 1) and
+\code{cluster_size} integer >= 1 (DE = 1 + (m-1)*ICC).
+\item \emph{steppedWedge}: \code{theta} != 0; \code{tau2} > 0; \code{sigma2_ind} > 0; \code{m} >= 1;
+\code{n_clusters} integer >= 2, a multiple of \code{clusters_per_step} >= 1.
+\item \emph{twoOrdinal}: \code{or} > 0, != 1; \code{prop_bar} positive vector summing to 1.
+\item \emph{predictiveModel, binary}: \code{prev} in (0, 1); \code{n_parameters} integer
+at least  1; \code{r2_cs} within its feasible maximum; \code{shrinkage} default 0.9;
+\code{mape} default 0.05; \code{precision_delta} default 0.05.
+\item \emph{predictiveModel, rate}: \code{rate} > 0 per person-year; \code{timepoint} > 0;
+\code{precision_delta} in (0, 1); optional \code{n_parameters}/\code{epv} cross-check.
+\item \emph{predictiveModel, events}: \code{n_parameters} >= 1; \code{epv} >= 1 (classic
+10); \code{event_prevalence} in (0, 1).
+\item \emph{kappa, estimate}: \code{pi1}, \code{pi2} in (0, 1); \code{kappa} in [0, 1); \code{d} in
+(0, 1).
+\item \emph{kappa, test}: \code{kappa1} != \code{kappa2} in (0, 1); same pi's.
+\item \emph{its}: \code{effect_sd} > 0; \code{n_pre}, \code{n_post} integers >= 3 (>= 8
+recommended); \code{rho} in [0, 1). Returns achieved power.
+}
+
+[0, 1) inflates by 1/(1-d).
+\itemize{
+\item \emph{cohort, rate}: \code{rate0}, \code{rate1} > 0 events per person-time; \code{ratio}
+at least  1 person-time ratio.
+\item \emph{caseControl}: \code{p0} in (0, 1) control exposure rate; \code{OR} > 0, != 1;
+\code{m} >= 1 controls per case (default 1).
+\item \emph{caseControlMatched}: \code{p0}, \code{OR} as above; 1:1 matching built in.
+\item \emph{crosstab}: \code{p0}, \code{p1} in (0, 1) prevalence in unexposed/exposed.
+\item \emph{singleProportion}: \code{p} in (0, 1); \code{precision} > 0; \code{precision_type} =
+"absolute" (default) or "relative".
+\item \emph{singleMean}: \code{sigma} > 0; \code{precision} > 0 margin of error.
+\item \emph{singleCorrelation}: \code{r} in (0, 1); exactly one of \code{precision}
+(absolute CI half-width in (0, 1)) or \code{epsilon} (relative).
+\item \emph{diagAccuracy, estimate}: \code{prob} in (0, 1) expected Se/Sp; \code{d} in
+(0, 1) CI half-width; \code{prevalence} in (0, 1]: R:0,\%201)\%20inflates\%20by\%201/(1-d).\%0A\%20\%20*\%20\emph{cohort,\%20rate}:\%20\%60rate0\%60,\%20\%60rate1\%60\%20\%3E\%200\%20events\%20per\%20person-time;\%20\%60ratio\%60\%0A\%20\%20\%20\%20at\%20least\%20\%201\%20person-time\%20ratio.\%0A\%20\%20*\%20\emph{caseControl}:\%20\%60p0\%60\%20in\%20(0,\%201)\%20control\%20exposure\%20rate;\%20\%60OR\%60\%20\%3E\%200,\%20!=\%201;\%0A\%20\%20\%20\%20\%60m\%60\%20\%3E=\%201\%20controls\%20per\%20case\%20(default\%201).\%0A\%20\%20*\%20\emph{caseControlMatched}:\%20\%60p0\%60,\%20\%60OR\%60\%20as\%20above;\%201:1\%20matching\%20built\%20in.\%0A\%20\%20*\%20\emph{crosstab}:\%20\%60p0\%60,\%20\%60p1\%60\%20in\%20(0,\%201)\%20prevalence\%20in\%20unexposed/exposed.\%0A\%20\%20*\%20\emph{singleProportion}:\%20\%60p\%60\%20in\%20(0,\%201);\%20\%60precision\%60\%20\%3E\%200;\%20\%60precision_type\%60\%20=\%0A\%20\%20\%20\%20\%22absolute\%22\%20(default)\%20or\%20\%22relative\%22.\%0A\%20\%20*\%20\emph{singleMean}:\%20\%60sigma\%60\%20\%3E\%200;\%20\%60precision\%60\%20\%3E\%200\%20margin\%20of\%20error.\%0A\%20\%20*\%20\emph{singleCorrelation}:\%20\%60r\%60\%20in\%20(0,\%201);\%20exactly\%20one\%20of\%20\%60precision\%60\%0A\%20\%20\%20\%20(absolute\%20CI\%20half-width\%20in\%20(0,\%201))\%20or\%20\%60epsilon\%60\%20(relative).\%0A\%20\%20*\%20\emph{diagAccuracy,\%20estimate}:\%20\%60prob\%60\%20in\%20(0,\%201)\%20expected\%20Se/Sp;\%20\%60d\%60\%20in\%0A\%20\%20\%20\%20(0,\%201)\%20CI\%20half-width;\%20\%60prevalence\%60\%20in\%20(0,\%201
+}}
 }
 \value{
 Object of class \code{sample_size_result} with print, summary, and
-plot methods. New-style objects additionally carry axis metadata
-(task, outcome, design_canonical, results, roles, adjustments).
+plot methods. Default printing shows sample sizes, the plain-text
+formula (\code{formula}), LaTeX source (\code{formula_latex}), calculation process
+(\code{calculation_steps}, also available as \code{calculation}), and literature
+references (\code{reference}). New-style objects also carry axis metadata
+(\code{task}, \code{outcome}, \code{design_canonical}, \code{results}, \code{roles}, \code{adjustments}).
+\code{\link[=summary.sample_size_result]{summary.sample_size_result()}} additionally lists all input parameters
+and recorded adjustments.
 }
 \description{
 Computes sample size (or events/cases) for a study design identified by the
@@ -33,10 +146,28 @@ repository) for the complete combination table, formulas, and literature
 sources.
 }
 \examples{
+# Antihypertensive RCT: placebo 10 mmHg vs new drug 12 mmHg SBP reduction,
+# pooled SD 3 mmHg, two-sided alpha 0.05, 80\% power
 calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+
+# Generic vs originator antidiabetic, non-inferiority margin 1 point,
+# one-sided alpha 0.05
 calculate(
   design = "rct", task = "noninferiority", outcome = "mean",
   mean1 = 10, mean2 = 9.5, sd = 3, margin = 1
 )
-calculate("diagAUC", auc = 0.80, d = 0.05)
+
+# Bioequivalence of a generic amlodipine: intra-subject CV 25\%,
+# expected GMR 1.0, 80-125\% acceptance range (2x2 crossover)
+calculate("bioequivalence", cv = 0.25)
+
+# Colorectal cancer screening kit: expected sensitivity 85\%,
+# CI half-width +/-5\%, clinic prevalence 20\%
+calculate("diagAccuracy", "estimate", "proportion",
+  prob = 0.85, d = 0.05, prevalence = 0.20
+)
+
+# AUC precision for a biomarker validation cohort: AUC 0.80,
+# CI half-width 0.10, 1:1 case:control, binormal variance
+calculate("diagAUC", auc = 0.80, d = 0.05, var_method = "binormal")
 }

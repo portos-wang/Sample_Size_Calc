@@ -7,17 +7,29 @@
 screen_required(n, prevalence, beta = 0.1)
 }
 \arguments{
-\item{n}{Required number of cases}
+\item{n}{Required number of cases; positive integer (e.g. the
+\code{target_state_cases_needed} from a diagnostic accuracy calculation).}
 
-\item{prevalence}{Disease prevalence in the screening population}
+\item{prevalence}{Disease prevalence in the screening population; scalar
+in (0, 1) (e.g. 0.20 for a 20 percent clinic prevalence).}
 
-\item{beta}{Acceptable probability of falling short (default 0.10, i.e. 90\% guarantee)}
+\item{beta}{Acceptable probability of falling short; scalar in (0, 1).
+Default 0.10, i.e. a 90 percent guarantee of capturing at least \code{n} cases.}
 }
 \value{
-Integer total enrollment N
+Integer total enrollment N (screening list size).
 }
 \description{
 Given a required number of cases n and a disease prevalence, compute the
 total enrollment needed so that, with probability 1-beta, at least n
 cases are captured: N satisfies P(Binomial(N, prev) >= n) >= 1-beta.
+}
+\examples{
+# A colon-cancer screening validation needs 196 confirmed cases;
+# clinic prevalence is 20\%. Enroll enough patients to capture
+# 196 cases with 90\% probability:
+screen_required(n = 196, prevalence = 0.20, beta = 0.10)
+
+# More stringent 95\% guarantee:
+screen_required(n = 196, prevalence = 0.20, beta = 0.05)
 }

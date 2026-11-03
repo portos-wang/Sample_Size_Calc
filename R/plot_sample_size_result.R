@@ -11,6 +11,13 @@
 #'   sample size vs effect size ratio (supported for twoMeans and twoProportions).
 #' @param ... Passed to downstream methods (currently unused).
 #' @return Invisibly returns \code{x}. A plot is drawn.
+#' @examples
+#' # Antihypertensive RCT planning: check how power scales with enrollment
+#' res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' plot(res, type = "power")        # sample size vs power curve
+#' \donttest{
+#' plot(res, type = "sample_size")  # sample size vs effect size
+#' }
 #' @export
 plot.sample_size_result <- function(x, type = c("power", "sample_size"), ...) {
   type <- rlang::arg_match(type)
@@ -82,6 +89,11 @@ ssr_no_power_curve <- c("singleArmPhaseII", "predictiveModel", "its")
 #' @param result A sample_size_result object
 #' @return Invisibly returns the result object
 #' @keywords internal
+#' @examples
+#' \donttest{
+#' res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' plot_power_curve(res)
+#' }
 plot_power_curve <- function(result) {
   if (!is.null(result$design_canonical) &&
     result$design_canonical %in% ssr_no_power_curve) {
@@ -165,6 +177,11 @@ plot_power_curve <- function(result) {
 #' @param result A sample_size_result object
 #' @return Invisibly returns the result object
 #' @keywords internal
+#' @examples
+#' \donttest{
+#' res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#' plot_sample_size_comparison(res)
+#' }
 plot_sample_size_comparison <- function(result) {
   params <- result$parameters
   alpha <- params$alpha

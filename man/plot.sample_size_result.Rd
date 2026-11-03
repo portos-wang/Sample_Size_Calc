@@ -22,3 +22,11 @@ Invisibly returns \code{x}. A plot is drawn.
 Draw power curve (sample size vs power) or sample size vs effect size ratio.
 Requires packages \pkg{ggplot2} and \pkg{scales}.
 }
+\examples{
+# Antihypertensive RCT planning: check how power scales with enrollment
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+plot(res, type = "power")        # sample size vs power curve
+\donttest{
+plot(res, type = "sample_size")  # sample size vs effect size
+}
+}

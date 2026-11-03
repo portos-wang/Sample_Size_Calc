@@ -610,30 +610,144 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #' repository) for the complete combination table, formulas, and literature
 #' sources.
 #'
-#' @param ... Control and design arguments, resolved by EXACT name (partial
-#'   matching is deliberately avoided so that design-specific arguments such
-#'   as `d` cannot be swallowed by the `design` slot). Recognised control
-#'   arguments: `design` (e.g. "rct", "caseControl", "diagAccuracy"; may be
-#'   the first positional argument), `task` ("estimate", "test",
-#'   "noninferiority", "superiority", "equivalence"; optional for
-#'   unambiguous designs, may be the second positional argument), `outcome`
-#'   ("mean", "proportion", "rate", "survival", "auc", "lr",
-#'   "correlation", "ordinal", "events"; optional for unambiguous designs,
-#'   may be the third positional argument), `alpha` (type I error, default
-#'   0.05), and `power` (target power, default 0.8). All remaining named
-#'   arguments are design-specific parameters, identical to the names used
-#'   by the legacy [sample_size_calculator()] API.
-#' @return Object of class \code{sample_size_result} with print, summary, and
-#'   plot methods. New-style objects additionally carry axis metadata
-#'   (task, outcome, design_canonical, results, roles, adjustments).
+#' @param ... ...
+#'   Control and design arguments, resolved by EXACT name (partial
+#'     matching is deliberately avoided so that design-specific arguments such
+#'     as `d` cannot be swallowed by the `design` slot).
+#'   
+#'     **Control arguments**
+#'   
+#'     * `design` (first positional argument): one of `"rct"`, `"paired"`,
+#'       `"rctSingleArm"`, `"crossover"`, `"bioequivalence"`,
+#'       `"singleArmPhaseII"`, `"cohort"`, `"caseControl"`,
+#'       `"caseControlMatched"`, `"crosstab"`, `"singleProportion"`,
+#'       `"singleMean"`, `"singleCorrelation"`, `"diagAccuracy"`,
+#'       `"diagAccuracyCompare"`, `"diagAUC"`, `"diagAUCCompare"`, `"diagLR"`,
+#'       `"clusterRCT"`, `"steppedWedge"`, `"twoOrdinal"`, `"predictiveModel"`,
+#'       `"kappa"`, `"its"` - the study-design axis.
+#'     * `task` (second positional argument): `"test"`, `"estimate"`,
+#'       `"noninferiority"`, `"superiority"`, `"equivalence"`, or `"plan"`;
+#'       optional for unambiguous designs.
+#'     * `outcome` (third positional argument): `"mean"`, `"proportion"`,
+#'       `"rate"`, `"survival"`, `"auc"`, `"lr"`, `"correlation"`, `"ordinal"`,
+#'       or `"events"`; optional for unambiguous designs.
+#'     * `alpha`: scalar in (0, 1), default 0.05. Use 0.025 for one-sided
+#'       non-inferiority trials spending a full two-sided 0.05.
+#'     * `power`: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
+#'       confirmatory trials.
+#'   
+#'     **Design-specific parameters** (all validated; ranges shown):
+#'   
+#'     * *RCT, test, mean*: `mean1`, `mean2` real-valued group means (e.g.
+#'       mmHg); `sd` > 0 pooled standard deviation.
+#'     * *RCT, test, proportion*: `p1`, `p2` in (0, 1) response rates, must
+#'       differ.
+#'     * *RCT, test, survival*: `hr` in (0, 1) anticipated hazard ratio
+#'       (<1 = benefit); `pE` in (0, 1) experimental-arm share (default 0.5).
+#'       Returns **events** required.
+#'     * *RCT, noninferiority/superiority, mean or proportion*: same inputs as
+#'       above plus `margin` > 0 (NI margin Delta, one-sided alpha; or the
+#'       minimal clinically important difference for superiority).
+#'     * *RCT, equivalence, mean or proportion*: `margin` = corridor
+#'       half-width; must exceed |mean1 - mean2| (or |p1 - p2|); uses
+#'       Z_(beta/2).
+#'     * *paired, mean*: `meanDiff` != 0 within-subject mean difference;
+#'       `sdDiff` > 0 SD of the differences (NOT the pooled SD).
+#'     * *paired, proportion*: `p1`, `p2` in (0, 1); `psi` in (0, 1) expected
+#'       discordant-pair proportion, psi >= |p1-p2|; output in pairs.
+#'     * *rctSingleArm, mean*: `mu0` historical mean, `mu1` anticipated mean,
+#'       `sigma` > 0.
+#'     * *rctSingleArm, proportion*: `p0` historical rate, `p1` anticipated
+#'       rate, both in (0, 1).
+#'     * *crossover, mean*: `delta` > 0 treatment difference; `sigma_within` > 0
+#'       within-subject SD.
+#'     * *bioequivalence*: `cv` in (0, 1) intra-subject CV; `theta0` GMR inside
+#'       the acceptance range (default 1.0); `margin_low`/`margin_high` default
+#'       0.8/1.25 (80-125 rule).
+#'     * *singleArmPhaseII*: `p0` unacceptable rate; `p1` > p0 target rate;
+#'       `optimizer` = "optimal" or "minimax".
+#'     * *cohort, proportion*: `p0`, `p1` in (0, 1); `ratio` >= 1
+#'       unexposed:exposed; optional `dropout` in [0, 1) inflates by 1/(1-d).
+#'     * *cohort, rate*: `rate0`, `rate1` > 0 events per person-time; `ratio`
+#'       at least  1 person-time ratio.
+#'     * *caseControl*: `p0` in (0, 1) control exposure rate; `OR` > 0, != 1;
+#'       `m` >= 1 controls per case (default 1).
+#'     * *caseControlMatched*: `p0`, `OR` as above; 1:1 matching built in.
+#'     * *crosstab*: `p0`, `p1` in (0, 1) prevalence in unexposed/exposed.
+#'     * *singleProportion*: `p` in (0, 1); `precision` > 0; `precision_type` =
+#'       "absolute" (default) or "relative".
+#'     * *singleMean*: `sigma` > 0; `precision` > 0 margin of error.
+#'     * *singleCorrelation*: `r` in (0, 1); exactly one of `precision`
+#'       (absolute CI half-width in (0, 1)) or `epsilon` (relative).
+#'     * *diagAccuracy, estimate*: `prob` in (0, 1) expected Se/Sp; `d` in
+#'       (0, 1) CI half-width; `prevalence` in (0, 1]; optional `ci_method` =
+#'       "precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses `power`).
+#'     * *diagAccuracy, test*: `prob`, `p0` in (0, 1); `method` = "asymptotic"
+#'       or "exact" (A'Hern); dual-endpoint adds `prob_spec`, `p0_spec`,
+#'       `dual = TRUE`, `dual_power` (default 0.90).
+#'     * *diagAccuracyCompare*: `p1`, `p2` in (0, 1); `paired` = TRUE requires
+#'       `psi` in (0, 1); margin tasks add `margin` in (0, 1).
+#'     * *diagAUC, estimate*: `auc` in (0, 1); `d` > 0; `ratio` >= 1
+#'       case:control (default 1); `var_method` = "binormal" (recommended),
+#'       "exponential", or "conservative".
+#'     * *diagAUC, test*: `auc`, `auc0` in (0, 1), auc > auc0.
+#'     * *diagAUCCompare*: `auc1`, `auc2` in (0, 1); `r` in [0, 1) (default
+#'       0.5); margin tasks add `margin` in (0, 1).
+#'     * *diagLR, estimate*: `sens`, `spec` in (0, 1); `lr_type` = "positive"
+#'       or "negative"; `target_lr` > 0 the boundary the CI must not cross.
+#'     * *clusterRCT*: base two-group args plus `icc` in [0, 1) and
+#'       `cluster_size` integer >= 1 (DE = 1 + (m-1)*ICC).
+#'     * *steppedWedge*: `theta` != 0; `tau2` > 0; `sigma2_ind` > 0; `m` >= 1;
+#'       `n_clusters` integer >= 2, a multiple of `clusters_per_step` >= 1.
+#'     * *twoOrdinal*: `or` > 0, != 1; `prop_bar` positive vector summing to 1.
+#'     * *predictiveModel, binary*: `prev` in (0, 1); `n_parameters` integer
+#'       at least  1; `r2_cs` within its feasible maximum; `shrinkage` default 0.9;
+#'       `mape` default 0.05; `precision_delta` default 0.05.
+#'     * *predictiveModel, rate*: `rate` > 0 per person-year; `timepoint` > 0;
+#'       `precision_delta` in (0, 1); optional `n_parameters`/`epv` cross-check.
+#'     * *predictiveModel, events*: `n_parameters` >= 1; `epv` >= 1 (classic
+#'       10); `event_prevalence` in (0, 1).
+#'     * *kappa, estimate*: `pi1`, `pi2` in (0, 1); `kappa` in [0, 1); `d` in
+#'       (0, 1).
+#'     * *kappa, test*: `kappa1` != `kappa2` in (0, 1); same pi's.
+#'     * *its*: `effect_sd` > 0; `n_pre`, `n_post` integers >= 3 (>= 8
+#'       recommended); `rho` in [0, 1). Returns achieved power.
+#'   
+#'   
+#' @return Object of class `sample_size_result` with print, summary, and
+#'   plot methods. Default printing shows sample sizes, the plain-text
+#'   formula (`formula`), LaTeX source (`formula_latex`), calculation process
+#'   (`calculation_steps`, also available as `calculation`), and literature
+#'   references (`reference`). New-style objects also carry axis metadata
+#'   (`task`, `outcome`, `design_canonical`, `results`, `roles`, `adjustments`).
+#'   [summary.sample_size_result()] additionally lists all input parameters
+#'   and recorded adjustments.
 #'
 #' @examples
+#' # Antihypertensive RCT: placebo 10 mmHg vs new drug 12 mmHg SBP reduction,
+#' # pooled SD 3 mmHg, two-sided alpha 0.05, 80% power
 #' calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#'
+#' # Generic vs originator antidiabetic, non-inferiority margin 1 point,
+#' # one-sided alpha 0.05
 #' calculate(
 #'   design = "rct", task = "noninferiority", outcome = "mean",
 #'   mean1 = 10, mean2 = 9.5, sd = 3, margin = 1
 #' )
-#' calculate("diagAUC", auc = 0.80, d = 0.05)
+#'
+#' # Bioequivalence of a generic amlodipine: intra-subject CV 25%,
+#' # expected GMR 1.0, 80-125% acceptance range (2x2 crossover)
+#' calculate("bioequivalence", cv = 0.25)
+#'
+#' # Colorectal cancer screening kit: expected sensitivity 85%,
+#' # CI half-width +/-5%, clinic prevalence 20%
+#' calculate("diagAccuracy", "estimate", "proportion",
+#'   prob = 0.85, d = 0.05, prevalence = 0.20
+#' )
+#'
+#' # AUC precision for a biomarker validation cohort: AUC 0.80,
+#' # CI half-width 0.10, 1:1 case:control, binormal variance
+#' calculate("diagAUC", auc = 0.80, d = 0.05, var_method = "binormal")
 #' @export
 calculate <- function(...) {
   args <- rlang::list2(...)

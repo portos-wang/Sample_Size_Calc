@@ -2,9 +2,18 @@
 
 #' Validate design-specific arguments
 #'
-#' @param design Study design type
-#' @param args List of arguments to validate
-#' @return Validated arguments list
+#' Checks that every required argument for the chosen design keyword is
+#' present and aborts with a structured error naming the missing parameters
+#' (e.g. twoMeans requires mean1, mean2, sd).
+#'
+#' @param design Study design keyword (legacy dispatch name, e.g.
+#'   "twoMeans", "cohortProportion", "simonTwoStage")
+#' @param args Named list of arguments to validate
+#' @return Validated arguments list (invisible)
+#' @keywords internal
+#' @examples
+#' validate_design_args("twoMeans", list(mean1 = 10, mean2 = 12, sd = 3))
+#' try(validate_design_args("twoMeans", list(mean1 = 10)))  # error: missing mean2, sd
 #' @keywords internal
 validate_design_args <- function(design, args) {
   required_args <- list(

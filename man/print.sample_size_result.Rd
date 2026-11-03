@@ -15,5 +15,12 @@
 Invisibly returns the input object
 }
 \description{
-Print method for sample_size_result objects
+Displays the study design, sample size metrics, plain-text formula,
+LaTeX source, calculation process, and literature references. Parameter
+roles and methodological hints are included where available.
+}
+\examples{
+# Antihypertensive RCT: 37 patients per arm with these assumptions
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+print(res)   # sample sizes, both formulas, calculation process, references
 }

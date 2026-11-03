@@ -15,4 +15,10 @@ Invisibly returns the result object
 \description{
 Plot sample size comparison
 }
+\examples{
+\donttest{
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+plot_sample_size_comparison(res)
+}
+}
 \keyword{internal}

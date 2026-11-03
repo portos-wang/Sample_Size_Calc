@@ -2,6 +2,9 @@
 ^\.agents$
 ^\.github$
 ^docs$
+^site_local$
+^tmp$
+^vign_preview$
 ^plans$
 ^references$
 ^figure$

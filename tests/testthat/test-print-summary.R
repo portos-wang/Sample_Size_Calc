@@ -51,3 +51,63 @@ test_that("new-design metrics render", {
   expect_match(txt2, "Stage 1 sample size")
   expect_match(txt2, "Total sample size")
 })
+
+test_that("print outputs plain text formula, LaTeX formula, calculation process, and reference", {
+  res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+  txt <- capture_cli(res)
+
+  # 1. Plain text formula
+  expect_match(txt, "Formula (plain text)", fixed = TRUE)
+  expect_match(txt, "Z_alpha/2", fixed = TRUE)
+
+  # 2. LaTeX formula
+  expect_match(txt, "Formula (LaTeX)", fixed = TRUE)
+  expect_match(txt, "$$n = 2", fixed = TRUE)
+
+  # 3. Calculation process
+  expect_match(txt, "Calculation process", fixed = TRUE)
+  expect_match(txt, "Step 1", fixed = TRUE)
+  expect_match(txt, "Step 2", fixed = TRUE)
+  expect_match(txt, "Step 3", fixed = TRUE)
+
+  # 4. Reference
+  expect_match(txt, "Reference", fixed = TRUE)
+  expect_match(txt, "Chow", fixed = TRUE)
+
+  # Verify object fields
+  expect_true(!is.null(res$formula) && nzchar(res$formula))
+  expect_true(!is.null(res$formula_latex) && nzchar(res$formula_latex))
+  expect_true(!is.null(res$calculation) && length(res$calculation) > 0)
+  expect_true(!is.null(res$calculation_steps) && length(res$calculation_steps) > 0)
+  expect_identical(res$calculation, res$calculation_steps)
+  expect_true(!is.null(res$reference) && nzchar(res$reference))
+})
+
+test_that("sample_size_calculator also outputs formulas, calculation process, and reference", {
+  res <- sample_size_calculator("twoProportions", p1 = 0.85, p2 = 0.70)
+  txt <- capture_cli(res)
+
+  expect_match(txt, "Formula (plain text)", fixed = TRUE)
+  expect_match(txt, "Formula (LaTeX)", fixed = TRUE)
+  expect_match(txt, "Calculation process", fixed = TRUE)
+  expect_match(txt, "Step 1", fixed = TRUE)
+  expect_match(txt, "Reference", fixed = TRUE)
+
+  expect_true(!is.null(res$formula) && nzchar(res$formula))
+  expect_true(!is.null(res$formula_latex) && nzchar(res$formula_latex))
+  expect_true(!is.null(res$calculation) && length(res$calculation) > 0)
+  expect_true(!is.null(res$reference) && nzchar(res$reference))
+})
+
+test_that("summary includes Calculation Process along with Formula and Reference", {
+  res <- calculate("rct", "test", "proportion", p1 = 0.85, p2 = 0.70)
+  txt <- capture_cli_summary(res)
+
+  expect_match(txt, "Formula", fixed = TRUE)
+  expect_match(txt, "Plain text", fixed = TRUE)
+  expect_match(txt, "LaTeX", fixed = TRUE)
+  expect_match(txt, "Calculation Process", fixed = TRUE)
+  expect_match(txt, "Step 1", fixed = TRUE)
+  expect_match(txt, "Reference", fixed = TRUE)
+})
+

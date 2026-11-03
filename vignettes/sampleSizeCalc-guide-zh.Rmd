@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7.2,
   fig.height = 4.8,
-  message = FALSE,
+  message = TRUE,
   warning = FALSE
 )
 
@@ -37,7 +37,8 @@ library(ggplot2)
 
 `sampleSizeCalc`（临床研究样本量计算器）覆盖了现代临床科研从经典双臂 RCT、流行病学调查，到前沿的 Simon 两阶段肿瘤试验、生物等效性（BE）、多阅片者诊断试验（MRMC）以及 BMJ 最新的 Riley 2020 预测模型样本量规则等 **42 个具体场景**。
 
-**每一次计算，都会输出学术级 LaTeX 公式、精确到章节和页码的文献出处、以及参数角色说明，可直接写入申报书与伦理文件！**
+**默认打印计算结果时，会同时显示纯文本公式、LaTeX 公式源码、计算过程和参考文献，并按设计提供参数角色说明。**
+赋值保存结果后，输入对象名称或调用 `print()` 即可查看；`summary()` 还会列出全部输入参数及已记录的调整。
 
 ---
 
@@ -87,11 +88,31 @@ res_1_1 <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, alph
 print(res_1_1)
 ```
 
-- **输出解读**：每组需 37 人，总计 74 人。
+- **输出解读**：每组需 37 人，总计 74 人。计算过程先给出正态近似的每组约 35.32 人，再说明通过 `stats::power.t.test()` 求解非中心 t 分布效能，最终向上取整为 37 人。
+
+### 默认报告的四项内容与提取方式
+
+| 内容 | 控制台标签 | 对象字段 |
+|---|---|---|
+| 纯文本公式 | `Formula (plain text)` | `formula` |
+| LaTeX 公式源码 | `Formula (LaTeX)` | `formula_latex` |
+| 计算过程 | `Calculation process` | `calculation_steps`，别名 `calculation` |
+| 参考文献 | `Reference` | `reference` |
+
+```{r report-fields-zh, eval = FALSE}
+res_1_1$formula
+cat(res_1_1$formula_latex)
+cat(res_1_1$calculation_steps, sep = "\n")
+cat(res_1_1$reference)
+```
+
+R 控制台显示可复制的 LaTeX 源码。在 R Markdown 文档中，可以通过
+`results = "asis"` 代码块内的 `cat(res_1_1$formula_latex)` 排版公式。
+[结果报告指南](result-reporting.html)提供可执行示例和保存报告的方法。
 
 ## 1.2 两独立样本比例比较（二分类治愈率）
 
-- **临床场景**：消化内科评价幽门螺杆菌根除率。传统三联方案为 70%（$p_2 = 0.70$），新方案预计达 85%（$p_1 = 0.85$）。设定双侧 $\alpha = 0.05$、$\text{Power} = 80\%$。
+- **临床场景**：消化内科评价幽门螺杆菌根除率。传统 14 天三联方案根除率为 70%（$p_2 = 0.70$），新的秘剂四联方案预计达 85%（$p_1 = 0.85$）。设定双侧 $\alpha = 0.05$、$\text{Power} = 80\%$。
 - **数学公式与出处**：
   $$n = \frac{\left[ Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)} \right]^2}{(p_1 - p_2)^2}$$
   *出处*：Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). *Biometrics*, 36(2), 343-346.
@@ -105,7 +126,7 @@ print(res_1_2)
 
 ## 1.3 生存分析与 Log-Rank 检验（时间-事件结局）
 
-- **临床场景**：肺癌靶向治疗。预期风险比（Hazard Ratio, $\text{HR} = 0.70$），试验组与对照组 1:1 分组，检验效能 80%。
+- **临床场景**：晚期非小细胞肺癌一线免疫治疗 vs 化疗的 III 期试验：预期风险比（Hazard Ratio）$\text{HR} = 0.70$，试验组与对照组 1:1 分组，检验效能 80%。需累计多少终点事件？
 - **数学公式与出处**：
   $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1 - p_E) [\ln(HR)]^2}$$
   *出处*：Schoenfeld, D. A. (1983). *Biometrics*, 39(2), 499-503.
@@ -119,7 +140,7 @@ print(res_1_3)
 
 ## 1.4 均数非劣效性检验（Non-Inferiority, Mean）
 
-- **临床场景**：评价国产降糖药是否不劣于进口原研药。试验组预期降低 HbA1c 1.0%（$\mu_1 = 10$），对照组降低 0.95%（$\mu_2 = 9.5$），标准差 $\text{SD} = 3$，临床可接受非劣效界值 $\text{margin} = 1.0$。
+- **临床场景**：评价国产仿制降糖药是否不劣于进口原研药：神经病变症状评分（0-30）改善，试验组预期降低 10 分（$\mu_1 = 10$），对照组降低 9.5 分（$\mu_2 = 9.5$），标准差 $\text{SD} = 3$，非劣效界值 $\text{margin} = 1.0$ 分。
 - **数学公式与出处**：
   $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 + \Delta}\right)^2$$
   *出处*：Chow et al. (2017) Chapter 4. 单侧 $\alpha = 0.05$。
@@ -133,7 +154,7 @@ print(res_1_4)
 
 ## 1.5 比例非劣效性检验（Non-Inferiority, Proportion）
 
-- **临床场景**：仿制抗生素口服有效率 85% 对比原研药 85%，非劣效界值设为 5%（$\text{margin} = 0.05$）。
+- **临床场景**：仿制抗菌药申请：口服治愈率需证明不劣于原研药（两者均预期 85%），监管接受的非劣效界值为 5 个百分点（$\text{margin} = 0.05$）。
 - **数学公式与出处**：
   $$n = \frac{(Z_{\alpha} + Z_{\beta})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 + \Delta)^2}$$
   *出处*：Chow et al. (2017); Machin et al. (2018) Ch.11.
@@ -147,7 +168,7 @@ print(res_1_5)
 
 ## 1.6 均数优效性检验（Superiority, Mean）
 
-- **临床场景**：新药降压效果不仅要好于对照药，而且必须超越预设的有临床价值的界限（$\text{margin} = 1$ mmHg）。预期新药降 12 mmHg，对照降 10 mmHg，$\text{SD} = 3$。
+- **临床场景**：膝骨关节炎新型 NSAID 凝胶的优效性试验：不仅需优于活性对照药，且需在 WOMAC 疼痛量表（0-20）上至少多降 1 分（$\text{margin} = 1$）。预期试验组降 12 分，对照组降 10 分，$\text{SD} = 3$。
 - **数学公式与出处**：
   $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 - \Delta}\right)^2$$
   *出处*：Chow et al. (2017). 单侧 $\alpha = 0.05$。
@@ -161,7 +182,7 @@ print(res_1_6)
 
 ## 1.7 比例优效性检验（Superiority, Proportion）
 
-- **临床场景**：新抗真菌药治愈率预期为 30%，对照药为 20%，要求优效界值至少超过 5%（$\text{margin} = 0.05$）。
+- **临床场景**：甲真菌病新口服抗真菌药：完全治愈率预期 30%，对照药特比蕲芬 20%，且申办方要求差异至少超过 5 个百分点的优效界值（$\text{margin} = 0.05$）才算临床有意义。
 - **数学公式与出处**：
   $$n = \frac{(Z_{\alpha} + Z_{\beta})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 - \Delta)^2}$$
   *出处*：Chow et al. (2017).
@@ -175,7 +196,7 @@ print(res_1_7)
 
 ## 1.8 均数等效性检验（Equivalence, Mean）
 
-- **临床场景**：证明两种降糖药疗效在临床上等效。两组均值差预期为 0.2 mmol/L，临床等效边界为 $\pm 1.0$ mmol/L（$\text{margin} = 1.0$），$\text{SD} = 3$。
+- **临床场景**：两种左甲状腺素钠制剂的疗效等效性验证：预期血清甲状腺素均值差 0.2 μg/dL，临床可接受的等效边界为 $\pm 1.0$ μg/dL（$\text{margin} = 1.0$），$\text{SD} = 3$。
 - **数学公式与出处**：
   $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 - \mu_2|}\right)^2$$
   *出处*：Chow et al. (2017).
@@ -189,7 +210,7 @@ print(res_1_8)
 
 ## 1.9 比例等效性检验（Equivalence, Proportion）
 
-- **临床场景**：两种镇痛药有效率分别为 50% 与 52%，临床等效区间为 $\pm 10\%$（$\text{margin} = 0.10$）。
+- **临床场景**：两种术后镇痛药有效率分别为 50% 与 52%，监管机构接受的临床等效区间为 $\pm 10$ 个百分点（$\text{margin} = 0.10$）。
 - **数学公式与出处**：
   $$n = \frac{(Z_{\alpha} + Z_{\beta/2})^2 [p_1(1-p_1) + p_2(1-p_2)]}{(\Delta - |p_1 - p_2|)^2}$$
   *出处*：Chow et al. (2017).
@@ -207,7 +228,7 @@ print(res_1_9)
 
 ## 2.1 配对均数比较（自身前后对照）
 
-- **临床场景**：同一批哮喘患者服药前后用力肺活量（FVC）差值平均为 2 L，差值的标准差 $\text{SD}_{\text{diff}} = 3$ L。
+- **临床场景**：哮喘队列：同一批患者吸入糖皮质激素治疗 12 周前后各测一次用力肺活量（FVC），前后差值均数 2 L，差值的标准差 $\text{SD}_{\text{diff}} = 3$ L。
 - **数学公式与出处**：
   $$n = \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma_d}{\mu_d}\right)^2$$
   *出处*：Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning.
@@ -221,9 +242,9 @@ print(res_2_1)
 
 ## 2.2 配对二分类比较（McNemar / Connor）
 
-- **临床场景**：同一批病人分别做两套检查，阳性率 80% vs 60%，预期不一致对占总人数比例 $\psi = 0.25$。
+- **临床场景**：同一批疑似感染患者同时接受新冠快速抗原检测（阳性率 80%）与 RT-PCR 核酸检测（阳性率 60%），预期不一致对占总对数的比例 $\psi = 0.25$。
 - **数学公式与出处**：
-  $$n_{\text{pairs}} = \frac{\left[ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - (p_1 - p_2)^2} \right]^2}{(p_1 - p_2)^2}$$
+  $$n_{\text{pairs}} = \frac{\left[ Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi - \delta^2} \right]^2}{\delta^2}, \quad \delta = |p_1 - p_2|$$
   *出处*：Connor, R. J. (1987). *Biometrics*, 43(1), 207-211.
 
 ```{r paired-prop}
@@ -235,7 +256,7 @@ print(res_2_2)
 
 ## 2.3 单臂试验对比已知常模均值
 
-- **临床场景**：某罕见病历史平均生存期为 10 个月（$\mu_0 = 10$），新疗法预期可延长至 12 个月（$\mu_1 = 12$），$\text{SD} = 3$。
+- **临床场景**：某罕见病（无法设立对照组）历史平均生存期为 10 个月（$\mu_0 = 10$），新的靶向治疗预期可延长至 12 个月（$\mu_1 = 12$），$\text{SD} = 3$ 个月。
 - **数学公式与出处**：
   $$n = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}$$
   *出处*：Machin et al. (2018) Chapter 5.
@@ -249,7 +270,7 @@ print(res_2_3)
 
 ## 2.4 单臂试验对比历史对照有效率
 
-- **临床场景**：某种复发性肿瘤历史缓解率仅 70%（$p_0 = 0.70$），新药预期提高至 80%（$p_1 = 0.80$）。
+- **临床场景**：复发/难治性淋巴瘤的历史最佳缓解率仅 70%（$p_0 = 0.70$），新的 CAR-T 细胞治疗方案预期提高至 80%（$p_1 = 0.80$）。
 - **数学公式与出处**：
   $$n = \frac{\left[ Z_{\alpha/2}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p_1(1-p_1)} \right]^2}{(p_1 - p_0)^2}$$
   *出处*：Hajian-Tilaki, K. (2014). *J Biomed Inform*, 48, 193-204 (Eq 6.8).
@@ -263,8 +284,8 @@ print(res_2_4)
 
 ## 2.5 单臂肿瘤 II 期：Simon 两阶段最优设计（Optimal）
 
-- **临床场景**：不可耐受响应率 $p_0 = 0.10$，期望目标响应率 $p_1 = 0.30$。采用 Simon Optimal 设计最小化期望样本量。
-- **数学公式与出处**：完全精确二项网格穷举搜索，Simon, R. (1989). *Controlled Clin Trials*, 10(1), 1-10.
+- **临床场景**：肉瘤新方案单臂 II 期试验：不可接受的历史响应率 $p_0 = 0.10$，期望目标响应率 $p_1 = 0.30$。采用 Simon Optimal 设计，使药物无效时的期望样本量最小。
+- **数学公式与出处**：完全精确二项网格穷举搜索，Simon, R. (1989). *Controlled Clin Trials*, 10(1), 1-10。设计 $(r_1/n_1, r/n)$ 需同时满足 $P(\text{有效}\mid p_0) \le \alpha$ 与 $P(\text{有效}\mid p_1) \ge 1-\beta$。
 
 ```{r simon-opt}
 res_2_5 <- calculate("singleArmPhaseII", "test", "proportion", p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8, optimizer = "optimal")
@@ -286,8 +307,8 @@ print(res_2_6)
 
 ## 2.7 单臂肿瘤 II 期：A'Hern 单阶段精确二项设计
 
-- **临床场景**：不适宜中途停顿的单阶段探索试验，基于精确二项分布控制错误率。
-- **数学公式与出处**：A'Hern, R. P. (2001). *Br J Cancer*, 85(2), 223-226.
+- **临床场景**：同上肉瘤试验，但因周期太短无法做期中分析，改用单阶段精确二项设计。
+- **数学公式与出处**：$P(X \ge r \mid p_0) \le \alpha$ 且 $P(X \ge r \mid p_1) \ge 1-\beta$；A'Hern, R. P. (2001). *Br J Cancer*, 85(2), 223-226.
 
 ```{r ahern}
 res_2_7 <- sampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)
@@ -298,8 +319,10 @@ print(res_2_7)
 
 ## 2.8 2x2 交叉试验均数比较
 
-- **临床场景**：健康受试者先后接受两种制剂口服，个体内标准差 $\sigma_w = 3$，预期均值差 $\Delta = 2$。
-- **数学公式与出处**：$n = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \sigma_w^2}{\Delta^2}$，Senn, S. (2002). *Cross-over Trials in Clinical Research*.
+- **临床场景**：哮喘患者按随机顺序先后吸入两种沙丁胺醇制剂（清洗期 7 天），FEV1% 预计值改善差 2 个百分点，个体内标准差 $\sigma_w = 3$。
+- **数学公式与出处**：
+  $$n = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \sigma_w^2}{\delta^2}$$
+  *出处*：Senn, S. (2002). *Cross-over Trials in Clinical Research* (2nd ed.). Wiley.
 
 ```{r crossover}
 res_2_8 <- calculate("crossover", "test", "mean", delta = 2, sigma_within = 3, alpha = 0.05, power = 0.8)
@@ -328,8 +351,10 @@ print(res_2_9)
 
 ## 3.1 前瞻性队列研究（累积发病率与 RR，含脱落率）
 
-- **临床场景**：吸烟与冠心病发病。非暴露组 5 年发病率 20%，暴露组 30%，考虑 10% 失访（`dropout = 0.10`）。
-- **数学公式与出处**：Bhardwaj et al. (2024). *J Family Med Prim Care*, 13(7), 2555-2561.
+- **临床场景**：吸烟与冠心病发病的弗莱明翰式队列：非吸烟组 5 年发病率 20%（$p_0 = 0.20$），吸烟组 30%（$p_1 = 0.30$），1:1 分组，预计 10% 失访（`dropout = 0.10`）。
+- **数学公式与出处**：
+  $$n_{1} = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+\frac{p_0(1-p_0)}{m}}\right]^2}{(p_1-p_0)^2}, \quad n = \frac{n_1}{1-d}$$
+  *出处*：Bhardwaj et al. (2024). *J Family Med Prim Care*, 13(7), 2559.
 
 ```{r cohort-prop}
 res_3_1 <- calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, ratio = 1, dropout = 0.10, alpha = 0.05, power = 0.8)
@@ -340,7 +365,7 @@ print(res_3_1)
 
 ## 3.2 队列研究人时发病率比（IRR）比较
 
-- **临床场景**：未暴露人群发病率为 0.10 人年，暴露人群为 0.20 人年，1:1 随访。
+- **临床场景**：职业流行病学：接触有机溶剂的工人发病率为 0.20 例/人年（$\lambda_1$），非接触工人为 0.10 例/人年（$\lambda_0$），1:1 人时分配。
 - **数学公式与出处**：
   $$T_0 = \frac{(Z_{\alpha/2} + Z_{\beta})^2 (\lambda_1/r + \lambda_0)}{(\lambda_1 - \lambda_0)^2}, \quad T_1 = r \cdot T_0$$
   *出处*：Machin et al. (2018) Chapter 6.
@@ -354,8 +379,10 @@ print(res_3_2)
 
 ## 3.3 经典病例对照研究（Case-Control）
 
-- **临床场景**：熬夜与心肌梗死。对照暴露率 30%，预期优势比 $\text{OR} = 2.0$。
-- **数学公式与出处**：Schlesselman, J. J. (1982). *Case-Control Studies*. Oxford University Press.
+- **临床场景**：熬夜与心肌梗死的医院基病例对照研究：对照组 30% 有长期熬夜暴露（$p_0$），预期优势比 $\text{OR} = 2.0$，1 名对照匹配 1 名病例。
+- **数学公式与出处**：
+  $$n_{cases} = \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}$$
+  *出处*：Schlesselman, J. J. (1982). *Case-Control Studies*. Oxford University Press.
 
 ```{r cc}
 res_3_3 <- calculate("caseControl", p0 = 0.30, OR = 2.0, m = 1, alpha = 0.05, power = 0.8)
@@ -366,8 +393,10 @@ print(res_3_3)
 
 ## 3.4 1:1 个体配对病例对照研究
 
-- **临床场景**：年龄与性别 1:1 严格配对病例对照研究，对照暴露率 30%，$\text{OR} = 2.0$。
-- **数学公式与出处**：Dupont, W. D. (1988). *Biometrics*, 44(4), 1157-1168.
+- **临床场景**：年轻女性口服避孕药与缺血性卒中的按年龄 1:1 严格配对病例对照研究：对照暴露率 30%，$\text{OR} = 2.0$。
+- **数学公式与出处**：
+  $$n_{pairs} = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}, \quad \psi = p_1(1-p_0)+p_0(1-p_1)$$
+  *出处*：Dupont, W. D. (1988). *Biometrics*, 44(4), 1157-1168.
 
 ```{r cc-matched}
 res_3_4 <- calculate("caseControlMatched", p0 = 0.30, OR = 2.0, alpha = 0.05, power = 0.8)
@@ -378,8 +407,8 @@ print(res_3_4)
 
 ## 3.5 现况研究 / 横断面调查关联分析
 
-- **临床场景**：某社区横断面调查，非暴露人群与暴露人群高血压患病率分别为 20% 与 30%。
-- **数学公式与出处**：Machin et al. (2018) Chapter 3.
+- **临床场景**：某社区横断面调查高血压与肥胖的关联：非肥胖人群高血压患病率 20%，肥胖人群 30%。
+- **数学公式与出处**：与 3.1 同核（$m = 1$）；Machin et al. (2018) Chapter 3.
 
 ```{r crosstab}
 res_3_5 <- calculate("crosstab", p0 = 0.20, p1 = 0.30, alpha = 0.05, power = 0.8)
@@ -394,8 +423,10 @@ print(res_3_5)
 
 ## 4.1 总体比例估计（患病率抽样调查）
 
-- **临床场景**：成人糖尿病患病率调查，预期患病率 10%，容许误差半宽 $\pm 2\%$（$d = 0.02$）。
-- **数学公式与出处**：$n = \frac{Z_{1-\alpha/2}^2 p(1-p)}{d^2}$，Lwanga & Lemeshow (1991) WHO.
+- **临床场景**：某县成人糖尿病患病率抽样调查：预期患病率 10%，要求估计值与真值的误差不超过 ±2 个百分点（$d = 0.02$），95% 置信水平。
+- **数学公式与出处**：
+  $$n = \frac{Z_{1-\alpha/2}^2 p(1-p)}{d^2}$$
+  *出处*：Lwanga & Lemeshow (1991) WHO；Bhardwaj et al. (2024), p. 2558.
 
 ```{r single-prop}
 res_4_1 <- calculate("singleProportion", p = 0.10, precision = 0.02, alpha = 0.05)
@@ -406,8 +437,10 @@ print(res_4_1)
 
 ## 4.2 总体均数估计（常模抽样）
 
-- **临床场景**：测定某地健康儿童血清铁蛋白均值，已知标准差 $\text{SD} = 10$，容许误差 $\pm 2$。
-- **数学公式与出处**：$n = \left(\frac{Z_{1-\alpha/2}\sigma}{d}\right)^2$，Machin et al. (2018) Ch.9.
+- **临床场景**：建立某地健康儿童血清铁蛋白参考值：已知人群标准差 $\text{SD} = 10$ μg/L，均数估计误差需控制在 $\pm 2$ μg/L 内。
+- **数学公式与出处**：
+  $$n = \left(\frac{Z_{1-\alpha/2}\sigma}{d}\right)^2$$
+  *出处*：Machin et al. (2018) Ch.9.
 
 ```{r single-mean}
 res_4_2 <- calculate("singleMean", sigma = 10, precision = 2, alpha = 0.05)
@@ -418,8 +451,10 @@ print(res_4_2)
 
 ## 4.3 Pearson 相关系数估计（Fisher-z 精确法）
 
-- **临床场景**：估计腰围与体脂率的 Pearson 相关系数，预期 $r = 0.50$，希望 95% 置信区间半宽不超过 $\pm 0.10$。
-- **数学公式与出处**：Machin et al. (2018) Ch.19 Eqs 19.5-19.8 精修公式，与 `presize::prec_cor` 严格一致。
+- **临床场景**：验证腰围替代体脂率的可靠性：预期 Pearson 相关系数 $r = 0.50$，要求 95% 置信区间半宽不超过 $\pm 0.10$。
+- **数学公式与出处**：
+  $$N_{P0} = \frac{4 z_{1-\alpha/2}^2 (1-r^2)^2}{w^2} + 3, \quad N_{Final} = (N_{P0}-3)\left(\frac{w_0}{w}\right)^2 + 3$$
+  *出处*：Machin et al. (2018) Ch.19 Eqs 19.5-19.8 精修公式，与 `presize::prec_cor` 严格一致。
 
 ```{r single-cor}
 res_4_3 <- calculate("singleCorrelation", r = 0.50, precision = 0.10, alpha = 0.05)
@@ -434,8 +469,10 @@ print(res_4_3)
 
 ## 5.1 敏感度/特异度估计与全人群筛查规模转化
 
-- **临床场景**：验证结直肠癌早筛试剂盒敏感度，预期 85%，容许半宽 $\pm 5\%$，门诊目标人群患病率 20%。
-- **数学公式与出处**：Zhou, Obuchowski, & McClish (2011) §6.1.1.
+- **临床场景**：验证结直肠癌早筛试剂盒的敏感度：预期 85%，95% 置信区间半宽需控制在 $\pm 5\%$，门诊目标人群患病率 20%。需多少确诊真病例？全人群需筛查多少人？
+- **数学公式与出处**：
+  $$n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}, \quad N_{screen} = \frac{n_{cases}}{\text{prevalence}}$$
+  *出处*：Zhou, Obuchowski, & McClish (2011) §6.1.1, pp. 194-196.
 
 ```{r diag-acc}
 res_5_1 <- calculate("diagAccuracy", "estimate", "proportion", prob = 0.85, d = 0.05, prevalence = 0.20, alpha = 0.05)
@@ -446,8 +483,10 @@ print(res_5_1)
 
 ## 5.2 诊断单端点优效性检验（渐近正态法）
 
-- **临床场景**：验证 AI 肺结节诊断系统敏感度是否显著优于行业及格线 70%（$p_0 = 0.70$），预期敏感度 85%。
-- **数学公式与出处**：Hajian-Tilaki (2014) Eq 6.8.
+- **临床场景**：验证 AI 肺结节诊断系统的敏感度是否显著优于行业及格线 70%（$p_0 = 0.70$），预期敏感度 85%，患病率 20%。
+- **数学公式与出处**：
+  $$n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p - p_0)^2}$$
+  *出处*：Hajian-Tilaki (2014) Eq 6.8.
 
 ```{r diag-test-asym}
 res_5_2 <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, alpha = 0.05, power = 0.8)
@@ -458,7 +497,8 @@ print(res_5_2)
 
 ## 5.3 诊断单端点优效性检验（A'Hern 精确二项法）
 
-- **临床场景**：小样本或高敏感度时，采用精确二项法消除正态近似误差。
+- **临床场景**：同上 AI 肺结节验证，但样本来源有限，采用精确二项法消除正态近似误差。
+- **数学公式与出处**：$P(X \ge r \mid p_0) \le \alpha$ 且 $P(X \ge r \mid p) \ge 1-\beta$；A'Hern (2001).
 
 ```{r diag-test-exact}
 res_5_3 <- calculate("diagAccuracy", "test", "proportion", prob = 0.85, p0 = 0.70, prevalence = 0.20, method = "exact", alpha = 0.05, power = 0.8)
@@ -469,8 +509,10 @@ print(res_5_3)
 
 ## 5.4 双端点诊断试验设计（敏感度+特异度协同达标）
 
-- **临床场景**：要求敏感度（80%升至90%）与特异度（75%升至85%）**同时**满足 $\ge 80\%$ 联合检验效能。
-- **数学公式与出处**：Akoglu, H. (2022). *Turk J Emerg Med*, 22(4), 177-185 (各端点置于 90% 效能取最大值).
+- **临床场景**：新的乳腺病灶 AI 需要敏感度（80%升至90%）与特异度（75%升至85%）**同时**较活检金标准显著提升，患病率 40%。各端点置于 90% 效能，联合效能约 80%。
+- **数学公式与出处**：
+  $$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$
+  *出处*：Akoglu, H. (2022). *Turk J Emerg Med*, 22(4), 177-185 (p. 184)。
 
 ```{r diag-dual}
 res_5_4 <- calculate("diagAccuracy", "test", "proportion", prob = 0.90, p0 = 0.80, prob_spec = 0.85, p0_spec = 0.75, prevalence = 0.40, dual = TRUE)
@@ -481,7 +523,8 @@ print(res_5_4)
 
 ## 5.5 非配对两诊断方法敏感度比较
 
-- **临床场景**：两组独立受试者分别接受方法 1 与方法 2，敏感度分别为 85% 与 75%。
+- **临床场景**：两套竞争性肺炎 CT-AI 系统在两组独立患者中验证：敏感度分别为 85% 与 75%，患病率 20%。
+- **数学公式与出处**：与 1.2 同核（Fleiss 1980 渐近方差公式）。
 
 ```{r diag-compare-unpaired}
 res_5_5 <- calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = FALSE, alpha = 0.05, power = 0.8)
@@ -492,7 +535,10 @@ print(res_5_5)
 
 ## 5.6 配对两诊断方法敏感度比较（Connor 核）
 
-- **临床场景**：同一批患者同时接受两套检查，敏感度 85% vs 75%，不一致对比例 $\psi = 0.10$。
+- **临床场景**：同一批疑似肺炎患者同时接受两套 AI 系统判读（配对设计）：敏感度 85% vs 75%，预期不一致对比例 $\psi = 0.10$——配对设计大幅节省病例数。
+- **数学公式与出处**：
+  $$n = \frac{\left[Z_{\alpha/2}\sqrt{\psi} + Z_{\beta}\sqrt{\psi-\delta^2}\right]^2}{\delta^2}$$
+  *出处*：Connor (1987)；Akoglu (2022) Tables 6A/6B。
 
 ```{r diag-compare-paired}
 res_5_6 <- calculate("diagAccuracyCompare", "test", "proportion", p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired = TRUE, psi = 0.10, alpha = 0.05, power = 0.8)
@@ -503,7 +549,10 @@ print(res_5_6)
 
 ## 5.7 诊断准确度非劣效性检验
 
-- **临床场景**：新简便试剂盒敏感度 90% 对比金标准 88%，非劣效界值 5%（$\text{margin} = 0.05$）。
+- **临床场景**：新的简便家庭自测盒（敏感度 90%）需证實不劣于实验室金标准（88%），非劣效界值 5%，患病率 30%。
+- **数学公式与出处**：
+  $$n = \frac{(Z_{\alpha}+Z_{\beta})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(p_1-p_2+\Delta)^2}$$
+  *出处*：Chow et al. (2017)；Zhou et al. (2011) §6.3, pp. 214-218。
 
 ```{r diag-compare-ni}
 res_5_7 <- calculate("diagAccuracyCompare", "noninferiority", "proportion", p1 = 0.90, p2 = 0.88, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8)
@@ -514,7 +563,10 @@ print(res_5_7)
 
 ## 5.8 诊断准确度等效性检验
 
-- **临床场景**：两款仪器敏感度分别为 90% 与 89%，临床等效界值 $\pm 5\%$。
+- **临床场景**：两台床旁分析仪敏感度分别为 90% 与 89%，临床可接受等效界值 $\pm 5\%$。
+- **数学公式与出处**：
+  $$n = \frac{(Z_{\alpha}+Z_{\beta/2})^2\left[p_1(1-p_1)+p_2(1-p_2)\right]}{(\Delta-|p_1-p_2|)^2}$$
+  *出处*：Chow et al. (2017)；Zhou et al. (2011) §6.3。
 
 ```{r diag-compare-equiv}
 res_5_8 <- calculate("diagAccuracyCompare", "equivalence", "proportion", p1 = 0.90, p2 = 0.89, margin = 0.05, prevalence = 0.30, alpha = 0.05, power = 0.8)
@@ -582,8 +634,10 @@ print(res_5_13)
 
 ## 5.14 似然比（Likelihood Ratio）对数置信区间阈值法
 
-- **临床场景**：排除试验要求阴性似然比（$\text{LR}^-$）置信区间上限不能超过 0.40（$\text{target\_lr} = 0.40$）。预期敏感度 90%，特异度 50%。
-- **数学公式与出处**：Hajian-Tilaki (2014) Eq 6.14; Simel et al. (1991).
+- **临床场景**：肺栓塞排除路径要求 D-二聚体的阴性似然比（$\text{LR}^-$）95% 置信区间**上限**不能超过 0.40（$\text{target\_lr} = 0.40$），否则排除规则不安全。预期敏感度 90%，特异度 50%。
+- **数学公式与出处**：
+  $$\log(LR) \pm Z_{1-\alpha/2}\sqrt{\frac{1-Se}{n \cdot Se} + \frac{1-Sp}{n \cdot Sp}}$$
+  *出处*：Hajian-Tilaki (2014) Eq 6.14; Simel et al. (1991).
 
 ```{r diag-lr}
 res_5_14 <- calculate("diagLR", "estimate", "lr", sens = 0.90, spec = 0.50, target_lr = 0.40, lr_type = "negative", alpha = 0.05)
@@ -594,8 +648,10 @@ print(res_5_14)
 
 ## 5.15 临床真实筛查总人数的“二项安全保障”（`screen_required`）
 
-- **临床场景**：理论筛查 980 人只有 50% 把握抓够 196 例病例。要求以 90% 概率安全保障抓满 196 例。
-- **数学公式与出处**：$P(\text{Binomial}(N, \text{prev}) \ge n) \ge 1 - \beta$，Zhou et al. (2011) Eq 6.3.
+- **临床场景**：理论平均筛查 980 人才能抓够 196 例确诊病例，但这只有 50% 的把握。筛查名单应扩大到多少人，才能以 90% 概率保障抓满 196 例？
+- **数学公式与出处**：
+  $$P(\text{Binomial}(N, \text{prev}) \ge n) \ge 1 - \beta$$
+  *出处*：Zhou et al. (2011) Eq 6.3。
 
 ```{r screen-req}
 safe_n <- screen_required(n = 196, prevalence = 0.20, beta = 0.10)
@@ -606,7 +662,7 @@ cat("理论平均筛查数：980 人；90% 概率安全保障筛查数：", safe
 
 ## 5.16 多阅片者多病例（MRMC）研究效能分析
 
-- **临床场景**：8 名放射科医生独立阅读 50 例乳腺钼靶片，检测两种成像技术的 AUC 差异（$\Delta = 0.10$）。
+- **临床场景**：乳腺钼靶 AI 辅助诊断研究：8 名放射科医生独立阅读 50 例病例，比较常规钼靶与断层合成两种技术的 AUC 差异（$\Delta = 0.10$）。
 - **数学公式与出处**：Obuchowski-Rockette 混合效应模型非中心 $F$ 检验，Zhou et al. (2011) Eq 6.32, p.225.
 
 ```{r mrmc}
@@ -622,8 +678,10 @@ print(res_5_16)
 
 ## 6.1 群随机试验（Cluster RCT：连续型结局）
 
-- **临床场景**：以病区为单位随机（每病区 20 张床位，组内相关系数 $\text{ICC} = 0.05$）。干预使并发症均分由 10 降至 12，$\text{SD} = 3$。
-- **数学公式与出处**：$DE = 1 + (m - 1)ICC = 1.95$，Donner & Klar (2000).
+- **临床场景**：以 ICU 病区（而非患者）为随机单位评价新导管护理包：并发症均分由 10 降至 12，$\text{SD} = 3$，每病区平均 20 张床位，组内相关系数 $\text{ICC} = 0.05$。
+- **数学公式与出处**：
+  $$DE = 1 + (m - 1) \times ICC = 1.95, \quad n_{clusters} = \left\lceil \frac{n_{individual} \times DE}{m} \right\rceil$$
+  *出处*：Donner & Klar (2000)；Machin et al. (2018) Ch.12。
 
 ```{r cluster-mean}
 res_6_1 <- calculate("clusterRCT", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8)
@@ -634,7 +692,8 @@ print(res_6_1)
 
 ## 6.2 群随机试验（Cluster RCT：二分类结局）
 
-- **临床场景**：以社区为单位随机干预，有效率由 20% 提高至 30%，每社区 20 人，$\text{ICC} = 0.05$。
+- **临床场景**：以行政村为单位随机化一项筛查依从性干预：筛查率由 20% 提高至 30%，每村平均 20 名居民，$\text{ICC} = 0.05$。
+- **数学公式与出处**：设计效应同 6.1（$DE = 1 + (m-1)ICC$），基础样本量用两比例核（Fleiss 1980）。
 
 ```{r cluster-prop}
 res_6_2 <- calculate("clusterRCT", "test", "proportion", p1 = 0.30, p2 = 0.20, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8)
@@ -645,8 +704,10 @@ print(res_6_2)
 
 ## 6.3 阶梯楔形整群试验（Stepped-Wedge CRT）
 
-- **临床场景**：24 个县分 4 批阶梯交叉推行某干预措施（每步 6 群，共 5 个时间节点，每群每期 100 人）。疗效差异 $\theta = -0.016$。
-- **数学公式与出处**：Hussey, M. A., & Hughes, J. P. (2007). *Contemp Clin Trials*, 28(2), 182-191 (Eq 8).
+- **临床场景**：24 个县分 4 批阶梯交叉推行手卫生干预（基线 + 4 个阶梯，每步 6 县，每县每期 100 名新生儿）。感染风险的治疗效应 $\theta = -0.016$。
+- **数学公式与出处**：
+  $$Var(\hat{\theta}) = \frac{I \tau^2 (\tau^2 + T\sigma^2)}{(IU - W)\tau^2 + (U^2 + ITU - TW - IV)\sigma^2}, \quad \text{power} = \Phi\left(|\theta|/SE - z_{1-\alpha/2}\right)$$
+  *出处*：Hussey, M. A., & Hughes, J. P. (2007). *Contemp Clin Trials*, 28(2), 182-191 (Eq 8).
 
 ```{r stepped-wedge}
 res_6_3 <- calculate("steppedWedge", "test", "mean", theta = -0.016, tau2 = 2.25e-4, sigma2_ind = 0.0475, m = 100, n_clusters = 24, clusters_per_step = 6, alpha = 0.05)
@@ -657,8 +718,10 @@ print(res_6_3)
 
 ## 6.4 有序多分类结局（Whitehead 比例优势比模型）
 
-- **临床场景**：评价骨关节炎缓解程度（轻度 20%、中度 50%、重度 30%），预期优势比 $\text{OR} = 1.5$。
-- **数学公式与出处**：Whitehead, J. (1993). *Stat Med*, 12(24), 2257-2271.
+- **临床场景**：膝骨关节炎疼痛缓解程度分轻度/中度/重度三级（预期分布 20%/50%/30%），新的关节腔注射疗法预期使更高级别缓解的比值比 $\text{OR} = 1.5$。
+- **数学公式与出处**：
+  $$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$
+  *出处*：Whitehead, J. (1993). *Stat Med*, 12(24), 2257-2271.
 
 ```{r ordinal}
 res_6_4 <- calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2, 0.5, 0.3), alpha = 0.05, power = 0.8)
@@ -669,8 +732,10 @@ print(res_6_4)
 
 ## 6.5 临床预测模型开发：Riley 2020 BMJ 准则（二分类结局）
 
-- **临床场景**：开发 ICU 死亡预测模型，10 个候选预测变量，结局发生率 30%，预期 $R^2_{CS} = 0.10$，目标收缩因子 $S = 0.90$。
-- **数学公式与出处**：Riley et al. (2020). *BMJ*, 368, m441 (Box 1 准则 B1 与 B3).
+- **临床场景**：开发 ICU 住院死亡预测模型：10 个候选预测变量，结局发生率 30%，预期 Cox-Snell $R^2_{CS} = 0.10$，目标收缩因子 $S = 0.90$，新增参数需多少患者与事件数？
+- **数学公式与出处**：
+  $$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n = \max(n_{B1}, n_{B3})$$
+  *出处*：Riley et al. (2020). *BMJ*, 368, m441 (Box 1 准则 B1 与 B3; 与 pmsampsize 一致)。
 
 ```{r riley-bin}
 res_6_5 <- calculate("predictiveModel", "plan", "binary", prev = 0.30, n_parameters = 10, r2_cs = 0.10, shrinkage = 0.90, precision_delta = 0.05, alpha = 0.05)
@@ -681,7 +746,8 @@ print(res_6_5)
 
 ## 6.6 临床预测模型开发：Riley 2020 时间-事件结局（人年估算）
 
-- **临床场景**：生存模型预测 10 年心血管死亡，年发病率 0.10/年，容许累计发病率误差 $\pm 5\%$。
+- **临床场景**：开发 10 年心血管死亡预测模型：队列年发病率 0.10/年，要求 10 年累计发病率 $F(10)$ 的估计误差不超过 $\pm 5\%$，需要多少随访人年？
+- **数学公式与出处**：$F(t) = 1 - e^{-\lambda t}$；求解使人年数 $T$ 满足 $F(t)$ 双侧置信限误差均 $\le \delta$（准则 T1）。Riley et al. (2020). *BMJ*, 368, m441 (Figure 1)。
 
 ```{r riley-rate}
 res_6_6 <- calculate("predictiveModel", "plan", "rate", rate = 0.10, timepoint = 10, precision_delta = 0.05, alpha = 0.05)
@@ -692,7 +758,10 @@ print(res_6_6)
 
 ## 6.7 临床预测模型开发：经典每变量事件数（EPV）规则
 
-- **临床场景**：经典每变量 10 个事件粗算（Peduzzi et al., 1996）。
+- **临床场景**：标书快速粗算：10 个候选预测变量的 logistic 回归模型，结局事件发生率 30%，按经典每变量 10 事件规则需要多少样本？
+- **数学公式与出处**：
+  $$n_{events} = EPV \times k, \quad n_{subjects} = n_{events} / \pi$$
+  *出处*：Peduzzi et al. (1996). *J Clin Epidemiol*, 49(12), 1373-1379.
 
 ```{r epv}
 res_6_7 <- calculate("predictiveModel", "plan", "events", n_parameters = 10, epv = 10, event_prevalence = 0.30)
@@ -703,8 +772,10 @@ print(res_6_7)
 
 ## 6.8 评分者一致性：Cohen's Kappa 置信区间精度估计
 
-- **临床场景**：两位专家阅片一致性估计，预期 $\kappa = 0.70$，希望 95% 置信区间半宽不超过 $\pm 0.10$。
-- **数学公式与出处**：Cantor, A. B. (1996). *Psychol Methods*, 1(2), 150-153.
+- **临床场景**：两位放射科医生独立判读同一批乳腺钼靶片：预期一致性 $\kappa = 0.70$，要求 95% 置信区间半宽不超过 $\pm 0.10$，需多少受试者/标本？
+- **数学公式与出处**：
+  $$n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q = \frac{p_o(1-p_o)}{(1-p_e)^2}$$
+  *出处*：Cantor, A. B. (1996). *Psychol Methods*, 1(2), 150-153.
 
 ```{r kappa-est}
 res_6_8 <- calculate("kappa", "estimate", "proportion", pi1 = 0.30, pi2 = 0.30, kappa = 0.70, d = 0.10, alpha = 0.05)
@@ -715,7 +786,10 @@ print(res_6_8)
 
 ## 6.9 评分者一致性：两独立 Kappa 系数差异检验
 
-- **临床场景**：比较新量表（$\kappa_1 = 0.70$）与旧量表（$\kappa_2 = 0.50$）的一致性是否有显著提升。
+- **临床场景**：比较新结构化报告清单（预期 $\kappa_1 = 0.70$）与传统阅片（预期 $\kappa_2 = 0.50$）在两组独立阅片者中的一致性是否显著提升，每组各需多少阅片者/标本？
+- **数学公式与出处**：
+  $$n = \frac{\left[z_{\alpha}\sqrt{2Q_1} + z_{\beta}\sqrt{Q_1+Q_2}\right]^2}{(K_1-K_2)^2}$$
+  *出处*：Cantor, A. B. (1996). *Psychol Methods*, 1(2), 150-153.
 
 ```{r kappa-test}
 res_6_9 <- calculate("kappa", "test", "proportion", pi1 = 0.50, pi2 = 0.50, kappa1 = 0.70, kappa2 = 0.50, alpha = 0.05, power = 0.8)
@@ -726,8 +800,10 @@ print(res_6_9)
 
 ## 6.10 中断时间序列研究（Interrupted Time Series, ITS）
 
-- **临床场景**：政策干预前后各监测 12 个月度时点，预期干预产生 2 个标准差的水平跃升（$\delta = 2$），时间序列自相关系数 $\rho = 0.30$。
-- **数学公式与出处**：Bernal et al. (2017). *Int J Epidemiol*, 46(1), 348-355（AR(1) 有效样本量校正近似）。
+- **临床场景**：某市对含糖饮料征收“糖税”的政策评估：干预前后各监测 12 个月度消费量时点，预期政策产生 2 个结局标准差的水平跃升（$\delta = 2$），月度数据自相关系数 $\rho = 0.30$。
+- **数学公式与出处**：
+  $$\text{power} = \Phi\left(\frac{\delta}{SE} - z_{\alpha/2}\right), \quad SE = \sqrt{\tfrac{1}{n_{eff}^{pre}} + \tfrac{1}{n_{eff}^{post}}}, \quad n_{eff} = \frac{n(1-\rho)}{1+\rho}$$
+  *出处*：Bernal et al. (2017). *Int J Epidemiol*, 46(1), 348-355（AR(1) 校正近似，试验性方法）。
 
 ```{r its}
 res_6_10 <- calculate("its", "test", "rate", effect_sd = 2, n_pre = 12, n_post = 12, rho = 0.3, alpha = 0.05, power = 0.8)
@@ -742,7 +818,8 @@ print(res_6_10)
 
 ## 论文与标书方法学撰写填空模板
 
-调用 `summary()` 可直接生成包含 LaTeX 公式与标准参考文献的完整报告：
+默认 `print()` 已包含纯文本公式、LaTeX 源码、计算过程和参考文献。
+调用 `summary()` 可进一步查看全部输入参数、设计分类及已记录的调整：
 
 ```{r summary-demo}
 summary(res_1_1)

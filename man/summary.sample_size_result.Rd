@@ -15,5 +15,12 @@
 Invisibly returns the input object
 }
 \description{
-Summary method for sample_size_result objects
+Includes the plain-text formula, LaTeX source, calculation process, and
+references shown by \code{\link[=print.sample_size_result]{print.sample_size_result()}}, with all input
+parameters, design axes, and recorded adjustments.
+}
+\examples{
+# Full protocol-ready report for the antihypertensive RCT:
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+summary(res)  # also lists all inputs, design axes, and adjustments
 }

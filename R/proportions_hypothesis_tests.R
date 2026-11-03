@@ -35,6 +35,7 @@ calculate_superiority_proportions <- function(p1, p2, margin, alpha, power) {
       alpha = alpha,
       power = power
     ),
+    formula = "n = (Z_alpha + Z_beta)^2 * (p1*(1-p1) + p2*(1-p2)) / (p1 - p2 - margin)^2",
     formula_latex = "$$n = \\frac{(Z_{\\alpha} + Z_{\\beta})^2[p_1(1-p_1) + p_2(1-p_2)]}{(p_1 - p_2 - \\Delta)^2}$$",
     reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
   )
@@ -75,6 +76,7 @@ calculate_equivalence_proportions <- function(p1, p2, margin, alpha, power) {
       alpha = alpha,
       power = power
     ),
+    formula = "n = (Z_alpha + Z_beta/2)^2 * (p1*(1-p1) + p2*(1-p2)) / (margin - |p1 - p2|)^2",
     formula_latex = "$$n = \\frac{(Z_{\\alpha} + Z_{\\beta/2})^2[p_1(1-p_1) + p_2(1-p_2)]}{(\\Delta - |p_1-p_2|)^2}$$",
     reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
   )

@@ -28,6 +28,8 @@ Thumbs.db
 
 # Documentation build
 docs/
+site_local/
+vign_preview/
 *_files/
 vignettes/*_files/
 *.html

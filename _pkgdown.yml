@@ -3,6 +3,7 @@ url: https://portos-wang.github.io/Sample_Size_Calc/
 template:
   bootstrap: 5
   bootswatch: flatly
+  math-rendering: mathjax
 
 navbar:
   structure:
@@ -16,6 +17,8 @@ navbar:
           href: articles/sampleSizeCalc-guide-zh.html
         - text: "📘 English Comprehensive Guide (Zero-to-Hero)"
           href: articles/sampleSizeCalc-guide-en.html
+        - text: "🧮 Formulas, steps & references / 公式、过程与文献"
+          href: articles/result-reporting.html
         - text: "-----------------"
         - text: "🚀 Quick Start & Package Overview"
           href: articles/sampleSizeCalc.html
@@ -31,7 +34,8 @@ reference:
 
   - title: "Results Display & Visualisation / 结果输出与绘图"
     desc: >
-      S3 print, summary, and ggplot2 visual diagnostic methods for sample_size_result objects.
+      Default print and summary reports include plain-text formulas, LaTeX source,
+      calculation steps, and references. Plot methods provide visual diagnostics.
     contents:
       - print.sample_size_result
       - summary.sample_size_result

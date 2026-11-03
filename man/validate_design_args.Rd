@@ -7,14 +7,21 @@
 validate_design_args(design, args)
 }
 \arguments{
-\item{design}{Study design type}
+\item{design}{Study design keyword (legacy dispatch name, e.g.
+"twoMeans", "cohortProportion", "simonTwoStage")}
 
-\item{args}{List of arguments to validate}
+\item{args}{Named list of arguments to validate}
 }
 \value{
-Validated arguments list
+Validated arguments list (invisible)
 }
 \description{
-Validate design-specific arguments
+Checks that every required argument for the chosen design keyword is
+present and aborts with a structured error naming the missing parameters
+(e.g. twoMeans requires mean1, mean2, sd).
+}
+\examples{
+validate_design_args("twoMeans", list(mean1 = 10, mean2 = 12, sd = 3))
+try(validate_design_args("twoMeans", list(mean1 = 10)))  # error: missing mean2, sd
 }
 \keyword{internal}

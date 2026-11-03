@@ -7,12 +7,18 @@
 validate_power(power)
 }
 \arguments{
-\item{power}{Statistical power (1 - beta)}
+\item{power}{Statistical power (1 - beta); single numeric strictly inside
+(0, 1). Typical: 0.8 (80 percent) or 0.9 (90 percent). Values outside
+(0, 1) abort.}
 }
 \value{
-Validated power value
+Validated power value (invisible numeric scalar)
 }
 \description{
 Validate power parameter
+}
+\examples{
+validate_power(0.8)     # OK
+try(validate_power(0))   # structured error
 }
 \keyword{internal}
