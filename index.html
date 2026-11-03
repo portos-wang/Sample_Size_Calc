@@ -5,7 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Sample Size Calculator for Clinical Research • sampleSizeCalc</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -37,6 +43,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-guides-">
 <li><a class="dropdown-item" href="articles/sampleSizeCalc-guide-zh.html">📖 中文完全使用指南 (零基础临床科研必读)</a></li>
     <li><a class="dropdown-item" href="articles/sampleSizeCalc-guide-en.html">📘 English Comprehensive Guide (Zero-to-Hero)</a></li>
+    <li><a class="dropdown-item" href="articles/result-reporting.html">🧮 Formulas, steps &amp; references / 公式、过程与文献</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="articles/sampleSizeCalc.html">🚀 Quick Start &amp; Package Overview</a></li>
   </ul>
@@ -59,7 +66,7 @@
 <p>Sample Size Calculator for Clinical Research</p>
 </blockquote>
 <p>A comprehensive R package for sample size determination across <strong>39 design combinations</strong>: experimental trials (superiority / non-inferiority / equivalence), observational studies (cohort, case-control, cross-sectional), diagnostic accuracy studies (estimation, testing, comparison, AUC), and complex designs (cluster RCT, Simon two-stage, bioequivalence, ordered outcomes, prediction models, interrupted time series).</p>
-<p>Every result carries: the formula (plain text + LaTeX), precise literature references (section/page level), parameter-role documentation, and methodological hints.</p>
+<p>Every result displays the formula in plain text and LaTeX, a calculation process, and literature references in the default R console output. Parameter roles and methodological hints are included where available.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -69,8 +76,9 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_local</span><span class="op">(</span><span class="st">"path/to/Sample_Size_Calc"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="quick-start-the-three-axis-api">Quick start: the three-axis API<a class="anchor" aria-label="anchor" href="#quick-start-the-three-axis-api"></a>
+<h2 id="quick-start-real-clinical-scenarios">Quick start: real clinical scenarios<a class="anchor" aria-label="anchor" href="#quick-start-real-clinical-scenarios"></a>
 </h2>
+<p><strong>Scenario 1 — Antihypertensive RCT (continuous endpoint).</strong> A cardiology trial compares a new drug with placebo for systolic blood pressure reduction. Based on a phase-2 study, the placebo arm is expected to drop 10 mmHg and the new drug 12 mmHg, with a pooled SD of 3 mmHg (two-sided <span class="math inline">\(\alpha = 0.05\)</span>, 80% power). How many patients per arm?</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://portos-wang.github.io/Sample_Size_Calc/">sampleSizeCalc</a></span><span class="op">)</span></span>
 <span></span>
@@ -78,44 +86,357 @@
 <span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>,</span>
 <span>  mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"noninferiority"</span>, <span class="st">"proportion"</span>,</span>
-<span>  p1 <span class="op">=</span> <span class="fl">0.90</span>, p2 <span class="op">=</span> <span class="fl">0.85</span>, margin <span class="op">=</span> <span class="fl">0.05</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Two independent samples, mean comparison"</span></span>
+<span><span class="co">#&gt; • Sample size per group: 37</span></span>
+<span><span class="co">#&gt; • Total sample size: 74</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05, power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common</span></span>
+<span><span class="co">#&gt; SD sigma = 3.</span></span>
+<span><span class="co">#&gt; • Step 3: Determine critical values: Z_(alpha/2) = 1.96 (for two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05), Z_beta = 0.8416 (for power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 4: Compute initial sample size via normal approximation: n0 = 2 *</span></span>
+<span><span class="co">#&gt; ((Z_(alpha/2) + Z_beta) * sigma / delta)^2 = 2 * ((1.96 + 0.8416) * 3 / 2)^2 =</span></span>
+<span><span class="co">#&gt; 35.32.</span></span>
+<span><span class="co">#&gt; • Step 5: Refine via exact two-sample Student's t-test power iteration</span></span>
+<span><span class="co">#&gt; (accounting for degrees of freedom df = 2n - 2).</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
+<p><strong>Scenario 2 — <em>H. pylori</em> eradication RCT (binary endpoint).</strong> Standard triple therapy eradicates 70% of infections; a new bismuth quadruple regimen is expected to reach 85%.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>,</span>
+<span>  p1 <span class="op">=</span> <span class="fl">0.85</span>, p2 <span class="op">=</span> <span class="fl">0.70</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"cohort"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>,</span>
-<span>  p0 <span class="op">=</span> <span class="fl">0.20</span>, p1 <span class="op">=</span> <span class="fl">0.30</span>, ratio <span class="op">=</span> <span class="fl">2</span>, dropout <span class="op">=</span> <span class="fl">0.10</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"caseControl"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>, p0 <span class="op">=</span> <span class="fl">0.3</span>, OR <span class="op">=</span> <span class="fl">2.0</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAccuracy"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>,</span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Two independent proportions"</span></span>
+<span><span class="co">#&gt; • Sample size per group: 121</span></span>
+<span><span class="co">#&gt; • Total sample size: 242</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `n = (Z_a/2 * sqrt(2*p_bar*(1-p_bar)) + Z_b * sqrt(p1*(1-p1)+p2*(1-p2)))^2 /</span></span>
+<span><span class="co">#&gt; (p1-p2)^2`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: State hypotheses: H0: p1 = p2 vs H1: p1 != p2 (two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05, power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 2: Compute pooled proportion: p_bar = (p1 + p2) / 2 = (0.85 + 0.70) / 2</span></span>
+<span><span class="co">#&gt; = 0.775.</span></span>
+<span><span class="co">#&gt; • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.</span></span>
+<span><span class="co">#&gt; • Step 4: Compute Fleiss formula numerator components:</span></span>
+<span><span class="co">#&gt; Z_(alpha/2)*sqrt(2*p_bar*(1-p_bar)) = 1.1575; Z_beta*sqrt(p1(1-p1)+p2(1-p2)) =</span></span>
+<span><span class="co">#&gt; 0.4889.</span></span>
+<span><span class="co">#&gt; • Step 5: Calculate unrounded sample size per group: n = (1.1575 + 0.4889)^2 /</span></span>
+<span><span class="co">#&gt; (0.85 - 0.70)^2 = 120.47.</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: n = 121 per group, total sample size N = 242.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., &amp; Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; With continuity correction: Casagrande, J. T., Pike, M. C., &amp; Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Book: Fleiss, J. L., Levin, B., &amp; Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
+<p><strong>Scenario 3 — Generic vs originator antihypertensive (bioequivalence).</strong> A <span class="math inline">\(2\times2\)</span> crossover study in healthy volunteers, intra-subject CV = 25%, expected geometric mean ratio <span class="math inline">\(\theta_0 = 1.0\)</span>, standard 80–125% acceptance range (Philips 1990 exact TOST).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"bioequivalence"</span>, <span class="st">"equivalence"</span>, <span class="st">"mean"</span>, cv <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Bioequivalence (2x2 crossover, exact TOST noncentral t)"</span></span>
+<span><span class="co">#&gt; • Required sample size: 12</span></span>
+<span><span class="co">#&gt; • Total sample size: 24</span></span>
+<span><span class="co">#&gt; • Power achieved: 0.8372</span></span>
+<span><span class="co">#&gt; Parameter roles</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • cv = intra-subject coefficient of variation (log scale implied)</span></span>
+<span><span class="co">#&gt; • theta0 = anticipated geometric mean ratio (true ratio, default 1.0)</span></span>
+<span><span class="co">#&gt; • margin = [0.80, 1.25] average BE criteria</span></span>
+<span><span class="co">#&gt; • n is per sequence; total subjects = 2n</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: Intra-subject variance on log scale: sigma_w = sqrt(ln(1 + CV^2)) =</span></span>
+<span><span class="co">#&gt; sqrt(ln(1 + 0.25^2)) = 0.2462.</span></span>
+<span><span class="co">#&gt; • Step 2: Standard BE log-scale boundaries: [ln(0.80), ln(1.25)] = [-0.2231,</span></span>
+<span><span class="co">#&gt; 0.2231].</span></span>
+<span><span class="co">#&gt; • Step 3: Two One-Sided Tests (TOST) under assumed geometric mean ratio theta0</span></span>
+<span><span class="co">#&gt; = 1.</span></span>
+<span><span class="co">#&gt; • Step 4: Search sequence sample size n by evaluating the difference of</span></span>
+<span><span class="co">#&gt; noncentral t distribution probabilities (Phillips 1990; df = 2n - 2).</span></span>
+<span><span class="co">#&gt; • Step 5: Required sample size: n = 12 per sequence (achieved power = 0.8372,</span></span>
+<span><span class="co">#&gt; Total N = 24).</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);</span></span>
+<span><span class="co">#&gt;  Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;</span></span>
+<span><span class="co">#&gt;  Chow &amp; Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
+<p><strong>Scenario 4 — Colorectal cancer screening kit (diagnostic accuracy).</strong> Expected sensitivity 85%, required CI half-width <span class="math inline">\(\pm 5\%\)</span>, clinic prevalence 20%: how many confirmed cases and how many screens?</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAccuracy"</span>, <span class="st">"estimate"</span>, <span class="st">"proportion"</span>,</span>
 <span>  prob <span class="op">=</span> <span class="fl">0.85</span>, d <span class="op">=</span> <span class="fl">0.05</span>, prevalence <span class="op">=</span> <span class="fl">0.2</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUC"</span>, <span class="st">"estimate"</span>, <span class="st">"auc"</span>,</span>
-<span>  auc <span class="op">=</span> <span class="fl">0.80</span>, d <span class="op">=</span> <span class="fl">0.10</span>, ratio <span class="op">=</span> <span class="fl">1</span>, var_method <span class="op">=</span> <span class="st">"binormal"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"singleArmPhaseII"</span>, <span class="st">"test"</span>, <span class="st">"proportion"</span>,</span>
-<span>  p0 <span class="op">=</span> <span class="fl">0.1</span>, p1 <span class="op">=</span> <span class="fl">0.3</span>, optimizer <span class="op">=</span> <span class="st">"optimal"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"clusterRCT"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>,</span>
-<span>  mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span>, icc <span class="op">=</span> <span class="fl">0.05</span>, cluster_size <span class="op">=</span> <span class="fl">20</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"bioequivalence"</span>, <span class="st">"equivalence"</span>, <span class="st">"mean"</span>, cv <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Diagnostic accuracy (single)"</span></span>
+<span><span class="co">#&gt; • Cases needed: 196</span></span>
+<span><span class="co">#&gt; • Total subjects to screen: 980</span></span>
+<span><span class="co">#&gt; • Total subjects: 980</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n_{{{cases}}} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: Specify diagnostic accuracy prob (Se or Sp) = 0.85, margin of error d</span></span>
+<span><span class="co">#&gt; = 0.05, prevalence = 0.20 (alpha = 0.05).</span></span>
+<span><span class="co">#&gt; • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =</span></span>
+<span><span class="co">#&gt; 95%).</span></span>
+<span><span class="co">#&gt; • Step 3: Calculate target cases required: n_cases = Z_sum^2 * prob * (1 -</span></span>
+<span><span class="co">#&gt; prob) / d^2 = (1.96)^2 * 0.85 * 0.15 / (0.05)^2 = 195.91.</span></span>
+<span><span class="co">#&gt; • Step 4: Adjust for disease prevalence: total subjects to screen = n_cases /</span></span>
+<span><span class="co">#&gt; prevalence = 195.91 / 0.20 = 979.57.</span></span>
+<span><span class="co">#&gt; • Step 5: Round up to integer: Target cases needed = 196, Total subjects to</span></span>
+<span><span class="co">#&gt; screen = 980.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Primary: Hanley, J. A., &amp; McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
+<p><strong>Scenario 5 — Diabetes prevalence survey (single proportion).</strong> Anticipated prevalence 30%, absolute precision <span class="math inline">\(\pm 5\%\)</span>, 95% CI (Bhardwaj 2024 worked example).</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"singleProportion"</span>, p <span class="op">=</span> <span class="fl">0.30</span>, precision <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="co"># -&gt; 323</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Single proportion estimation (precision)"</span></span>
+<span><span class="co">#&gt; • Required sample size: 323</span></span>
+<span><span class="co">#&gt; Parameter roles</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • p = expected proportion (e.g. prevalence)</span></span>
+<span><span class="co">#&gt; • precision = margin of error d (half-width of the CI)</span></span>
+<span><span class="co">#&gt; • confidence level = 95%</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `n = Z^2 * p(1-p) / d^2`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: Specify anticipated proportion p = 0.30, margin of error d = 0.05</span></span>
+<span><span class="co">#&gt; (absolute precision), alpha = 0.05.</span></span>
+<span><span class="co">#&gt; • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =</span></span>
+<span><span class="co">#&gt; 95%).</span></span>
+<span><span class="co">#&gt; • Step 3: Compute variance component: p * (1 - p) = 0.30 * 0.70 = 0.21.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculate unrounded sample size: n = Z_(1-alpha/2)^2 * p * (1 - p) /</span></span>
+<span><span class="co">#&gt; d^2 = (1.96)^2 * 0.21 / (0.05)^2 = 322.68.</span></span>
+<span><span class="co">#&gt; • Step 5: Round up to integer: Required sample size n = 323.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Bhardwaj et al. (2024). Determination of sample size for various study designs in medical research: A practical primer. Journal of Family Medicine and Primary Care, 13(7), 2555-2561 (p. 2558).</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Also: Lwanga, S. K., &amp; Lemeshow, S. (1991). Sample size determination in health studies: A practical manual. World Health Organization.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
 <p>Unambiguous designs allow omitting <code>task</code>/<code>outcome</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"diagAUC"</span>, auc <span class="op">=</span> <span class="fl">0.80</span>, d <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"singleProportion"</span>, p <span class="op">=</span> <span class="fl">0.30</span>, precision <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span>   <span class="co"># -&gt; 323</span></span></code></pre></div>
-<p>Illegal combinations error with the list of legal ones. The full design x task x outcome table, formulas, and sources live in <a href="docs/DESIGN_MATRIX.html">docs/DESIGN_MATRIX.md</a>; published worked examples used as numeric test anchors are catalogued in <a href="docs/NUMERIC_ANCHORS.html">docs/NUMERIC_ANCHORS.md</a>.</p>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Single-group AUC CI precision"</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * Var(AUC)`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot Var(AUC)$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,</span></span>
+<span><span class="co">#&gt; prevalence = 1 (alpha = 0.05).</span></span>
+<span><span class="co">#&gt; • Step 2: Hanley-McNeil variance components: Q1 = AUC/(2-AUC) = 0.6667, Q2 =</span></span>
+<span><span class="co">#&gt; 2*AUC^2/(1+AUC) = 0.7111.</span></span>
+<span><span class="co">#&gt; • Step 3: Compute variance factor: V(AUC) = Inf.</span></span>
+<span><span class="co">#&gt; • Step 4: Calculate cases needed: n_cases = (Z_(1-alpha/2) / d)^2 * V(AUC) =</span></span>
+<span><span class="co">#&gt; (1.96 / 0.05)^2 * Inf = Inf.</span></span>
+<span><span class="co">#&gt; • Step 5: Adjust for prevalence: screening total = n_cases / prevalence = Inf /</span></span>
+<span><span class="co">#&gt; 1 = Inf.</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: Target cases needed = Inf, Total subjects to</span></span>
+<span><span class="co">#&gt; screen = Inf.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Primary: Hanley, J. A., &amp; McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
+<p>Illegal combinations error with the list of legal ones. The <a href="https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html">English guide</a> and <a href="https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html">Chinese guide</a> cover design choices, parameters, formulas, and worked clinical examples. The <a href="https://github.com/portos-wang/Sample_Size_Calc/tree/master/tests/testthat" class="external-link">regression tests</a> check sample sizes against published examples.</p>
 </div>
 <div class="section level2">
 <h2 id="legacy-api-silently-compatible">Legacy API (silently compatible)<a class="anchor" aria-label="anchor" href="#legacy-api-silently-compatible"></a>
 </h2>
 <p>All 17 pre-3.0 keywords keep working with identical results:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span><span class="st">"twoMeans"</span>, mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>  <span class="co"># 37/group</span></span>
-<span><span class="fu"><a href="reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span><span class="st">"survival"</span>, hr <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>                        <span class="co"># 65 events</span></span></code></pre></div>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Two independent samples, mean comparison"</span></span>
+<span><span class="co">#&gt; • Sample size per group: 37</span></span>
+<span><span class="co">#&gt; • Total sample size: 74</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05, power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common</span></span>
+<span><span class="co">#&gt; SD sigma = 3.</span></span>
+<span><span class="co">#&gt; • Step 3: Determine critical values: Z_(alpha/2) = 1.96 (for two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05), Z_beta = 0.8416 (for power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 4: Compute initial sample size via normal approximation: n0 = 2 *</span></span>
+<span><span class="co">#&gt; ((Z_(alpha/2) + Z_beta) * sigma / delta)^2 = 2 * ((1.96 + 0.8416) * 3 / 2)^2 =</span></span>
+<span><span class="co">#&gt; 35.32.</span></span>
+<span><span class="co">#&gt; • Step 5: Refine via exact two-sample Student's t-test power iteration</span></span>
+<span><span class="co">#&gt; (accounting for degrees of freedom df = 2n - 2).</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="fu"><a href="reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span><span class="st">"survival"</span>, hr <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>                        <span class="co"># 247 events</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
+<span><span class="co">#&gt; • Design type: "Survival (log-rank)"</span></span>
+<span><span class="co">#&gt; • Events needed: 247</span></span>
+<span><span class="co">#&gt; Formula (plain text):</span></span>
+<span><span class="co">#&gt; `E = (Z_a/2 + Z_b)^2 / (pE*(1-pE)*log(HR)^2)`</span></span>
+<span><span class="co">#&gt; Formula (LaTeX):</span></span>
+<span><span class="co">#&gt; $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$</span></span>
+<span><span class="co">#&gt; Calculation process:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Step 1: State survival parameters: Hazard Ratio HR = 0.70, experimental arm</span></span>
+<span><span class="co">#&gt; allocation pE = 0.50 (alpha = 0.05, power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 2: Compute log hazard ratio: ln(HR) = ln(0.70) = -0.3567.</span></span>
+<span><span class="co">#&gt; • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.</span></span>
+<span><span class="co">#&gt; • Step 4: Apply Schoenfeld formula: E = (Z_(alpha/2) + Z_beta)^2 / [pE * (1 -</span></span>
+<span><span class="co">#&gt; pE) * (ln HR)^2] = (1.96 + 0.8416)^2 / [0.50 * 0.50 * (-0.3567)^2] = 246.79.</span></span>
+<span><span class="co">#&gt; • Step 5: Round up to integer: Target events needed E = 247.</span></span>
+<span><span class="co">#&gt; Reference:</span></span>
+<span><span class="co">#&gt; Primary: Schoenfeld, D. A. (1983). Sample-size formula for the proportional-hazards regression model. Biometrics, 39(2), 499-503.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Extensions:</span></span>
+<span><span class="co">#&gt; - Hsieh, F. Y., &amp; Lavori, P. W. (2000). Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates. Controlled Clinical Trials, 21(6), 552-560.</span></span>
+<span><span class="co">#&gt; - Rubinstein, L. V., Gail, M. H., &amp; Santner, T. J. (1981). Planning the duration of a comparative clinical trial with loss to follow-up and a period of continued observation. Journal of Chronic Diseases, 34(9-10), 469-479.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="result-object">Result object<a class="anchor" aria-label="anchor" href="#result-object"></a>
 </h2>
-<p><code><a href="reference/calculate.html">calculate()</a></code> returns a <code>sample_size_result</code> S3 object with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods. <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> shows the metrics, the role of each parameter under the chosen design, and any methodological hints; <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> adds the formula, LaTeX, precise references and the adjustment audit trail.</p>
+<p><code><a href="reference/calculate.html">calculate()</a></code> returns a <code>sample_size_result</code> S3 object. Printing the object (or calling <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>) displays the design, sample size, and all four report components:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Report component</th>
+<th>Console label</th>
+<th>Result field</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Plain-text formula</td>
+<td><code>Formula (plain text)</code></td>
+<td><code>formula</code></td>
+</tr>
+<tr>
+<td>LaTeX source</td>
+<td><code>Formula (LaTeX)</code></td>
+<td><code>formula_latex</code></td>
+</tr>
+<tr>
+<td>Calculation process</td>
+<td><code>Calculation process</code></td>
+<td>
+<code>calculation_steps</code> (also <code>calculation</code>)</td>
+</tr>
+<tr>
+<td>Literature sources</td>
+<td><code>Reference</code></td>
+<td><code>reference</code></td>
+</tr>
+</tbody>
+</table>
+<p>The same reporting components are available through <code><a href="reference/sample_size_calculator.html">sample_size_calculator()</a></code>. Assigning a result to a variable stores it; print that variable to display the report. <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> additionally shows all input parameters, classification axes, and recorded adjustments. <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> provides the supported visual diagnostics.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calculate.html">calculate</a></span><span class="op">(</span><span class="st">"rct"</span>, <span class="st">"test"</span>, <span class="st">"mean"</span>, mean1 <span class="op">=</span> <span class="fl">10</span>, mean2 <span class="op">=</span> <span class="fl">12</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ✔ Sample Size Calculation Summary</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Study Design</span></span>
+<span><span class="co">#&gt; • Type: "Two independent samples, mean comparison"</span></span>
+<span><span class="co">#&gt; • Design: "rct"</span></span>
+<span><span class="co">#&gt; • Task: "test" | Outcome: "mean"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Parameters</span></span>
+<span><span class="co">#&gt; • mean1: 10</span></span>
+<span><span class="co">#&gt; • mean2: 12</span></span>
+<span><span class="co">#&gt; • sd: 3</span></span>
+<span><span class="co">#&gt; • alpha: 0.05</span></span>
+<span><span class="co">#&gt; • power: 0.8</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Sample Size Results</span></span>
+<span><span class="co">#&gt; • Sample size per group: 37</span></span>
+<span><span class="co">#&gt; • Total sample size: 74</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Formula</span></span>
+<span><span class="co">#&gt; Plain text:</span></span>
+<span><span class="co">#&gt; `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`</span></span>
+<span><span class="co">#&gt; LaTeX:</span></span>
+<span><span class="co">#&gt; $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Calculation Process</span></span>
+<span><span class="co">#&gt; • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05, power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common</span></span>
+<span><span class="co">#&gt; SD sigma = 3.</span></span>
+<span><span class="co">#&gt; • Step 3: Determine critical values: Z_(alpha/2) = 1.96 (for two-sided alpha =</span></span>
+<span><span class="co">#&gt; 0.05), Z_beta = 0.8416 (for power = 0.80).</span></span>
+<span><span class="co">#&gt; • Step 4: Compute initial sample size via normal approximation: n0 = 2 *</span></span>
+<span><span class="co">#&gt; ((Z_(alpha/2) + Z_beta) * sigma / delta)^2 = 2 * ((1.96 + 0.8416) * 3 / 2)^2 =</span></span>
+<span><span class="co">#&gt; 35.32.</span></span>
+<span><span class="co">#&gt; • Step 5: Refine via exact two-sample Student's t-test power iteration</span></span>
+<span><span class="co">#&gt; (accounting for degrees of freedom df = 2n - 2).</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Reference</span></span>
+<span><span class="co">#&gt; Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>You can also extract the report components for a protocol or manuscript:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">formula</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">formula_latex</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">calculation_steps</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">reference</span><span class="op">)</span></span></code></pre></div>
+<p>The R console displays LaTeX as copyable source. In an R Markdown document, use <code>cat(res$formula_latex)</code> in a chunk with <code>results = "asis"</code> to typeset it. See the <a href="https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.html">reporting guide</a> for an executed example and instructions in English and Chinese.</p>
 </div>
 <div class="section level2">
 <h2 id="study-designs-family-overview">Study designs (family overview)<a class="anchor" aria-label="anchor" href="#study-designs-family-overview"></a>
@@ -183,19 +504,19 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use the package in research, please cite the original methodology papers for each design (listed in every result’s <code>reference</code> field) along with the package:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">@software{sampleSizeCalc,</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">  author = {Portos (Yishan) Wang and Bingxin Cai},</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">  version = {3.1.0},</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">  url = {https://github.com/portos-wang/sampleSizeCalc}</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">@software{sampleSizeCalc,</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">  author = {Portos (Yishan) Wang and Bingxin Cai},</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">  organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">  version = {3.1.0},</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">  url = {https://github.com/portos-wang/sampleSizeCalc}</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT (see <a href="LICENSE">LICENSE</a>).</p>
+<p>MIT (see <a href="https://github.com/portos-wang/Sample_Size_Calc/blob/master/LICENSE" class="external-link">LICENSE</a>).</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

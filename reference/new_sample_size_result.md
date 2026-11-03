@@ -14,10 +14,12 @@ new_sample_size_result(
   legacy = list(),
   formula_ascii = NULL,
   formula_latex = NULL,
+  calculation = NULL,
   reference = NULL,
   roles = character(),
   adjustments = list(),
-  hints = character()
+  hints = character(),
+  calculation_steps = NULL
 )
 ```
 
@@ -29,11 +31,13 @@ new_sample_size_result(
 
 - task:
 
-  Statistical task: estimate/test/noninferiority/superiority/equivalence
+  Statistical task: "estimate", "test", "noninferiority", "superiority",
+  "equivalence", or "plan"
 
 - outcome:
 
-  Outcome type: mean/proportion/rate/survival/auc/lr/correlation
+  Outcome type: "mean", "proportion", "rate", "survival", "auc", "lr",
+  "correlation", "ordinal", or "events"
 
 - design_type:
 
@@ -41,7 +45,8 @@ new_sample_size_result(
 
 - parameters:
 
-  Named list of input parameters
+  Named list of input parameters. Each entry must be finite numeric
+  scalar (or vector for `prop_bar`); e.g. `mean1 = 10`, `sd = 3`.
 
 - legacy:
 
@@ -50,11 +55,16 @@ new_sample_size_result(
 
 - formula_ascii:
 
-  Plain-text formula
+  Plain-text formula (single string, e.g. "n =
+  2\*((Za/2+Zb)\*sd/(mean1-mean2))^2")
 
 - formula_latex:
 
-  LaTeX formula
+  LaTeX formula wrapped in \$\$...\$\$
+
+- calculation:
+
+  Step-by-step calculation explanation (character vector)
 
 - reference:
 
@@ -68,6 +78,30 @@ new_sample_size_result(
 
   Named list of applied adjustments (dropout, nonresponse)
 
+- hints:
+
+  Character vector of methodological warnings/tips
+
+- calculation_steps:
+
+  Alias for `calculation`
+
 ## Value
 
 A sample_size_result object
+
+## Examples
+
+``` r
+r <- new_sample_size_result(
+  design = "rct", task = "test", outcome = "mean",
+  design_type = "Two independent samples, mean comparison",
+  parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),
+  legacy = list(n_per_group = 37L, total_n = 74L),
+  formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2",
+  reference = "Chow et al. (2017)"
+)
+#> Error in new_sample_size_result(design = "rct", task = "test", outcome = "mean",     design_type = "Two independent samples, mean comparison",     parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05,         power = 0.8), legacy = list(n_per_group = 37L, total_n = 74L),     formula_ascii = "n = 2*((Za/2+Zb)*sd/(mean1-mean2))^2", reference = "Chow et al. (2017)"): could not find function "new_sample_size_result"
+stopifnot(inherits(r, "sample_size_result"))
+#> Error: object 'r' not found
+```

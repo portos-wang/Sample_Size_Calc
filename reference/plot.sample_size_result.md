@@ -31,3 +31,16 @@ plot(x, type = c("power", "sample_size"), ...)
 ## Value
 
 Invisibly returns `x`. A plot is drawn.
+
+## Examples
+
+``` r
+# Antihypertensive RCT planning: check how power scales with enrollment
+res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+plot(res, type = "power")        # sample size vs power curve
+
+# \donttest{
+plot(res, type = "sample_size")  # sample size vs effect size
+
+# }
+```

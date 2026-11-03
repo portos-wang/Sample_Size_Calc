@@ -20,22 +20,139 @@ in clinical and epidemiological research.
 
 ## The Three-Axis API (v3.0+)
 
+**Scenario A — Antihypertensive RCT:** Placebo 10 mmHg vs new
+ACE-inhibitor 12 mmHg reduction, pooled SD 3 mmHg (two-sided \\\alpha =
+0.05\\, 80% power).
+
 ``` r
 
 calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Two independent samples, mean comparison"
+#> • Sample size per group: 37
+#> • Total sample size: 74
+#> Formula (plain text):
+#> `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`
+#> Formula (LaTeX):
+#> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =
+#> 0.05, power = 0.80).
+#> • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common
+#> SD sigma = 3.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96 (for two-sided alpha =
+#> 0.05), Z_beta = 0.8416 (for power = 0.80).
+#> • Step 4: Compute initial sample size via normal approximation: n0 = 2 *
+#> ((Z_(alpha/2) + Z_beta) * sigma / delta)^2 = 2 * ((1.96 + 0.8416) * 3 / 2)^2 =
+#> 35.32.
+#> • Step 5: Refine via exact two-sample Student's t-test power iteration
+#> (accounting for degrees of freedom df = 2n - 2).
+#> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
+#> Reference:
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
+```
+
+**Scenario B — Framingham-style Cohort:** 5-year coronary disease risk
+20% in non-smokers vs 30% in smokers, 10% anticipated dropout.
+
+``` r
+
 calculate("cohort", "test", "proportion", p0 = 0.20, p1 = 0.30, dropout = 0.10)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Cohort study (cumulative incidence, RR)"
+#> • Sample size per group: 327
+#> • Exposed group: 327
+#> • Unexposed group: 327
+#> • Total sample size: 654
+#> Parameter roles
+#> 
+#> • p0 = unexposed-group cumulative incidence
+#> • p1 = exposed-group cumulative incidence
+#> • ratio = unexposed:exposed allocation (m)
+#> • effect measure: risk ratio RR (estimable in cohort designs)
+#> Formula (plain text):
+#> `n1 = [Za*sqrt((1+1/m)*pbar*(1-pbar)) + Zb*sqrt(p1q1+p0q0/m)]^2/(p1-p0)^2`
+#> Formula (LaTeX):
+#> $$n_{1} = \frac{\left[Z_{\alpha/2}\sqrt{(1+\frac{1}{m})\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1)+\frac{p_0(1-p_0)}{m}}\right]^2}{(p_1-p_0)^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: Specify proportions: unexposed p0 = 0.20, exposed p1 = 0.30,
+#> allocation ratio m = 1 (alpha = 0.05, power = 0.80).
+#> • Step 2: Weighted average proportion: p_bar = (p1 + m*p0) / (1 + m) = 0.25.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 4: Calculate exposed sample size: n_exposed =
+#> [Z_(alpha/2)*sqrt((1+1/m)*p_bar*(1-p_bar)) + Z_beta*sqrt(p1*q1 + p0*q0/m)]^2 /
+#> (p1 - p0)^2 = 293.15.
+#> • Step 5: Calculate unexposed sample size: n_unexposed = m * n_exposed = 1 *
+#> 293.15 = 293.15.
+#> • Step 6: Round up before dropout inflation: ceiling(n_exposed) = 294,
+#> ceiling(m*n_exposed) = 294; apply dropout d = 0.10 using ceiling(n/(1-d)).
+#> Exposed = 327, Unexposed = 327, Total sample size N = 654.
+#> Reference:
+#> Primary: Bhardwaj et al. (2024). Journal of Family Medicine and Primary Care, 13(7), 2559 (worked example: p0=0.20, p1=0.30, m=1 -> 293/group).
+#> 
+#>  Also: Schlesselman, J. J. (1982). Case-Control Studies. Oxford University Press (cohort/case-control shared formula, roles swapped); Machin et al. (2018) Ch.3.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
+```
+
+**Scenario C — Diagnostic ROC-AUC validation:** Anticipated AUC = 0.80,
+CI half-width \\\pm 0.10\\, 1:1 case:control, binormal model.
+
+``` r
+
 calculate("diagAUC", "estimate", "auc",
   auc = 0.80, d = 0.10,
   ratio = 1, var_method = "binormal"
 )
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Single-group AUC CI precision"
+#> • Cases needed: 46
+#> • Total subjects to screen: 92
+#> • Total subjects: 92
+#> Parameter roles
+#> 
+#> • auc = anticipated area under the ROC curve
+#> • precision = desired CI half-width L
+#> • ratio = case:control ratio R (cases:non-cases; default 1)
+#> • var_method = binormal variance function
+#> Formula (plain text):
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`
+#> Formula (LaTeX):
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
+#> Calculation process:
+#> 
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
+#> 1, alpha = 0.05.
+#> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
+#> = 0.1195.
+#> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
+#> (1.96/0.10)^2 * 0.1195 = 45.89.
+#> • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =
+#> 45.89*(1+1) = 91.78.
+#> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
+#> Reference:
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
+#> 
+#>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
+#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
-Every result prints the role of each parameter under the chosen design
-(e.g. `p0` is the unexposed incidence in a cohort but the control-group
-exposure rate in a case-control study), plus methodological hints where
-relevant. See `docs/DESIGN_MATRIX.md` for the full combination table and
-`docs/NUMERIC_ANCHORS.md` for the published worked examples used as
-automated test benchmarks.
+Every result displays the plain-text formula, LaTeX source, calculation
+process, and literature references. Parameter roles (for example, `p0`
+is unexposed incidence in a cohort but control-group exposure in a
+case-control study) and methodological hints are included where
+available. See the [reporting
+guide](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.md)
+for field extraction and a rendered formula example.
 
 ## Introduction (legacy examples)
 
@@ -88,13 +205,40 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Two independent samples, mean comparison"
+#> • Sample size per group: 37
+#> • Total sample size: 74
+#> Formula (plain text):
+#> `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`
+#> Formula (LaTeX):
+#> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =
+#> 0.05, power = 0.80).
+#> • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common
+#> SD sigma = 3.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96 (for two-sided alpha =
+#> 0.05), Z_beta = 0.8416 (for power = 0.80).
+#> • Step 4: Compute initial sample size via normal approximation: n0 = 2 *
+#> ((Z_(alpha/2) + Z_beta) * sigma / delta)^2 = 2 * ((1.96 + 0.8416) * 3 / 2)^2 =
+#> 35.32.
+#> • Step 5: Refine via exact two-sample Student's t-test power iteration
+#> (accounting for degrees of freedom df = 2n - 2).
+#> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
+#> Reference:
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Interpretation**: - Need 37 subjects per group - Total sample size: 74
 subjects - The effect size (Cohen’s d): 0.67
 
-**Formula**: \$\$n = 2\\left(\\frac{(Z\_{\\alpha/2} + Z\_{\\beta})
-\\cdot \\sigma}{\\mu_1 - \\mu_2}\\right)^2\$\$
+**Formula**: \\n = 2\left(\frac{(Z\_{\alpha/2} + Z\_{\beta}) \cdot
+\sigma}{\mu_1 - \mu_2}\right)^2\\
 
 **Reference**: Chow et al. (2017). *Sample Size Calculations in Clinical
 Research* (3rd ed.). CRC Press.
@@ -120,6 +264,30 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Paired means"
+#> • Pairs needed: 29
+#> • Total individuals: 58
+#> Formula (plain text):
+#> `n = ((Z_a/2 + Z_b) * sd_diff / mean_diff)^2`
+#> Formula (LaTeX):
+#> $$n = \left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma_d}{\mu_d}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State paired difference hypotheses: H0: mu_d = 0 vs H1: mu_d != 0
+#> (alpha = 0.05, power = 0.90).
+#> • Step 2: Expected paired difference mu_d = 2.50, SD of differences sigma_d =
+#> 4.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 1.2816.
+#> • Step 4: Normal approximation: n0 = ((Z_(alpha/2) + Z_beta) * sigma_d /
+#> mu_d)^2 = ((1.96 + 1.2816) * 4 / 2.50)^2 = 26.90.
+#> • Step 5: Exact paired Student's t-test degrees of freedom iteration.
+#> • Step 6: Round up to integer: n = 29 pairs (total individuals = 58).
+#> Reference:
+#> Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Interpretation**: - Need 29 pairs (i.e., 58 measurements from 29
@@ -149,6 +317,37 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Two independent proportions"
+#> • Sample size per group: 163
+#> • Total sample size: 326
+#> Formula (plain text):
+#> `n = (Z_a/2 * sqrt(2*p_bar*(1-p_bar)) + Z_b * sqrt(p1*(1-p1)+p2*(1-p2)))^2 /
+#> (p1-p2)^2`
+#> Formula (LaTeX):
+#> $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: State hypotheses: H0: p1 = p2 vs H1: p1 != p2 (two-sided alpha =
+#> 0.05, power = 0.80).
+#> • Step 2: Compute pooled proportion: p_bar = (p1 + p2) / 2 = (0.30 + 0.45) / 2
+#> = 0.375.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 4: Compute Fleiss formula numerator components:
+#> Z_(alpha/2)*sqrt(2*p_bar*(1-p_bar)) = 1.3419; Z_beta*sqrt(p1(1-p1)+p2(1-p2)) =
+#> 0.5693.
+#> • Step 5: Calculate unrounded sample size per group: n = (1.3419 + 0.5693)^2 /
+#> (0.30 - 0.45)^2 = 162.33.
+#> • Step 6: Round up to integer: n = 163 per group, total sample size N = 326.
+#> Reference:
+#> Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.
+#> 
+#> With continuity correction: Casagrande, J. T., Pike, M. C., & Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.
+#> 
+#> Book: Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Interpretation**: - Need 163 patients per group - Absolute risk
@@ -179,6 +378,31 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Survival (log-rank)"
+#> • Events needed: 247
+#> Formula (plain text):
+#> `E = (Z_a/2 + Z_b)^2 / (pE*(1-pE)*log(HR)^2)`
+#> Formula (LaTeX):
+#> $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: State survival parameters: Hazard Ratio HR = 0.70, experimental arm
+#> allocation pE = 0.50 (alpha = 0.05, power = 0.80).
+#> • Step 2: Compute log hazard ratio: ln(HR) = ln(0.70) = -0.3567.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 4: Apply Schoenfeld formula: E = (Z_(alpha/2) + Z_beta)^2 / [pE * (1 -
+#> pE) * (ln HR)^2] = (1.96 + 0.8416)^2 / [0.50 * 0.50 * (-0.3567)^2] = 246.79.
+#> • Step 5: Round up to integer: Target events needed E = 247.
+#> Reference:
+#> Primary: Schoenfeld, D. A. (1983). Sample-size formula for the proportional-hazards regression model. Biometrics, 39(2), 499-503.
+#> 
+#> Extensions:
+#> - Hsieh, F. Y., & Lavori, P. W. (2000). Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates. Controlled Clinical Trials, 21(6), 552-560.
+#> - Rubinstein, L. V., Gail, M. H., & Santner, T. J. (1981). Planning the duration of a comparative clinical trial with loss to follow-up and a period of continued observation. Journal of Chronic Diseases, 34(9-10), 469-479.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Important Notes**: - This calculates the **number of events needed**,
@@ -186,8 +410,8 @@ not the total sample size - Total sample size = events / event rate -
 For example, if event rate is 50%, total sample size needed: 494
 subjects
 
-**Formula**: \$\$E = \\frac{(Z\_{\\alpha/2} +
-Z\_{\\beta})^2}{p_E(1-p_E)\[\\ln(HR)\]^2}\$\$
+**Formula**: \\E = \frac{(Z\_{\alpha/2} +
+Z\_{\beta})^2}{p_E(1-p_E)\[\ln(HR)\]^2}\\
 
 **Reference**: Schoenfeld (1983). Sample-size formula for the
 proportional-hazards regression model. *Biometrics*, 39(2), 499-503.
@@ -216,6 +440,29 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Non-inferiority (means)"
+#> • Sample size per group: 337
+#> • Total sample size: 674
+#> Formula (plain text):
+#> `n = 2*(Z_a+Z_b)^2*sd^2/(mean1-mean2+margin)^2`
+#> Formula (LaTeX):
+#> $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 + \Delta}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State non-inferiority hypotheses: H0: mu1 - mu2 <= -margin vs H1: mu1
+#> - mu2 > -margin (margin Delta = 1, one-sided alpha = 0.025, power = 0.90).
+#> • Step 2: Effective difference: delta_E = mu1 - mu2 + margin = 8 - 8.50 + 1 =
+#> 0.50; SD sigma = 2.
+#> • Step 3: Determine critical values: one-sided Z_alpha = 1.96, Z_beta = 1.2816.
+#> • Step 4: Compute sample size: n = 2 * (Z_alpha + Z_beta)^2 * sigma^2 /
+#> delta_E^2 = 2 * (1.96 + 1.2816)^2 * 2^2 / (0.50)^2 = 336.24.
+#> • Step 5: Round up to integer: n = 337 per group, total sample size N = 674.
+#> Reference:
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Key Points**: - Uses **one-sided** α (typically 0.025) - Margin Δ
@@ -246,6 +493,29 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Superiority (means)"
+#> • Sample size per group: 50
+#> • Total sample size: 100
+#> Formula (plain text):
+#> `n = 2*(Z_a+Z_b)^2*sd^2/(mean1-mean2-margin)^2`
+#> Formula (LaTeX):
+#> $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu_1 - \mu_2 - \Delta}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State superiority hypotheses: H0: mu1 - mu2 <= margin vs H1: mu1 -
+#> mu2 > margin (margin Delta = 0.50, one-sided alpha = 0.025, power = 0.85).
+#> • Step 2: Effective difference: delta_E = mu1 - mu2 - margin = 12 - 10 - 0.50 =
+#> 1.50; SD sigma = 2.50.
+#> • Step 3: Determine critical values: one-sided Z_alpha = 1.96, Z_beta = 1.0364.
+#> • Step 4: Compute sample size: n = 2 * (Z_alpha + Z_beta)^2 * sigma^2 /
+#> delta_E^2 = 2 * (1.96 + 1.0364)^2 * 2.50^2 / (1.50)^2 = 49.88.
+#> • Step 5: Round up to integer: n = 50 per group, total sample size N = 100.
+#> Reference:
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Key Points**: - Uses **one-sided** α - Effect must exceed margin to be
@@ -272,6 +542,30 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Equivalence (means)"
+#> • Sample size per group: 48
+#> • Total sample size: 96
+#> Formula (plain text):
+#> `n = 2*(Z_a+Z_b/2)^2*sd^2/(margin-|mean1-mean2|)^2`
+#> Formula (LaTeX):
+#> $$n = 2\left(\frac{(Z_{\alpha} + Z_{\beta/2})\sigma}{\Delta - |\mu_1 - \mu_2|}\right)^2$$
+#> Calculation process:
+#> 
+#> • Step 1: State equivalence hypotheses (TOST): H0: |mu1 - mu2| >= margin vs H1:
+#> |mu1 - mu2| < margin (margin Delta = 5, alpha = 0.05, power = 0.80).
+#> • Step 2: Margin clearance: Delta - |mu1 - mu2| = 5 - |100 - 102| = 3; SD sigma
+#> = 5.
+#> • Step 3: Determine critical values: one-sided Z_alpha = 1.6449, Z_(beta/2) =
+#> 1.2816.
+#> • Step 4: Compute sample size: n = 2 * (Z_alpha + Z_(beta/2))^2 * sigma^2 /
+#> (Delta - |mu1 - mu2|)^2 = 2 * (1.6449 + 1.2816)^2 * 5^2 / (3)^2 = 47.58.
+#> • Step 5: Round up to integer: n = 48 per group, total sample size N = 96.
+#> Reference:
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Key Points**: - Uses **TOST** (Two One-Sided Tests) procedure -
@@ -300,13 +594,39 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Diagnostic accuracy (single)"
+#> • Cases needed: 196
+#> • Total subjects to screen: 980
+#> Formula (plain text):
+#> `N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2`
+#> Formula (LaTeX):
+#> $$n_{{{cases}}} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: Specify diagnostic accuracy prob (Se or Sp) = 0.85, margin of error d
+#> = 0.05, prevalence = 0.20 (alpha = 0.05).
+#> • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =
+#> 95%).
+#> • Step 3: Calculate target cases required: n_cases = Z_sum^2 * prob * (1 -
+#> prob) / d^2 = (1.96)^2 * 0.85 * 0.15 / (0.05)^2 = 195.91.
+#> • Step 4: Adjust for disease prevalence: total subjects to screen = n_cases /
+#> prevalence = 195.91 / 0.20 = 979.57.
+#> • Step 5: Round up to integer: Target cases needed = 196, Total subjects to
+#> screen = 980.
+#> Reference:
+#> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+#> 
+#> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Interpretation**: - Target state cases needed: 196 - Total subjects to
 screen: 980 - With 20% prevalence, need to screen 980 to get 196 cases
 
-**Formula**: \$\$n\_{cases} = \\frac{Z\_{1-\\alpha/2}^2 \\cdot
-p(1-p)}{d^2}\$\$
+**Formula**: \\n\_{cases} = \frac{Z\_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}\\
 
 **Reference**: Hajian-Tilaki (2014). Sample size determination in
 diagnostic test studies. *Journal of Biomedical Informatics*, 48,
@@ -331,6 +651,34 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Single-group AUC CI precision"
+#> • Cases needed: 373
+#> • Total subjects to screen: 1243
+#> Formula (plain text):
+#> `N_cases = (Z_1-a/2 / d)^2 * Var(AUC)`
+#> Formula (LaTeX):
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot Var(AUC)$$
+#> Calculation process:
+#> 
+#> • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,
+#> prevalence = 0.30 (alpha = 0.05).
+#> • Step 2: Hanley-McNeil variance components: Q1 = AUC/(2-AUC) = 0.6667, Q2 =
+#> 2*AUC^2/(1+AUC) = 0.7111.
+#> • Step 3: Compute variance factor: V(AUC) = 0.2425.
+#> • Step 4: Calculate cases needed: n_cases = (Z_(1-alpha/2) / d)^2 * V(AUC) =
+#> (1.96 / 0.05)^2 * 0.2425 = 372.68.
+#> • Step 5: Adjust for prevalence: screening total = n_cases / prevalence =
+#> 372.68 / 0.30 = 1242.27.
+#> • Step 6: Round up to integer: Target cases needed = 373, Total subjects to
+#> screen = 1243.
+#> Reference:
+#> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+#> 
+#> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Key Points**: - Calculates cases with disease - AUC variance depends
@@ -361,6 +709,29 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "AUC comparison (two tests)"
+#> • Cases needed: 545
+#> • Total subjects to screen: 2179
+#> Formula (plain text):
+#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`
+#> Formula (LaTeX):
+#> $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: Specify AUC1 = 0.85, AUC2 = 0.80, correlation r = 0.60, prevalence =
+#> 0.25 (alpha = 0.05, power = 0.80).
+#> • Step 2: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).
+#> • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *
+#> V(AUC) * (1 - r) / (AUC1 - AUC2)^2.
+#> • Step 5: Round up to integer: Target cases needed = 545, Total subjects to
+#> screen = 2179.
+#> Reference:
+#> Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Key Points**: - Requires correlation coefficient (r) - Higher
@@ -389,6 +760,39 @@ result <- sample_size_calculator(
 )
 
 print(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Results
+#> • Design type: "Case-control"
+#> • Cases needed: 80
+#> • Controls needed: 80
+#> • Total subjects: 160
+#> Formula (plain text):
+#> `n_cases = [Z_alpha/2 * sqrt((1+1/m)*p_bar*(1-p_bar)) + Z_beta * sqrt(p1*(1-p1)
+#> + p0*(1-p0)/m)]^2 / (p1 - p0)^2`
+#> Formula (LaTeX):
+#> $$n_{cases} = \frac{\left[Z_{\alpha/2}\sqrt{(1+1/m)\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_0(1-p_0)/m}\right]^2}{(p_1-p_0)^2}$$
+#> Calculation process:
+#> 
+#> • Step 1: Compute case exposure rate from Odds Ratio: p1 = (OR * p0) / (1 - p0
+#> + OR * p0) = (2.50 * 0.30) / (1 - 0.30 + 2.50 * 0.30) = 0.5172.
+#> • Step 2: Weighted average exposure (matching ratio m = 1): p_bar = (p1 + m*p0)
+#> / (1 + m) = 0.4086.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 4: Schlesselman formula for cases: n_cases =
+#> [Z_(alpha/2)*sqrt((1+1/m)*p_bar*(1-p_bar)) + Z_beta*sqrt(p1*(1-p1) +
+#> p0*(1-p0)/m)]^2 / (p1 - p0)^2 = 79.19.
+#> • Step 5: Calculate controls needed: n_controls = m * n_cases = 1 * 79.19 =
+#> 79.19.
+#> • Step 6: Round up to integer: Cases needed = 80, Controls needed = 80, Total
+#> subjects = 160.
+#> Reference:
+#> Primary: Schlesselman, J. J. (1982). Case-control studies: Design, conduct, analysis. Oxford University Press.
+#> 
+#> IARC classic: Breslow, N. E., & Day, N. E. (1980). Statistical methods in cancer research: Volume I - The analysis of case-control studies. IARC Scientific Publications No. 32.
+#> 
+#> For individually matched designs (not the formula implemented here): Dupont, W. D. (1988). Power calculations for matched case-control studies. Biometrics, 44(4), 1157-1168; see the caseControlMatched design.
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
 ```
 
 **Interpretation**: - Cases needed: 80 - Controls needed: 80 - Total
@@ -433,7 +837,13 @@ plot(result, type = "sample_size")
 
 ![](sampleSizeCalc_files/figure-html/plot-sample-size-1.png)
 
-### Using `summary()` for Complete Information
+### Using `summary()` for Parameters and Adjustments
+
+Default [`print()`](https://rdrr.io/r/base/print.html) output already
+includes the four report components.
+[`summary()`](https://rdrr.io/r/base/summary.html) expands the report
+with all input parameters, design axes where available, and recorded
+adjustments.
 
 ``` r
 
@@ -445,17 +855,70 @@ result <- sample_size_calculator(
 )
 
 summary(result)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> ✔ Sample Size Calculation Summary
+#> ────────────────────────────────────────────────────────────────────────────────
+#> 
+#> ── Study Design
+#> • Type: "Survival (log-rank)"
+#> 
+#> ── Parameters
+#> • hazard_ratio: 0.7
+#> • allocation_ratio: 0.5
+#> • alpha: 0.05
+#> • power: 0.8
+#> 
+#> ── Sample Size Results
+#> • Events needed: 247
+#> 
+#> ── Formula
+#> Plain text:
+#> `E = (Z_a/2 + Z_b)^2 / (pE*(1-pE)*log(HR)^2)`
+#> LaTeX:
 #> $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$
+#> 
+#> ── Calculation Process
+#> • Step 1: State survival parameters: Hazard Ratio HR = 0.70, experimental arm
+#> allocation pE = 0.50 (alpha = 0.05, power = 0.80).
+#> • Step 2: Compute log hazard ratio: ln(HR) = ln(0.70) = -0.3567.
+#> • Step 3: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
+#> • Step 4: Apply Schoenfeld formula: E = (Z_(alpha/2) + Z_beta)^2 / [pE * (1 -
+#> pE) * (ln HR)^2] = (1.96 + 0.8416)^2 / [0.50 * 0.50 * (-0.3567)^2] = 246.79.
+#> • Step 5: Round up to integer: Target events needed E = 247.
+#> 
+#> ── Reference
 #> Primary: Schoenfeld, D. A. (1983). Sample-size formula for the proportional-hazards regression model. Biometrics, 39(2), 499-503.
 #> 
 #> Extensions:
 #> - Hsieh, F. Y., & Lavori, P. W. (2000). Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates. Controlled Clinical Trials, 21(6), 552-560.
 #> - Rubinstein, L. V., Gail, M. H., & Santner, T. J. (1981). Planning the duration of a comparative clinical trial with loss to follow-up and a period of continued observation. Journal of Chronic Diseases, 34(9-10), 469-479.
+#> ────────────────────────────────────────────────────────────────────────────────
 ```
 
-The summary includes: - Study design description - All parameters used -
-Sample size results - Formula in LaTeX format - Complete literature
-citations
+The summary includes:
+
+- Study design description
+- All parameters used
+- Sample size results
+- Formula in plain text and LaTeX source
+- Calculation process
+- Literature references
+- Parameter roles and recorded adjustments where available
+
+### Extracting the Report Components
+
+``` r
+
+result$formula
+cat(result$formula_latex)
+cat(result$calculation_steps, sep = "\n")
+cat(result$reference)
+```
+
+`calculation` is an alias for `calculation_steps`. Both the three-axis
+API and
+[`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+provide these report fields.
 
 ------------------------------------------------------------------------
 

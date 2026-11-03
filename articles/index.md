@@ -2,6 +2,8 @@
 
 ### All vignettes
 
+- [Formulas, calculation steps, and references /
+  公式、计算过程与参考文献](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.md):
 - [sampleSizeCalc: A Comprehensive Guide to Sample Size Determination in
   Clinical
   Research](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.md):

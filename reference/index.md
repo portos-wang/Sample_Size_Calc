@@ -13,8 +13,9 @@ task x outcome) and legacy single-keyword compatibility.
 
 ## Results Display & Visualisation / 结果输出与绘图
 
-S3 print, summary, and ggplot2 visual diagnostic methods for
-sample_size_result objects.
+Default print and summary reports include plain-text formulas, LaTeX
+source, calculation steps, and references. Plot methods provide visual
+diagnostics.
 
 - [`print(`*`<sample_size_result>`*`)`](https://portos-wang.github.io/Sample_Size_Calc/reference/print.sample_size_result.md)
   : Print method for sample_size_result objects
