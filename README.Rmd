@@ -36,65 +36,139 @@ devtools::install_github("portos-wang/sampleSizeCalc")
 devtools::install_local("path/to/Sample_Size_Calc")
 ```
 
-## Quick start: real clinical scenarios
+## Quick start: clinical study planning
 
-**Scenario 1 — Antihypertensive RCT (continuous endpoint).** A cardiology
-trial compares a new drug with placebo for systolic blood pressure
-reduction. Based on a phase-2 study, the placebo arm is expected to drop
-10 mmHg and the new drug 12 mmHg, with a pooled SD of 3 mmHg
-(two-sided $\alpha = 0.05$, 80% power). How many patients per arm?
+These are teaching protocols with illustrative clinical inputs. In a real
+study, document compatible evidence for the expected effects, variability,
+prevalence, and margins; a citation for the formula does not establish
+those clinical assumptions. The
+[English](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
+and [Chinese](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html)
+guides expand 52 scenarios into population, endpoint, parameter, design,
+and recruitment decisions.
+
+**Scenario 1 — Antihypertensive RCT (continuous endpoint).** A blinded,
+1:1 parallel trial enrolls adults aged 40–75 with stable background
+therapy. The primary endpoint is baseline minus week-12 systolic BP,
+using the same averaged seated-reading protocol at both visits. Assume
+mean reductions of 10 mmHg with placebo and 12 mmHg with study treatment,
+with change-score SD 3 mmHg, two-sided alpha 0.05, and power 80%.
+The relevant SD is for the change score, not baseline BP. The decision
+is how many independent patients with complete endpoints are required.
 
 ```{r scenario-1}
 library(sampleSizeCalc)
 
 # design x task x outcome
-calculate("rct", "test", "mean",
+trial_mean <- calculate("rct", "test", "mean",
   mean1 = 10, mean2 = 12, sd = 3
 )
+trial_mean
 ```
 
-**Scenario 2 — *H. pylori* eradication RCT (binary endpoint).** Standard
-triple therapy eradicates 70% of infections; a new bismuth quadruple
-regimen is expected to reach 85%.
+This requires `r trial_mean$n_per_group` complete patients per arm. If
+10% are expected to lack the primary endpoint, plan
+`r ceiling(trial_mean$n_per_group / 0.9)` recruits per arm
+(`r 2 * ceiling(trial_mean$n_per_group / 0.9)` total); this additional
+allowance is not included in the displayed RCT result.
+
+**Scenario 2 — *H. pylori* eradication RCT (binary endpoint).** Adults
+with confirmed infection are randomized to two 14-day regimens. Define
+eradication by a standardized post-treatment breath test in a fixed
+follow-up window, with prespecified rules for invalid tests, rescue
+treatment, and missing assessments. Assume cure rates of 85% and 70%,
+with independent groups, two-sided alpha 0.05, and power 80%. Evidence
+for these rates should match treatment history and local resistance
+patterns; symptomatic improvement is not the eradication endpoint.
 
 ```{r scenario-2}
-calculate("rct", "test", "proportion",
+trial_prop <- calculate("rct", "test", "proportion",
   p1 = 0.85, p2 = 0.70
 )
+trial_prop
 ```
 
-**Scenario 3 — Generic vs originator antihypertensive (bioequivalence).**
-A $2\times2$ crossover study in healthy volunteers, intra-subject
-CV = 25%, expected geometric mean ratio $\theta_0 = 1.0$, standard
-80–125% acceptance range (Philips 1990 exact TOST).
+The result is `r trial_prop$n_per_group` patients per arm,
+`r trial_prop$total_n` total. Endpoint completeness of 90% would require
+`r ceiling(trial_prop$n_per_group / 0.9)` recruits per arm, alongside the
+prespecified analysis and missing-data strategy.
+
+**Scenario 3 — Test versus reference formulation (bioequivalence).**
+Eligible healthy adults are randomized to AB or BA in a two-period
+crossover study. Evaluate one prespecified log-transformed PK endpoint,
+such as AUC, with standardized sampling and a justified washout period.
+Assume within-subject CV 25%, expected geometric mean ratio 1.0,
+acceptance limits 0.80–1.25, one-sided alpha 0.05, and target power 80%.
+CV should come from compatible crossover data for the same PK endpoint;
+additional co-primary PK endpoints require their own planning.
 
 ```{r scenario-3}
-calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
+be_trial <- calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
+be_trial
 ```
 
-**Scenario 4 — Colorectal cancer screening kit (diagnostic accuracy).**
-Expected sensitivity 85%, required CI half-width $\pm 5\%$, clinic
-prevalence 20%: how many confirmed cases and how many screens?
+This needs `r be_trial$n_required` complete subjects per sequence,
+`r be_trial$total_n` total, each completing both periods. With 10%
+incomplete follow-up, a balanced recruitment plan is
+`r 2 * ceiling(be_trial$n_required / 0.9)` subjects.
+
+**Scenario 4 — Diagnostic sensitivity in a colorectal referral clinic.**
+Consecutively enroll symptomatic or high-risk patients referred for
+colonoscopy, collect the index-test specimen before reference assessment,
+and keep the positive threshold fixed. Assume sensitivity 85%, a 95%
+CI half-width of 0.05, and disease prevalence 20% in this referral setting.
+Prevalence converts confirmed-case requirements into screening capacity;
+it is not the test sensitivity and need not match community prevalence.
+Plan specificity separately if it is also a primary objective.
 
 ```{r scenario-4}
-calculate("diagAccuracy", "estimate", "proportion",
+diag_precision <- calculate("diagAccuracy", "estimate", "proportion",
   prob = 0.85, d = 0.05, prevalence = 0.2
 )
+diag_precision
 ```
 
-**Scenario 5 — Diabetes prevalence survey (single proportion).**
-Anticipated prevalence 30%, absolute precision $\pm 5\%$, 95% CI
-(Bhardwaj 2024 worked example).
+The requirement is `r diag_precision$target_state_cases_needed` confirmed
+cases, with an expectation-based screening total of
+`r diag_precision$total_subjects_to_screen`. A 90% probability of enough
+cases instead requires `r screen_required(diag_precision$target_state_cases_needed, 0.2, beta = 0.1)`
+complete participants under the binomial prevalence assumption. Incomplete
+reference examinations need additional operational allowance.
+
+**Scenario 5 — Diabetes prevalence in a defined older population.**
+A district survey samples eligible residents aged 65 years or older from
+an explicit population frame. Apply the same disease-ascertainment
+protocol to each participant. For teaching, assume prevalence 30% and
+seek a 95% CI absolute half-width of 5 percentage points; this is precision
+estimation, so no between-group difference or target power is specified.
+Cluster sampling and nonresponse require separate adjustments.
 
 ```{r scenario-5}
-calculate("singleProportion", p = 0.30, precision = 0.05) # -> 323
+survey <- calculate("singleProportion", p = 0.30, precision = 0.05)
+survey
 ```
 
-Unambiguous designs allow omitting `task`/`outcome`:
+Obtain `r survey$n_required` valid records; at a 90% response rate, invite
+about `r ceiling(survey$n_required / 0.9)` people before any design-effect
+adjustment.
+
+**Scenario 6 — Precision of a continuous biomarker's AUC.** Select
+reference-confirmed cases and clinically comparable non-cases in equal
+numbers, using a frozen score and one observation per patient. Assume
+AUC 0.80 and a 95% CI half-width of 0.10 under a binormal variance model.
+The quota sample estimates discrimination; it does not directly estimate
+population prevalence. Because this design is unambiguous, `task` and
+`outcome` can be omitted:
 
 ```{r scenario-6}
-calculate("diagAUC", auc = 0.80, d = 0.05)
+auc_precision <- calculate("diagAUC", auc = 0.80, d = 0.10,
+  ratio = 1, var_method = "binormal"
+)
+auc_precision
 ```
+
+Plan `r auc_precision$target_state_cases_needed` cases and the same number
+of non-cases, each contributing a complete score and reference result.
 
 Illegal combinations error with the list of legal ones. The
 [English guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
@@ -154,12 +228,11 @@ example and instructions in English and Chinese.
 
 | Family | Designs |
 |---|---|
-| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/rate/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A'Hern) |
+| Trials | `rct` (test/NI/superiority/equivalence x mean/proportion/survival), `paired` (mean/proportion), `rctSingleArm`, `crossover`, `bioequivalence`, `singleArmPhaseII` (Simon optimal/minimax, A'Hern) |
 | Observational | `cohort` (proportion/rate), `caseControl`, `caseControlMatched`, `crosstab` |
 | Diagnostic | `diagAccuracy` (estimate/test/dual-endpoint), `diagAccuracyCompare` (test/NI/equivalence), `diagAUC`, `diagAUCCompare` (test/NI/equivalence), `diagLR` |
 | Estimation | `singleProportion`, `singleMean`, `singleCorrelation` |
-| Complex | `clusterRCT`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
-| Deferred | `kappa`, `steppedWedge` (formula sources under verification) |
+| Complex | `clusterRCT`, `steppedWedge`, `kappa`, `twoOrdinal`, `predictiveModel`, `its` (experimental) |
 
 ## Literature
 
@@ -193,7 +266,7 @@ with the package:
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
-  version = {3.1.0},
+  version = {3.1.1},
   url = {https://github.com/portos-wang/sampleSizeCalc}
 }
 ```
