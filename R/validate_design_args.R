@@ -12,8 +12,11 @@
 #' @return Validated arguments list (invisible)
 #' @keywords internal
 #' @examples
-#' validate_design_args("twoMeans", list(mean1 = 10, mean2 = 12, sd = 3))
-#' try(validate_design_args("twoMeans", list(mean1 = 10)))  # error: missing mean2, sd
+#' sampleSizeCalc:::validate_design_args(
+#'   "twoMeans", list(mean1 = 10, mean2 = 12, sd = 3)
+#' )
+#' # Error: missing mean2 and sd
+#' try(sampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)))
 #' @keywords internal
 validate_design_args <- function(design, args) {
   required_args <- list(

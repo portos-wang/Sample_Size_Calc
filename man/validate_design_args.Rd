@@ -21,7 +21,10 @@ present and aborts with a structured error naming the missing parameters
 (e.g. twoMeans requires mean1, mean2, sd).
 }
 \examples{
-validate_design_args("twoMeans", list(mean1 = 10, mean2 = 12, sd = 3))
-try(validate_design_args("twoMeans", list(mean1 = 10)))  # error: missing mean2, sd
+sampleSizeCalc:::validate_design_args(
+  "twoMeans", list(mean1 = 10, mean2 = 12, sd = 3)
+)
+# Error: missing mean2 and sd
+try(sampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)))
 }
 \keyword{internal}

@@ -9,6 +9,8 @@
 ^references$
 ^figure$
 ^Rplots\.pdf$
+^README\.Rmd$
+^_pkgdown\.yml$
 ^\.Rcheck$
 ^\.Rcheck2$
 ^\.Rproj\.user$

@@ -18,7 +18,7 @@ Validated power value (invisible numeric scalar)
 Validate power parameter
 }
 \examples{
-validate_power(0.8)     # OK
-try(validate_power(0))   # structured error
+sampleSizeCalc:::validate_power(0.8)     # OK
+try(sampleSizeCalc:::validate_power(0))   # structured error
 }
 \keyword{internal}

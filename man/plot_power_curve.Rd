@@ -18,7 +18,7 @@ Plot power curve
 \examples{
 \donttest{
 res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-plot_power_curve(res)
+sampleSizeCalc:::plot_power_curve(res)
 }
 }
 \keyword{internal}
