@@ -20,7 +20,7 @@ Parameter roles and methodological hints are included where available.
 ## Installation
 
 ``` r
-devtools::install_github("portos-wang/sampleSizeCalc")
+devtools::install_github("portos-wang/Sample_Size_Calc")
 # or from a local source
 devtools::install_local("path/to/Sample_Size_Calc")
 ```
@@ -539,7 +539,7 @@ along with the package:
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
   version = {3.1.1},
-  url = {https://github.com/portos-wang/sampleSizeCalc}
+  url = {https://github.com/portos-wang/Sample_Size_Calc}
 }
 ```
 

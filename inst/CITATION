@@ -18,5 +18,5 @@ bibentry(
   ),
   year = "2026",
   note = "R package version 3.1.0",
-  url = "https://github.com/portos-wang/sampleSizeCalc"
+  url = "https://github.com/portos-wang/Sample_Size_Calc"
 )
