@@ -147,7 +147,8 @@ margins), and likelihood ratios.
 
 ## Complex & Modern Clinical Designs / 复杂与现代临床研究设计
 
-Methodologies for cluster randomised trials (design effects),
+Methodologies for cluster randomised trials (design effect, Machin Eq
+12.10 with the Student t correction, optional variable cluster size),
 stepped-wedge cluster trials, ordered categorical outcomes, clinical
 prediction model sample size, and interrupted time series.
 
@@ -155,6 +156,10 @@ prediction model sample size, and interrupted time series.
   : Cluster RCT wrapping the two-means kernel
 - [`calculate_cluster_proportion()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_cluster_proportion.md)
   : Cluster RCT wrapping the two-proportions kernel
+- [`cluster_design_from_indiv()`](https://portos-wang.github.io/Sample_Size_Calc/reference/cluster_design_from_indiv.md)
+  : Cluster RCT with Machin Eq 12.10 (DE + Student t correction)
+- [`cluster_size_inflation()`](https://portos-wang.github.io/Sample_Size_Calc/reference/cluster_size_inflation.md)
+  : Design effect for a cluster randomised trial (Machin Eq 12.5 / 12.7)
 - [`apply_cluster_design()`](https://portos-wang.github.io/Sample_Size_Calc/reference/apply_cluster_design.md)
   : Apply the cluster design effect to an individually-randomised result
 - [`calculate_stepped_wedge()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_stepped_wedge.md)
@@ -185,13 +190,23 @@ assertion utilities.
 
 - [`validate_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_sample_size_result.md)
   : Validate a sample_size_result object
+
 - [`assert_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/assert_sample_size_result.md)
   : Assert an object is a valid sample_size_result
+
 - [`validate_design_args()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_design_args.md)
   : Validate design-specific arguments
+
 - [`validate_alpha()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_alpha.md)
   : Validate alpha (type I error) parameter
+
 - [`validate_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_power.md)
   : Validate power parameter
+
+- [`validate_alternative()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_alternative.md)
+  :
+
+  Validate the `alternative` argument
+
 - [`new_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/new_sample_size_result.md)
   : Internal constructor for sample_size_result objects

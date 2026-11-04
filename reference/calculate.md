@@ -1,9 +1,10 @@
 # Unified sample size calculator (three-axis API)
 
 Computes sample size (or events/cases) for a study design identified by
-the triple design / task / outcome. See `docs/DESIGN_MATRIX.md` (source
-repository) for the complete combination table, formulas, and literature
-sources.
+the triple design / task / outcome. See the installed reference manual
+`system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")`
+for the complete combination table, formulas, and literature sources
+(also on the pkgdown site under `reference/`).
 
 ## Usage
 
@@ -43,6 +44,16 @@ calculate(...)
 
   - `power`: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
     confirmatory trials.
+
+  - `alternative`: `"one.sided"` (the package's historical default and
+    the Akoglu 2022 Table 2 Eq 2 convention) or `"two.sided"`
+    (Hajian-Tilaki 2014 Eq 6.8 convention), or `NULL` to keep the design
+    default. Currently consumed by `diagAccuracy` + `test` +
+    `proportion` only; other designs ignore it.
+
+  - `dropout`: anticipated dropout/non-response proportion in \[0, 1),
+    inflating by 1/(1-d). Currently applied by `cohort` + `test` +
+    `proportion` only; other designs ignore it.
 
   **Design-specific parameters** (all validated; ranges shown):
 
@@ -227,7 +238,9 @@ calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term). 
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 
@@ -258,7 +271,9 @@ calculate(
 #> delta_E^2 = 2 * (1.6449 + 0.8416)^2 * 3^2 / (1.50)^2 = 49.46.
 #> • Step 5: Round up to integer: n = 50 per group, total sample size N = 100.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 noninferiority, Eq 3.12, p. 50.
+#> 
+#>  Also: Machin et al. (2018) Eq 11.3, p. 173. 
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 
@@ -296,7 +311,7 @@ calculate("bioequivalence", cv = 0.25)
 #> Reference:
 #> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
 #> 
-#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);
+#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986 (Section 6.3 'Cross-over trials', Eq 6.1-6.9; the non-central t power expression is Eq 6.8).
 #>  Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;
 #>  Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies. 
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -370,7 +385,7 @@ calculate("diagAUC", auc = 0.80, d = 0.05, var_method = "binormal")
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
 #>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
-#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162. 
+#>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243. 
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```

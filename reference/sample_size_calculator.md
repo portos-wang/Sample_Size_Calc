@@ -89,8 +89,8 @@ and
 `sample_size_calculator()` is the legacy single-keyword API retained for
 backward compatibility. New code should prefer the three-axis
 [`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
-entry point; see docs/DESIGN_MATRIX.md for the keyword mapping. Results
-are identical between the two entry points.
+entry point; see inst/reference/DESIGN_MATRIX.md for the keyword
+mapping. Results are identical between the two entry points.
 
 ## Functions
 
@@ -126,7 +126,9 @@ sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. 
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term). 
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 

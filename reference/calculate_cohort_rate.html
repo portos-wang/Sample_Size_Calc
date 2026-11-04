@@ -5,11 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cohort study: incidence rate comparison (person-time, Poisson) — calculate_cohort_rate"><meta name="description" content="Equal person-time: T = (Za/2 + Zb)^2 (l1 + l2) / (l1 - l2)^2 per group.
-Unequal allocation r = T_exposed/T_unexposed:
-T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2."><meta property="og:description" content="Equal person-time: T = (Za/2 + Zb)^2 (l1 + l2) / (l1 - l2)^2 per group.
-Unequal allocation r = T_exposed/T_unexposed:
-T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2."></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cohort study: incidence rate comparison (person-time, Poisson) — calculate_cohort_rate"><meta name="description" content="Machin et al. (2018) Eq 6.2 (p. 84): total person-time for a 1:phi
+allocation is PU = (z_1-a/2 + z_1-b)^2 (lambda_T + lambda_S/phi) / (lambda_T - lambda_S)^2. This implementation reports the unexposed (S)
+and exposed (T) components separately, with r being the
+exposed:unexposed person-time ratio."><meta property="og:description" content="Machin et al. (2018) Eq 6.2 (p. 84): total person-time for a 1:phi
+allocation is PU = (z_1-a/2 + z_1-b)^2 (lambda_T + lambda_S/phi) / (lambda_T - lambda_S)^2. This implementation reports the unexposed (S)
+and exposed (T) components separately, with r being the
+exposed:unexposed person-time ratio."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,9 +53,10 @@ T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2."></head><body>
     </div>
 
     <div class="ref-description section level2">
-    <p>Equal person-time: T = (Za/2 + Zb)^2 (l1 + l2) / (l1 - l2)^2 per group.
-Unequal allocation r = T_exposed/T_unexposed:
-T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2.</p>
+    <p>Machin et al. (2018) Eq 6.2 (p. 84): total person-time for a 1:phi
+allocation is <code>PU = (z_1-a/2 + z_1-b)^2 (lambda_T + lambda_S/phi) / (lambda_T - lambda_S)^2</code>. This implementation reports the unexposed (S)
+and exposed (T) components separately, with <code>r</code> being the
+exposed:unexposed person-time ratio.</p>
     </div>
 
     <div class="section level2">
@@ -61,8 +64,13 @@ T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_cohort_rate</span><span class="op">(</span><span class="va">rate0</span>, <span class="va">rate1</span>, <span class="va">ratio</span>, <span class="va">alpha</span>, <span class="va">power</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>T_unexposed = (Za/2 + Zb)^2 (l1/r + l0) / (l1 - l0)^2, T_exposed = r*T0.</p>
+    </div>
 
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

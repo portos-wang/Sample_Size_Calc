@@ -411,7 +411,7 @@
       </dl></div><div class="section level2">
       <h2 id="complex-modern-clinical-designs-">Complex &amp; Modern Clinical Designs / 复杂与现代临床研究设计<a class="anchor" aria-label="anchor" href="#complex-modern-clinical-designs-"></a></h2>
 
-      <div class="section-desc"><p>Methodologies for cluster randomised trials (design effects), stepped-wedge cluster trials, ordered categorical outcomes, clinical prediction model sample size, and interrupted time series.</p></div>
+      <div class="section-desc"><p>Methodologies for cluster randomised trials (design effect, Machin Eq 12.10 with the Student t correction, optional variable cluster size), stepped-wedge cluster trials, ordered categorical outcomes, clinical prediction model sample size, and interrupted time series.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -431,6 +431,20 @@
 
         </dt>
         <dd>Cluster RCT wrapping the two-proportions kernel</dd>
+
+        <dt>
+
+          <code><a href="cluster_design_from_indiv.html">cluster_design_from_indiv()</a></code>
+
+        </dt>
+        <dd>Cluster RCT with Machin Eq 12.10 (DE + Student t correction)</dd>
+
+        <dt>
+
+          <code><a href="cluster_size_inflation.html">cluster_size_inflation()</a></code>
+
+        </dt>
+        <dd>Design effect for a cluster randomised trial (Machin Eq 12.5 / 12.7)</dd>
 
         <dt>
 
@@ -531,6 +545,13 @@
 
         </dt>
         <dd>Validate power parameter</dd>
+
+        <dt>
+
+          <code><a href="validate_alternative.html">validate_alternative()</a></code>
+
+        </dt>
+        <dd>Validate the <code>alternative</code> argument</dd>
 
         <dt>
 

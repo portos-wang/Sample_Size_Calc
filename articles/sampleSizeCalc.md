@@ -60,7 +60,9 @@ calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -159,7 +161,7 @@ calculate("diagAUC", "estimate", "auc",
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
 #>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
-#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162.
+#>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -250,7 +252,9 @@ print(result)
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -499,7 +503,9 @@ print(result)
 #> delta_E^2 = 2 * (1.96 + 1.2816)^2 * 2^2 / (0.50)^2 = 336.24.
 #> • Step 5: Round up to integer: n = 337 per group, total sample size N = 674.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 noninferiority, Eq 3.12, p. 50.
+#> 
+#>  Also: Machin et al. (2018) Eq 11.3, p. 173.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -557,7 +563,9 @@ print(result)
 #> delta_E^2 = 2 * (1.96 + 1.0364)^2 * 2.50^2 / (1.50)^2 = 49.88.
 #> • Step 5: Round up to integer: n = 50 per group, total sample size N = 100.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 superiority, Eq 3.12, p. 50.
+#> 
+#>  Also: Machin et al. (2018) Eq 11.3, p. 173.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -611,7 +619,9 @@ print(result)
 #> (Delta - |mu1 - mu2|)^2 = 2 * (1.6449 + 1.2816)^2 * 5^2 / (3)^2 = 47.58.
 #> • Step 5: Round up to integer: n = 48 per group, total sample size N = 96.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.3 equivalence, Eq 3.13, p. 51; the Z_{beta/2} convention is discussed in Section 3.6.1 (p. 67).
+#> 
+#>  Also: Machin et al. (2018) Eq 11.5-11.6, p. 174.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -712,12 +722,13 @@ print(result)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
-#> • Cases needed: 373
-#> • Total subjects to screen: 1243
+#> • Cases needed: 144
+#> • Total subjects to screen: 478
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * Var(AUC)`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC), V = 0.0099*exp(-a^2/2)*([5a^2+8] +
+#> [a^2+8]/R), a = qnorm(A)*1.414`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot Var(AUC)$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot \left\{0.0099\,e^{-a^2/2}\left([5a^2+8]+\frac{a^2+8}{R}\right)\right\}, \quad a = \Phi^{-1}(A)\cdot 1.414$$
 #> Calculation process:
 #> 
 #> • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,
@@ -729,12 +740,14 @@ print(result)
 #> (1.96 / 0.05)^2 * 0.2425 = 372.68.
 #> • Step 5: Adjust for prevalence: screening total = n_cases / prevalence =
 #> 372.68 / 0.30 = 1242.27.
-#> • Step 6: Round up to integer: Target cases needed = 373, Total subjects to
-#> screen = 1243.
+#> • Step 6: Round up to integer: Target cases needed = 144, Total subjects to
+#> screen = 478.
 #> Reference:
-#> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, Eq 6.5, pp. 196-198 (binormal variance function).
 #> 
-#> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
+#>  Variance function: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
+#> 
+#>  Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics, 48, 193-204 (Eq 7.4).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -775,10 +788,11 @@ print(result)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "AUC comparison (two tests)"
-#> • Cases needed: 545
-#> • Total subjects to screen: 2179
+#> • Cases needed: 208
+#> • Total subjects to screen: 830
 #> Formula (plain text):
-#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`
+#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2,
+#> binormal V`
 #> Formula (LaTeX):
 #> $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
 #> Calculation process:
@@ -789,10 +803,12 @@ print(result)
 #> • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).
 #> • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *
 #> V(AUC) * (1 - r) / (AUC1 - AUC2)^2.
-#> • Step 5: Round up to integer: Target cases needed = 545, Total subjects to
-#> screen = 2179.
+#> • Step 5: Round up to integer: Target cases needed = 208, Total subjects to
+#> screen = 830.
 #> Reference:
-#> Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013
+#> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the worked example on p. 199 gives n = 211 with the binormal variance). https://doi.org/10.1016/j.jbi.2014.02.013
+#> 
+#>  Variance function: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Eq 6.5.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -1145,5 +1161,5 @@ for complete citations).
 
 ------------------------------------------------------------------------
 
-**Last Updated**: 2026-11-03  
+**Last Updated**: 2026-11-04  
 **Version**: 3.1.1

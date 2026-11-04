@@ -20,7 +20,8 @@ calculate_auc_superiority(auc, auc0, prevalence, alpha, power)
 
 - prevalence:
 
-  Disease prevalence
+  Disease prevalence (used only to derive the non-diseased:diseased
+  sampling ratio R; omitted or 1 falls back to 1:1)
 
 - alpha:
 

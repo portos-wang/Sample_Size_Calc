@@ -6,10 +6,10 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Internal calculation: stepped wedge power (Hussey &amp; Hughes 2007 Eq 8) — calculate_stepped_wedge"><meta name="description" content="WLS-based Wald power for the treatment effect in a full CS stepped wedge
-design. Requires (I, T, cluster_size m, tau2, sigma2_ind) — the variance
+design. Requires (I, T, cluster_size m, tau2, sigma2_ind) - the variance
 of the treatment effect estimate is computed from the design matrix
 quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2))."><meta property="og:description" content="WLS-based Wald power for the treatment effect in a full CS stepped wedge
-design. Requires (I, T, cluster_size m, tau2, sigma2_ind) — the variance
+design. Requires (I, T, cluster_size m, tau2, sigma2_ind) - the variance
 of the treatment effect estimate is computed from the design matrix
 quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2))."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -54,7 +54,7 @@ quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2))."></head><body>
 
     <div class="ref-description section level2">
     <p>WLS-based Wald power for the treatment effect in a full CS stepped wedge
-design. Requires (I, T, cluster_size m, tau2, sigma2_ind) — the variance
+design. Requires (I, T, cluster_size m, tau2, sigma2_ind) - the variance
 of the treatment effect estimate is computed from the design matrix
 quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2)).</p>
     </div>
@@ -75,13 +75,19 @@ quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2)).</p>
 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Anchor: H&amp;H EPT example — I=24 counties, T=5 (baseline + 4 steps of 6),
-m=100, binary outcome p=0.05 (sigma2_ind = p(1-p) = 0.0475),
-CV=0.3 -&gt; tau2 = (0.3*0.05)^2 = 2.25e-4. This implementation returns
-power = 0.959 at RR=0.64 and 0.870 at RR=0.70 (transparent Eq-8
-computation; the paper's Fig 2 "about 80% at RR~0.64" is a figure
-reading and corresponds to RR ~ 0.73 under Eq 8 at 80% — discrepancy
-documented in NUMERIC_ANCHORS.md).</p>
+    <p>Eq 8 as printed (Hussey &amp; Hughes 2007, p. 187):</p>
+<div class="sourceCode"><pre><code>
+  Var(theta_hat) = I * sigma^2 * (sigma^2 + T * tau^2) /
+    [ (IU - W) * sigma^2 + (U^2 + ITU - TW - IV) * tau^2 ]
+</code></pre></div>
+
+<p>where sigma^2 is the variance of the cluster-level mean response
+(sigma^2_ind / m) and tau^2 is the between-cluster variance.</p>
+<p>Anchor: H&amp;H EPT example - I = 24 counties, T = 5 (baseline + 4 steps of
+6), m = 100, binary outcome p = 0.05 (sigma2_ind = p(1-p) = 0.0475),
+CV = 0.3 -&gt; tau2 = (0.3*0.05)^2 = 2.25e-4. Eq 8 returns power = 0.774 at
+RR = 0.64, matching the paper's "about 80% power to detect a decrease in
+prevalence of roughly 36% (from 0.05 to 0.032)".</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

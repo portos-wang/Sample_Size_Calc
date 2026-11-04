@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Internal calculation: single mean precision — calculate_single_mean"><meta name="description" content="n = Z^2 * sigma^2 / d^2 (Bhardwaj 2024 p.2558; Machin 2018 Ch.9)."><meta property="og:description" content="n = Z^2 * sigma^2 / d^2 (Bhardwaj 2024 p.2558; Machin 2018 Ch.9)."></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Internal calculation: single mean precision — calculate_single_mean"><meta name="description" content="Machin et al. (2018) Eq 9.18 (p. 152):"><meta property="og:description" content="Machin et al. (2018) Eq 9.18 (p. 152):"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -47,7 +47,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>n = Z^2 * sigma^2 / d^2 (Bhardwaj 2024 p.2558; Machin 2018 Ch.9).</p>
+    <p>Machin et al. (2018) Eq 9.18 (p. 152):</p>
     </div>
 
     <div class="section level2">
@@ -55,8 +55,23 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_single_mean</span><span class="op">(</span><span class="va">sigma</span>, <span class="va">precision</span>, <span class="va">alpha</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
-  </main></div>
+<div class="sourceCode"><pre><code>
+  N = (t_{N-1, 1-a/2} * sigma / d)^2
+</code></pre></div>
+
+<p>The right-hand z form is the starting value N0; when N0 &lt; 40 the Student t
+quantile depends on N and the equation must be iterated (Machin p. 152:
+"if this is large (&gt;= 40) then this is taken as the sample size. If N0 &lt; 40,
+then the Student t quantile with N0 - 1 df is obtained ... and a revised
+sample size N1 obtained"). This implementation iterates until N stabilises,
+which reproduces Machin's worked Example 9.8 behaviour.</p>
+    </div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

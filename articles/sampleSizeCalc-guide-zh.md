@@ -128,7 +128,9 @@ print(res_1_1)
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -306,7 +308,9 @@ print(res_1_4)
 #> delta_E^2 = 2 * (1.6449 + 0.8416)^2 * 3^2 / (1.50)^2 = 49.46.
 #> • Step 5: Round up to integer: n = 50 per group, total sample size N = 100.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 noninferiority, Eq 3.12, p. 50.
+#> 
+#>  Also: Machin et al. (2018) Eq 11.3, p. 173.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -358,7 +362,9 @@ print(res_1_5)
 #> / delta_E^2 = 630.62.
 #> • Step 5: Round up to integer: n = 631 per group, total sample size N = 1262.
 #> Reference:
-#> Primary: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press; Machin et al. (2018) Chapter 11 (Non-inferiority and Equivalence).
+#> Primary: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 4 (Large Sample Tests for Proportions), Section 4.2.2 noninferiority/superiority, Eq 4.8 (p. 78).
+#> 
+#>  Also: Machin et al. (2018) Chapter 11, Eq 11.5-11.6, p. 174.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -406,7 +412,9 @@ print(res_1_6)
 #> delta_E^2 = 2 * (1.6449 + 0.8416)^2 * 3^2 / (1)^2 = 111.29.
 #> • Step 5: Round up to integer: n = 112 per group, total sample size N = 224.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 superiority, Eq 3.12, p. 50.
+#> 
+#>  Also: Machin et al. (2018) Eq 11.3, p. 173.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -453,7 +461,9 @@ print(res_1_7)
 #> / delta_E^2 = (1.6449 + 0.8416)^2 * [0.21 + 0.16] / (0.05)^2 = 915.02.
 #> • Step 5: Round up to integer: n = 916 per group, total sample size N = 1832.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 4 (Large Sample Tests for Proportions), Section 4.2.2 noninferiority/ superiority, Eq 4.8 (p. 78).
+#> 
+#>  Also: Machin et al. (2018) Eq 11.5-11.6, p. 174; Fleiss, Tytun & Ury (1980), Biometrics 36(2), 343-346.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -500,7 +510,9 @@ print(res_1_8)
 #> (Delta - |mu1 - mu2|)^2 = 2 * (1.6449 + 1.2816)^2 * 3^2 / (0.80)^2 = 240.86.
 #> • Step 5: Round up to integer: n = 241 per group, total sample size N = 482.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.3 equivalence, Eq 3.13, p. 51; the Z_{beta/2} convention is discussed in Section 3.6.1 (p. 67).
+#> 
+#>  Also: Machin et al. (2018) Eq 11.5-11.6, p. 174.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -545,7 +557,9 @@ print(res_1_9)
 #> p2(1-p2)] / (Delta - |p1 - p2|)^2 = 668.52.
 #> • Step 5: Round up to integer: n = 669 per group, total sample size N = 1338.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 4 (Large Sample Tests for Proportions), Section 4.2.3 equivalence, Eq 4.9 (p. 79).
+#> 
+#>  Also: Machin et al. (2018) Eq 11.5-11.6, p. 174.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -839,8 +853,8 @@ print(res_2_6)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-arm phase II (Simon two-stage, minimax)"
-#> • Stage 1 sample size: 11
-#> • Stage 1 futility boundary (stop if responses <= r1): 0
+#> • Stage 1 sample size: 15
+#> • Stage 1 futility boundary (stop if responses <= r1): 1
 #> • Total sample size (both stages): 25
 #> • Overall boundary (declare effective if responses > r): 5
 #> Parameter roles
@@ -861,12 +875,12 @@ print(res_2_6)
 #> • Step 1: State phase II hypotheses: H0: p <= 0.10 (unacceptable) vs H1: p >=
 #> 0.30 (promising) (alpha = 0.05, power = 0.80).
 #> • Step 2: Exhaustive exact binomial search under 'minimax' criterion.
-#> • Step 3: Stage 1: Accrue n1 = 11 patients; stop early for futility if
-#> responses <= r1 = 0.
-#> • Step 4: Stage 2: If > 0 responses observed, accrue additional 14 patients up
+#> • Step 3: Stage 1: Accrue n1 = 15 patients; stop early for futility if
+#> responses <= r1 = 1.
+#> • Step 4: Stage 2: If > 1 responses observed, accrue additional 10 patients up
 #> to total n = 25.
 #> • Step 5: Final decision: Declare effective if total responses > r = 5
-#> (Expected sample size under H0 = 20.60).
+#> (Expected sample size under H0 = 19.50).
 #> Reference:
 #> Primary: Simon, R. (1989). Optimal two-stage designs for phase II clinical trials. Controlled Clinical Trials, 10(1), 1-10.
 #> 
@@ -875,7 +889,7 @@ print(res_2_6)
 #> 
 ```
 
-- **输出解读与执行规则**：第一阶段 11 人，缓解数≤0
+- **输出解读与执行规则**：第一阶段 15 人，缓解数≤1
   时停止；继续时总入组最多 25 人，最终缓解数需\>5。该最大总人数可与
   optimal 方案的 29 人直接比较。
 
@@ -888,8 +902,8 @@ print(res_2_6)
 - **设计选择**：A’Hern 单阶段设计适合一次性决策。输出的 `r_total`
   是“需超过”的无效界值，达到等于该界值的缓解数还不足以拒绝零假设。
 - **数学公式与出处**：\\P(X \> r \mid p_0) \le \alpha\\ 且 \\P(X \> r
-  \mid p_1) \ge 1-\beta\\；A’Hern, R. P. (2001). *Br J Cancer*, 85(2),
-  223-226.
+  \mid p_1) \ge 1-\beta\\；A’Hern, R. P. (2001). *Statistics in
+  Medicine*, 20(6), 859-866（<doi:10.1002/sim.721>）。
 
 ``` r
 
@@ -925,7 +939,7 @@ print(res_2_7)
 #> [1] "$$P(X > r \\mid p_0) \\le \\alpha \\quad \\text{and} \\quad P(X > r \\mid p_1) \\ge 1-\\beta$$"
 #> 
 #> $reference
-#> [1] "Primary: A'Hern, R. P. (2001). Single stage and double sampling phase II trials. British Journal of Cancer, 85(2), 223-226."
+#> [1] "Primary: A'Hern, R. P. (2001). Sample size tables for exact single-stage phase II designs. Statistics in Medicine, 20(6), 859-866. https://doi.org/10.1002/sim.721"
 #> 
 #> $roles
 #> [1] "p0 = unacceptable response rate"                       
@@ -960,36 +974,38 @@ print(res_2_8)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "2x2 crossover trial (continuous)"
-#> • Required sample size: 36
-#> • Total sample size: 72
+#> • Required sample size: 18
+#> • Total sample size: 36
 #> Parameter roles
 #> 
 #> • delta = anticipated treatment difference (mu_T - mu_R)
 #> • sigma_within = within-subject standard deviation
-#> • n is per sequence; total subjects = 2n (each receives both treatments)
+#> • n_required/n_per_sequence = subjects per sequence; total_n = 2 x that
+#> ! This is the normal-approximation form (Julious 2004 Eq 6.6; Machin Eq 11.4). Senn (2002) Section 9.5.1, Eq 9.18-9.20, refines it with a Student t correction (df = n - 2), which typically needs 1-2 extra subjects; use the returned total as a lower bound and add 2 for exact 80% power.
+#> 
 #> Formula (plain text):
-#> `n = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 (per sequence)`
+#> `n_total = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 ; n_per_sequence = n_total/2`
 #> Formula (LaTeX):
-#> $$n = \frac{2(Z_{\alpha/2}+Z_{\beta})^2\sigma_w^2}{\delta^2}$$
+#> $$n_{\text{total}} = \frac{2(Z_{\alpha/2}+Z_{\beta})^2\sigma_w^2}{\delta^2}, \quad n_{\text{sequence}} = \frac{n_{\text{total}}}{2}$$
 #> Calculation process:
 #> 
 #> • Step 1: Identify study design: 2x2 crossover trial (continuous).
 #> • Step 2: Input parameters: delta = 2, sigma_within = 3, alpha = 0.05, power =
 #> 0.80.
-#> • Step 3: Apply design formula: n = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 (per
-#> sequence).
-#> • Step 4: Calculated sample size metrics: Required sample size: 36; Total
-#> sample size: 72.
+#> • Step 3: Apply design formula: n_total = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 ;
+#> n_per_sequence = n_total/2.
+#> • Step 4: Calculated sample size metrics: Required sample size: 18; Total
+#> sample size: 36.
 #> Reference:
-#> Primary: Senn, S. (2002). Cross-over Trials in Clinical Research (2nd ed.). Wiley.
+#> Primary: Senn, S. (2002). Cross-over Trials in Clinical Research (2nd ed.). Wiley. Section 9.5 'Sample-size issues', Eq 9.18-9.20, pp. 278-280 (sigma^2 = 2 sigma_w^2 for a basic estimator, Var = sigma^2/n, df = n - 2, n = total patients with n/2 per sequence).
 #> 
-#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (crossover section).
+#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986 (Section 6.3 'Cross-over trials', Eq 6.3/6.6; n there is the total sample size, and the reported quantity is per sequence).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：本函数给出每序列 36 人、合计 72
-  名患者，每人完成两个研究期。按 10% 的未完成比例预留，应为 40
+- **输出解读与招募安排**：本函数给出每序列 18 人、合计 36
+  名患者，每人完成两个研究期。按 10% 的未完成比例预留，应为 20
   人/序列，两个时期的测量次数不能当成独立患者数。
 
 ### 2.9 生物等效性（BE）精确 TOST 非中心 t 检验
@@ -1042,7 +1058,7 @@ print(res_2_9)
 #> Reference:
 #> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
 #> 
-#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);
+#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986 (Section 6.3 'Cross-over trials', Eq 6.1-6.9; the non-central t power expression is Eq 6.8).
 #>  Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;
 #>  Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies.
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -1150,7 +1166,7 @@ print(res_3_2)
 #> 
 #> • rate0 = unexposed-group incidence rate (events per person-time)
 #> • rate1 = exposed-group incidence rate
-#> • ratio = unexposed:exposed person-time ratio
+#> • ratio = exposed:unexposed person-time ratio (r >= 1)
 #> • effect measure: incidence rate ratio IRR
 #> • person-time = total follow-up time; for fixed duration FT, subjects needed =
 #> person-time / FT
@@ -1432,15 +1448,15 @@ print(res_4_2)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single mean estimation (precision)"
-#> • Required sample size: 97
+#> • Required sample size: 99
 #> Parameter roles
 #> 
 #> • sigma = population standard deviation (from pilot/literature)
 #> • precision = margin of error d
 #> Formula (plain text):
-#> `n = (Z * sigma / d)^2`
+#> `n = (t_(n-1, 1-a/2) * sigma / d)^2 (iterated from the z starting value)`
 #> Formula (LaTeX):
-#> $$n = \left(\frac{Z_{1-\alpha/2} \cdot \sigma}{d}\right)^2$$
+#> $$n = \left(\frac{t_{n-1,\,1-\alpha/2}\cdot\sigma}{d}\right)^2$$
 #> Calculation process:
 #> 
 #> • Step 1: Specify population SD sigma = 10, margin of error d = 2, alpha =
@@ -1449,17 +1465,17 @@ print(res_4_2)
 #> 95%).
 #> • Step 3: Compute unrounded sample size: n = (Z_(1-alpha/2) * sigma / d)^2 =
 #> (1.96 * 10 / 2)^2 = 96.04.
-#> • Step 4: Round up to integer: Required sample size n = 97.
+#> • Step 4: Round up to integer: Required sample size n = 99.
 #> Reference:
-#> Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 9.
+#> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 9 (Confidence Intervals), Eq 9.18, p. 152 (iterative Student t form; Eq 9.19 for relative precision).
 #> 
-#> Also: Bhardwaj et al. (2024), p. 2558 (continuous outcome precision).
+#>  Also: Bhardwaj et al. (2024), p. 2558 (continuous outcome precision, normal approximation).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：需要 97 名有效测量儿童。若预计 5%
-  样本因前处理或检验质量无法分析，可准备 103
+- **输出解读与招募安排**：需要 99 名有效测量儿童。若预计 5%
+  样本因前处理或检验质量无法分析，可准备 105
   人；需要分年龄或性别分别估计时，应分别规划各层人数。
 
 ### 4.3 Pearson 相关系数估计（Fisher-z 精确法）
@@ -1608,13 +1624,15 @@ print(res_5_2)
 #> 
 #> • Step 1: Identify study design: Diagnostic superiority (single).
 #> • Step 2: Input parameters: prob = 0.85, p0 = 0.70, prevalence = 0.20, alpha =
-#> 0.05, power = 0.80, method = asymptotic.
+#> 0.05, power = 0.80, method = asymptotic, alternative = one.sided.
 #> • Step 3: Apply design formula: N_cases = [Za*sqrt(P0*Q0) + Zb*sqrt(P*Q)]^2 /
 #> (P-P0)^2.
 #> • Step 4: Calculated sample size metrics: Cases needed: 50; Total subjects to
 #> screen: 248.
 #> Reference:
-#> Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013
+#> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 6.8; the paper uses two-sided Z_alpha/2 throughout, p. 197). https://doi.org/10.1016/j.jbi.2014.02.013
+#> 
+#>  One-sided variant: Akoglu, H. (2022). User's guide to sample size estimation in diagnostic accuracy studies. Turkish Journal of Emergency Medicine, 22(4), 177-185 (Table 2, Eq 2, p. 180; one-sided Z_alpha).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -1667,7 +1685,7 @@ print(res_5_3)
 #> • Step 4: Calculated sample size metrics: Cases needed: 49; Total subjects to
 #> screen: 245.
 #> Reference:
-#> Primary (exact binomial): A'Hern, R. P. (2001). Single stage and double sampling phase II trials. British Journal of Cancer, 85(2), 223-226.
+#> Primary (exact binomial): A'Hern, R. P. (2001). Sample size tables for exact single-stage phase II designs. Statistics in Medicine, 20(6), 859-866. https://doi.org/10.1002/sim.721
 #> 
 #>  Also: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -1884,7 +1902,7 @@ print(res_5_7)
 #> / delta_E^2 = 246.80.
 #> • Step 5: Round up to integer: n = 247 per group, total sample size N = 494.
 #> Reference:
-#> Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press (margin designs); Machin et al. (2018) Ch.11.
+#> Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 4, Section 4.2.2 (noninferiority/superiority) and 4.2.3 (equivalence), Eq 4.8-4.9, pp. 78-79. Machin et al. (2018) Ch.11, Eq 11.5-11.6, p. 174.
 #> 
 #>  Diagnostic application: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Section 6.3 (non-inferiority/equivalency of two tests), pp. 214-218.
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -1938,7 +1956,7 @@ print(res_5_8)
 #> • Step 4: Calculated sample size metrics: Sample size per group: 1006; Total
 #> sample size: 2012; Cases needed: 1006; Total subjects to screen: 3353.
 #> Reference:
-#> Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press (margin designs); Machin et al. (2018) Ch.11.
+#> Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 4, Section 4.2.2 (noninferiority/superiority) and 4.2.3 (equivalence), Eq 4.8-4.9, pp. 78-79. Machin et al. (2018) Ch.11, Eq 11.5-11.6, p. 174.
 #> 
 #>  Diagnostic application: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Section 6.3 (non-inferiority/equivalency of two tests), pp. 214-218.
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -1998,7 +2016,7 @@ print(res_5_9)
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
 #>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
-#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162.
+#>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -2026,14 +2044,14 @@ print(res_5_10)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "AUC superiority (single)"
-#> • Cases needed: 180
-#> • Total subjects to screen: 600
-#> • Total subjects: 600
+#> • Cases needed: 82
+#> • Total subjects to screen: 272
+#> • Total subjects: 272
 #> Formula (plain text):
-#> `n_cases = (Z_alpha * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC -
-#> AUC0)^2`
+#> `n_cases = (Z_alpha/2 * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC -
+#> AUC0)^2, binormal V`
 #> Formula (LaTeX):
-#> $$n_{cases} = \frac{\left(Z_{\alpha}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
+#> $$n_{cases} = \frac{\left(Z_{\alpha/2}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
 #> Calculation process:
 #> 
 #> • Step 1: Specify AUC alternative = 0.80, null AUC0 = 0.70, prevalence = 0.30
@@ -2044,17 +2062,19 @@ print(res_5_10)
 #> V(AUC0).
 #> • Step 4: Calculate target cases: n_cases = [Z_alpha*sqrt(V(AUC0)) +
 #> Z_beta*sqrt(V(AUC))]^2 / (AUC - AUC0)^2.
-#> • Step 5: Round up to integer: Target cases needed = 180, Total subjects to
-#> screen = 600.
+#> • Step 5: Round up to integer: Target cases needed = 82, Total subjects to
+#> screen = 272.
 #> Reference:
-#> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.4, Eq 6.8, pp. 199-200 (V(AUC) from Eq 6.5; the CTC worked example on p. 200 reports n = 13 with a two-tailed 5% test).
 #> 
-#> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
+#>  Variance function: Obuchowski, N. A. (1994). Investigative Radiology, 29(2), 238-243.
+#> 
+#>  Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics, 48, 193-204 (Eq 7.5).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：需要 180 例病例，平均总筛查规模为 600
+- **输出解读与招募安排**：需要 82 例病例，平均总筛查规模为 272
   人。其余受检者中的非病例同样用于 AUC 估计，不能只招募疾病阳性者。
 
 ### 5.11 两诊断方法 ROC-AUC 比较
@@ -2076,11 +2096,12 @@ print(res_5_11)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "AUC comparison (two tests)"
-#> • Cases needed: 223
-#> • Total subjects to screen: 743
-#> • Total subjects: 743
+#> • Cases needed: 81
+#> • Total subjects to screen: 270
+#> • Total subjects: 270
 #> Formula (plain text):
-#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`
+#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2,
+#> binormal V`
 #> Formula (LaTeX):
 #> $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
 #> Calculation process:
@@ -2091,16 +2112,18 @@ print(res_5_11)
 #> • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).
 #> • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *
 #> V(AUC) * (1 - r) / (AUC1 - AUC2)^2.
-#> • Step 5: Round up to integer: Target cases needed = 223, Total subjects to
-#> screen = 743.
+#> • Step 5: Round up to integer: Target cases needed = 81, Total subjects to
+#> screen = 270.
 #> Reference:
-#> Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. *Journal of Biomedical Informatics*, 48, 193-204. https://doi.org/10.1016/j.jbi.2014.02.013
+#> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the worked example on p. 199 gives n = 211 with the binormal variance). https://doi.org/10.1016/j.jbi.2014.02.013
+#> 
+#>  Variance function: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Eq 6.5.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：需 223 例病例，每例接受两种方法；函数返回 743
-  人的筛查换算。按整数病例配额和 30% 患病率计算，平均筛查规模为 744 人。
+- **输出解读与招募安排**：需 81 例病例，每例接受两种方法；函数返回 270
+  人的筛查换算。按整数病例配额和 30% 患病率计算，平均筛查规模为 270 人。
 
 ### 5.12 两法 ROC-AUC 非劣效性检验
 
@@ -2121,9 +2144,9 @@ print(res_5_12)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic non-inferiority (two ROC areas)"
-#> • Cases needed: 80
-#> • Total subjects to screen: 159
-#> • Total subjects: 159
+#> • Cases needed: 102
+#> • Total subjects to screen: 203
+#> • Total subjects: 203
 #> Parameter roles
 #> 
 #> • auc1/auc2 = anticipated ROC areas of the new/reference test
@@ -2137,21 +2160,21 @@ print(res_5_12)
 #> 
 #> • Step 1: Identify study design: Diagnostic non-inferiority (two ROC areas).
 #> • Step 2: Input parameters: auc1 = 0.85, auc2 = 0.82, r = 0.50, margin = 0.05,
-#> task = noninferiority, var_method = exponential, alpha = 0.05, power = 0.80.
+#> task = noninferiority, var_method = binormal, alpha = 0.05, power = 0.80.
 #> • Step 3: Apply design formula: n = 2(Za+Zb)^2 * V * (1-r) /
 #> (auc1-auc2+margin)^2.
-#> • Step 4: Calculated sample size metrics: Cases needed: 80; Total subjects to
-#> screen: 159.
+#> • Step 4: Calculated sample size metrics: Cases needed: 102; Total subjects to
+#> screen: 203.
 #> Reference:
-#> Framework: margin designs per Chow et al. (2017); Machin et al. (2018) Ch.11. AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
+#> Framework: margin designs per Chow et al. (2017) Ch.4 Eq 4.8-4.9 (pp. 78-79) and Machin et al. (2018) Ch.11 Eq 11.5-11.6 (p. 174). AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
 #> 
 #>  Diagnostic application: Zhou et al. (2011) Section 6.3, pp. 214-218.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：返回所需病例数 80，总量换算字段为
-  159。实际按整数配额应安排同数非病例，共 160
+- **输出解读与招募安排**：返回所需病例数 102，总量换算字段为
+  203。实际按整数配额应安排同数非病例，共 204
   名患者，每人都完成两种设备检查。
 
 ### 5.13 两法 ROC-AUC 等效性检验
@@ -2172,9 +2195,9 @@ print(res_5_13)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic equivalence (two ROC areas)"
-#> • Cases needed: 416
-#> • Total subjects to screen: 831
-#> • Total subjects: 831
+#> • Cases needed: 537
+#> • Total subjects to screen: 1073
+#> • Total subjects: 1073
 #> Parameter roles
 #> 
 #> • auc1/auc2 = anticipated ROC areas of the new/reference test
@@ -2188,21 +2211,21 @@ print(res_5_13)
 #> 
 #> • Step 1: Identify study design: Diagnostic equivalence (two ROC areas).
 #> • Step 2: Input parameters: auc1 = 0.85, auc2 = 0.84, r = 0.50, margin = 0.05,
-#> task = equivalence, var_method = exponential, alpha = 0.05, power = 0.80.
+#> task = equivalence, var_method = binormal, alpha = 0.05, power = 0.80.
 #> • Step 3: Apply design formula: n = 2(Za+Zb/2)^2 * V * (1-r) /
 #> (margin-|auc1-auc2|)^2.
-#> • Step 4: Calculated sample size metrics: Cases needed: 416; Total subjects to
-#> screen: 831.
+#> • Step 4: Calculated sample size metrics: Cases needed: 537; Total subjects to
+#> screen: 1073.
 #> Reference:
-#> Framework: margin designs per Chow et al. (2017); Machin et al. (2018) Ch.11. AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
+#> Framework: margin designs per Chow et al. (2017) Ch.4 Eq 4.8-4.9 (pp. 78-79) and Machin et al. (2018) Ch.11 Eq 11.5-11.6 (p. 174). AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
 #> 
 #>  Diagnostic application: Zhou et al. (2011) Section 6.3, pp. 214-218.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：需要 416 例病例；函数的总量换算为
-  831。按整数病例与非病例各一组招募时，共应安排 832
+- **输出解读与招募安排**：需要 537 例病例；函数的总量换算为
+  1073。按整数病例与非病例各一组招募时，共应安排 1074
   名患者，每人提供两套系统的评分。
 
 ### 5.14 似然比（Likelihood Ratio）对数置信区间阈值法
@@ -2257,7 +2280,7 @@ print(res_5_14)
 #> Reference:
 #> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).
 #> 
-#>  CI method: Simel, D. L., Samsa, G. P., & Matchar, D. B. (1991). Likelihood ratios with confidence: sample size estimation for accuracy of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130.
+#>  CI method: Simel, D. L., Samsa, G. P., & Matchar, D. B. (1991). Likelihood ratios with confidence: sample size estimation for accuracy of a diagnostic test. Journal of Clinical Epidemiology, 44(8), 763-770.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -2296,61 +2319,71 @@ cat("理论平均筛查数：980 人；90% 概率安全保障筛查数：", safe
   名放射科医生分别判读同一批 50
   名患者的两种影像，希望结论能够考虑患者和阅片者两类变异。
 - **实施与主要结局**：按随机顺序分期判读、设置记忆影响的控制流程，并对参考疾病状态保持盲法。每位患者提供两种影像，每位医生均参加两种方法的判读。
-- **参数设定与依据**：本例沿用 Zhou 教材的规划参数：AUC 差
-  `delta = 0.10`，读者、场次和病例方差分别为
-  0.00123、0.00087、0.05，三类相关系数分别为
-  0.25、0.20、0.10；这些分量需要相容的 MRMC 先导资料，不能用单个 AUC 的
-  SD 替代。
+- **参数设定与依据**：本例沿用 Zhou 教材乳腺影像规划参数：AUC 差
+  `delta = 0.10`，读者、场次和病例抽样方差分别为
+  0.00123、0.00087、0.00196，相关系数
+  `rho1 = 0.5`、`rho2 = 0.3`、`rho3 = 0.25`、`rho_b = 0.75`；这些分量需要相容的
+  MRMC 先导资料，不能用单个 AUC 的 SD 替代。
 - **设计选择**：[`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md)
   在给定病例与读者数后求效能，不会自动求最小病例数。一次阅读场次下，工作量为
   50×8×2=800 次判读。
 - **数学公式与出处**：Obuchowski-Rockette 混合效应模型非中心 \\F\\
-  检验，Zhou et al. (2011) Eq 6.32, p.225.
+  检验，Zhou et al. (2011) Eq 6.32, p.221（算例 p.225）： \\\lambda =
+  \frac{J\delta^2}{2\left\[\sigma_b^2(1-\rho_b) + \sigma_w^2/Q +
+  \sigma_c^2\left((1-\rho_1)+(J-1)(\rho_2-\rho_3)\right)\right\]}\\
 
 ``` r
 
-res_5_16 <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
+res_5_16 <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.00196, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25, rho_b = 0.75)
 print(res_5_16)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "MRMC (paired-patient, paired-reader, Obuchowski-Rockette)"
 #> Parameter roles
 #> 
-#> • n = cases per test (paired-patient: total cases)
+#> • n = patients with the condition (paired-patient: imaged under both tests)
 #> • J = readers per test
 #> • delta = accuracy difference to detect
-#> • sigma_b2/sigma_w2/sigma_c2 = reader/occasion/case variance components
+#> • sigma_b2/sigma_w2/sigma_c2 = reader/occasion/patient-sampling variance
+#> components
 #> • rho1/rho2/rho3 = correlations (same-reader-diff-test / diff-reader-same-test
 #> / diff-reader-diff-test)
+#> • rho_b = same-reader, different-test correlation (Table 6.3 p_b)
 #> ! MRMC power depends on 6 variance/correlation components estimated from
 #> ! pilot data or literature (Zhou Table 6.3); treat results as approximate.
+#> ! sigma_c2 is the patient-sampling variance component V(A)/n (Zhou p. 221),
+#> ! so it already reflects the patient sample size; it is not divided by n again.
+#> ! rho_b is the same-reader, different-test correlation (Table 6.3 `p_b`);
+#> ! when omitted it defaults to rho1.
 #> ! For reader variability planning: sigma_b2 = (accuracy range / 4)^2 is a
 #> ! common heuristic (Zhou p. 223, Beam 1996 mammography example).
 #> 
 #> Formula (plain text):
-#> `lambda = J*delta^2/(2*[sb2(1-r1) + sw2/Q + sc2(1-r1)/n +
-#> r2*sb2*((1-r1)+(J-1)(r2-r3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha})`
+#> `lambda = J*delta^2/(2*[sb2(1-rho_b) + sw2/Q +
+#> sc2*((1-rho1)+(J-1)(rho2-rho3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha})`
 #> Formula (LaTeX):
-#> $$\lambda = \frac{J \cdot \delta^2}{2\left[\sigma_b^2(1-r_1) + \frac{\sigma_w^2}{Q} + \frac{\sigma_c^2(1-r_1)}{n} + r_2 \sigma_b^2((1-r_1)+(J-1)(r_2-r_3))\right]}, \quad \text{Power} = P(F_{1,J-1}(\lambda) > F_{1-\alpha})$$
+#> $$\lambda = \frac{J \delta^2}{2\left[\sigma_b^2(1-\rho_b) + \frac{\sigma_w^2}{Q} + \sigma_c^2\left((1-\rho_1) + (J-1)(\rho_2-\rho_3)\right)\right]}, \quad \text{Power} = P(F_{1,J-1}(\lambda) > F_{1-\alpha})$$
 #> Calculation process:
 #> 
 #> • Step 1: Identify study design: MRMC (paired-patient, paired-reader,
 #> Obuchowski-Rockette).
 #> • Step 2: Input parameters: n = 50, J = 8, delta = 0.10, sigma_b2 = 0.0012,
-#> sigma_w2 = 0.0009, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10,
-#> alpha = 0.05, n_repeats = 1, noncentrality_lambda = 13.7969.
-#> • Step 3: Apply design formula: lambda = J*delta^2/(2*[sb2(1-r1) + sw2/Q +
-#> sc2(1-r1)/n + r2*sb2*((1-r1)+(J-1)(r2-r3))]); power = P(F_{1,J-1}(lambda) >
-#> F_{1-alpha}).
+#> sigma_w2 = 0.0009, sigma_c2 = 0.002, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25,
+#> rho_b = 0.75, rho_b_defaulted = FALSE, alpha = 0.05, n_repeats = 1,
+#> noncentrality_lambda = 14.0672.
+#> • Step 3: Apply design formula: lambda = J*delta^2/(2*[sb2(1-rho_b) + sw2/Q +
+#> sc2*((1-rho1)+(J-1)(rho2-rho3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha}).
 #> Reference:
-#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.5, Eq 6.32, Tables 6.3-6.5, pp. 220-226 (mammography worked example).
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.5, Eq 6.32, Tables 6.3-6.5, pp. 220-226 (mammography worked example: 89% power).
 #> 
-#>  Model: Obuchowski, N. A., & Rockette, H. E. (1995). Hypothesis testing of diagnostic accuracy for multiple readers, multiple tests. Communications in Statistics - Simulation and Computation, 24, 285-308.
+#>  Model: Obuchowski, N. A., & Rockette, H. E. (1995). Hypothesis testing of diagnostic accuracy for multiple readers and multiple tests: an ANOVA approach with dependent observations. Communications in Statistics - Simulation and Computation, 24(2), 285-308.
+#> 
+#>  Method review: Obuchowski, N. A., Beiden, S. V., Berbaum, K. S., Hillis, S. L., Ishwaran, H., Song, H. H., & Wagner, R. F. (2004). Multireader, multicase receiver operating characteristic analysis: an empirical comparison of five methods. Academic Radiology, 11(9), 980-995.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与执行安排**：模型效能为 88.8%。该数值对应当前 50 名患者、8
+- **输出解读与执行安排**：模型效能为 89.3%。该数值对应当前 50 名患者、8
   名读者及方差分量，若读者可用人数或病例疾病谱改变，应重新计算，而不能只按总判读次数保持不变。
 
 ------------------------------------------------------------------------
@@ -2367,11 +2400,16 @@ print(res_5_16)
 - **参数设定与依据**：设患者层面 SD=3、组内相关
   `icc = 0.05`、`cluster_size = 20`，设计效应为 1.95。ICC
   需要来自相近病区、终点及入组时期，不能直接取另一疾病研究的相关系数。
-- **设计选择**：函数先求个体随机样本量，再按设计效应及整群人数取整。实际方案还需评估群数是否足够、群大小差异及计划的群层面或混合模型分析。
-- **数学公式与出处**： \\DE = 1 + (m - 1) \times ICC = 1.95, \quad
-  n\_{clusters} = \left\lceil \frac{n\_{individual} \times DE}{m}
-  \right\rceil\\ *出处*：Donner & Klar (2000)；Machin et al. (2018)
-  Ch.12。
+- **设计选择**：函数按 Machin Eq 12.10 在个体随机样本量上加入设计效应与
+  Student t 校正项，并**只在群层面取整一次**（每增加一个群就多 m
+  名患者）。实际方案还需评估群数是否足够、群大小差异及计划的群层面或混合模型分析。
+- **数学公式与出处**（Machin Eq 12.10, p. 199）： \\DE = 1 + (m-1)\rho,
+  \quad N =
+  DE\left\[\frac{(1+\varphi)^2}{\varphi}\cdot\frac{(Z\_{\alpha/2}+Z\_{\beta})^2}{(\delta/\sigma)^2} +
+  \frac{Z^2\_{\alpha/2}}{2}\right\], \quad K = \left\lceil
+  \frac{N/(1+\varphi)}{m} \right\rceil\\ *出处*：Machin et al. (2018)
+  Ch.12, Eq 12.4–12.13, pp. 197–200（算例 Example 12.1, p. 206）；Donner
+  & Klar (2000)。
 
 ``` r
 
@@ -2379,17 +2417,25 @@ res_6_1 <- calculate("clusterRCT", "test", "mean", mean1 = 10, mean2 = 12, sd = 
 print(res_6_1)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
-#> • Design type: "Cluster RCT: Two independent samples, mean comparison"
+#> • Design type: "Cluster RCT: two independent samples, mean comparison"
 #> • Sample size per group: 80
 #> • Total sample size: 160
 #> • Clusters per arm: 4
 #> Parameter roles
 #> 
-#> • icc = 0.05, cluster_size = 20 -> DE = 1.95; n_clusters per arm = 4
+#> • mean1/mean2 = group means; sd = common SD (individual level)
+#> • icc = intra-cluster correlation rho (Machin Eq 12.4)
+#> • cluster_size = subjects per cluster m
+#> • DE = 1+(m-1)*ICC = 1.9500; n_clusters per arm = 4
+#> ! Machin Eq 12.10 includes the Student t correction z^2/2 and rounds once
+#> ! at the cluster level; each extra cluster adds a further m subjects.
+#> ! For variable cluster sizes use Eq 12.6-12.7 (cv_m) and Eq 12.8.
+#> 
 #> Formula (plain text):
-#> `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`
+#> `N = DE*[(1+phi)^2/phi*(Za/2+Zb)^2/(delta/sigma)^2 + Za/2^2/2], DE =
+#> 1+(m-1)*ICC`
 #> Formula (LaTeX):
-#> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
+#> $$N = DE\left[\frac{(1+\varphi)^2}{\varphi}\cdot\frac{(Z_{\alpha/2}+Z_{\beta})^2}{(\delta/\sigma)^2} + \frac{Z^2_{\alpha/2}}{2}\right], \quad DE = 1+(m-1)\rho$$
 #> Calculation process:
 #> 
 #> • Step 1: Compute individual-level sample size without clustering from standard
@@ -2401,9 +2447,9 @@ print(res_6_1)
 #> / cluster_size) = 4.
 #> • Step 5: Total individuals per arm = 4 * 20 = 80; Total sample size N = 160.
 #> Reference:
-#> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs); Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
+#> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs): Eq 12.4 (ICC), Eq 12.5 (DE), Eq 12.9-12.10 (sample size with the Student t correction), pp. 197-199; Example 12.1, p. 206 (N=171.35 -> 172, K=86).
 #> 
-#>  Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#>  Also: Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -2430,18 +2476,24 @@ res_6_2 <- calculate("clusterRCT", "test", "proportion", p1 = 0.30, p2 = 0.20, i
 print(res_6_2)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
-#> • Design type: "Cluster RCT: Two independent proportions"
+#> • Design type: "Cluster RCT: two independent proportions"
 #> • Sample size per group: 580
 #> • Total sample size: 1160
 #> • Clusters per arm: 29
 #> Parameter roles
 #> 
-#> • icc = 0.05, cluster_size = 20 -> DE = 1.95; n_clusters per arm = 29
+#> • p1/p2 = group proportions; pbar = (p1+p2)/2
+#> • icc = intra-cluster correlation rho_Binary (Machin Eq 12.13)
+#> • cluster_size = subjects per cluster m
+#> • DE = 1+(m-1)*ICC = 1.9500; n_clusters per arm = 29
+#> ! Machin Eq 12.10 includes the Student t correction z^2/2 and rounds once
+#> ! at the cluster level; each extra cluster adds a further m subjects.
+#> 
 #> Formula (plain text):
-#> `n = (Z_a/2 * sqrt(2*p_bar*(1-p_bar)) + Z_b * sqrt(p1*(1-p1)+p2*(1-p2)))^2 /
-#> (p1-p2)^2`
+#> `N = DE*[(1+phi)^2/phi*(Za/2+Zb)^2/(delta/sigma_Plan)^2 + Za/2^2/2], sigma_Plan
+#> = sqrt(pbar(1-pbar))`
 #> Formula (LaTeX):
-#> $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$
+#> $$N = DE\left[\frac{(1+\varphi)^2}{\varphi}\cdot\frac{(Z_{\alpha/2}+Z_{\beta})^2}{(\delta/\sigma_{Plan})^2} + \frac{Z^2_{\alpha/2}}{2}\right], \quad \sigma_{Plan}=\sqrt{\bar{p}(1-\bar{p})}$$
 #> Calculation process:
 #> 
 #> • Step 1: Compute individual-level sample size without clustering from standard
@@ -2454,13 +2506,9 @@ print(res_6_2)
 #> • Step 5: Total individuals per arm = 29 * 20 = 580; Total sample size N =
 #> 1160.
 #> Reference:
-#> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs); Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
+#> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 12 (Cluster Designs): Eq 12.5 (DE), Eq 12.10 (sample size with the Student t correction), Eq 12.12 (sigma_Plan for a binary outcome), Eq 12.13 (rho_Binary), pp. 197-200; Example 12.4, p. 208.
 #> 
-#>  Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.
-#> 
-#> With continuity correction: Casagrande, J. T., Pike, M. C., & Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.
-#> 
-#> Book: Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley.
+#>  Also: Donner, A., & Klar, N. (2000). Design and Analysis of Cluster Randomisation Trials in Health Research. Arnold.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
@@ -2494,7 +2542,7 @@ print(res_6_3)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Stepped wedge cluster trial (Hussey-Hughes, mean outcome)"
 #> • Clusters per arm: 24
-#> • Power achieved: 0.908
+#> • Power achieved: 0.674
 #> Parameter roles
 #> 
 #> • theta = treatment effect (additive scale; e.g. risk difference)
@@ -2507,27 +2555,27 @@ print(res_6_3)
 #> ! consider incorporating time fixed effects via simulation or swCRTdesign.
 #> 
 #> Formula (plain text):
-#> `Var = I*t2*(t2+T*s2)/((I*U-W)*t2 + (U^2+I*T*U-T*W-I*V)*s2); power =
+#> `Var = I*s2*(s2 + T*t2)/((I*U-W)*s2 + (U^2+I*T*U-T*W-I*V)*t2); power =
 #> Phi(|theta|/se - z)`
 #> Formula (LaTeX):
-#> $$\text{Var}(\hat{\theta}) = \frac{I \tau^2(\tau^2+T\sigma^2)}{(IU-W)\tau^2 + (U^2+ITU-TW-IV)\sigma^2}, \quad \sigma^2 = \sigma_{ind}^2/m, \quad \text{Power} = \Phi\left(\frac{|\theta|}{\text{SE}} - z_{1-\alpha/2}\right)$$
+#> $$\text{Var}(\hat{\theta}) = \frac{I \sigma^2(\sigma^2+T\tau^2)}{(IU-W)\sigma^2 + (U^2+ITU-TW-IV)\tau^2}, \quad \sigma^2 = \sigma_{ind}^2/m, \quad \text{Power} = \Phi\left(\frac{|\theta|}{\text{SE}} - z_{1-\alpha/2}\right)$$
 #> Calculation process:
 #> 
 #> • Step 1: Identify study design: Stepped wedge cluster trial (Hussey-Hughes,
 #> mean outcome).
 #> • Step 2: Input parameters: theta = -0.016, tau2 = 0.0002, sigma2_ind = 0.0475,
 #> m = 100, n_clusters = 24, clusters_per_step = 6, alpha = 0.05.
-#> • Step 3: Apply design formula: Var = I*t2*(t2+T*s2)/((I*U-W)*t2 +
-#> (U^2+I*T*U-T*W-I*V)*s2); power = Phi(|theta|/se - z).
+#> • Step 3: Apply design formula: Var = I*s2*(s2 + T*t2)/((I*U-W)*s2 +
+#> (U^2+I*T*U-T*W-I*V)*t2); power = Phi(|theta|/se - z).
 #> • Step 4: Calculated sample size metrics: Clusters per arm: 24; Power achieved:
-#> 0.908.
+#> 0.674.
 #> Reference:
-#> Primary: Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped wedge cluster randomized trials. Contemporary Clinical Trials, 28(2), 182-191 (Eq 8; EPT worked example I=24, T=5).
+#> Primary: Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped wedge cluster randomized trials. Contemporary Clinical Trials, 28(2), 182-191 (Eq 8, p. 187; EPT worked example I=24, T=5, m=100, p=0.05, CV=0.3 -> ~80% power at a 36% relative reduction).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与执行安排**：该配置下模型效能为 90.8%。按每县每期 100
+- **输出解读与执行安排**：该配置下模型效能为 67.4%。按每县每期 100
   名不同新生儿估计，需安排 24×5×100=12000
   人次观察，并同步规划切换培训、时期划分及各县数据完整性。
 
@@ -2556,17 +2604,17 @@ print(res_6_4)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Two-group ordered categorical outcome (Mann-Whitney /
 #> proportional odds)"
-#> • Sample size per group: 86
-#> • Total sample size: 171
+#> • Sample size per group: 342
+#> • Total sample size: 683
 #> Parameter roles
 #> 
 #> • or = anticipated odds ratio (proportional odds)
 #> • prop_bar = anticipated average category proportions (sums to 1)
 #> • output: total N and per-group n (equal allocation)
 #> Formula (plain text):
-#> `N = 3(Za/2+Zb)^2 / ((log OR)^2 * (1 - sum(p_bar^3)))`
+#> `N = Gamma*(1+phi)^2/phi*(Za/2+Zb)^2/(log OR)^2 ; Gamma = 3/(1 - sum(p_bar^3))`
 #> Formula (LaTeX):
-#> $$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$
+#> $$N = \frac{\Gamma\,(1+\phi)^2}{\phi}\cdot\frac{(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2}, \quad \Gamma = \frac{3}{1-\sum_j \bar{p}_j^3}$$
 #> Calculation process:
 #> 
 #> • Step 1: Specify odds ratio OR = 1.50, pooled proportion categories = [0.20,
@@ -2575,17 +2623,17 @@ print(res_6_4)
 #> • Step 3: Compute Whitehead variance factor: 1 - sum(p_bar_j^3).
 #> • Step 4: Whitehead formula: N = 3 * (Z_(alpha/2) + Z_beta)^2 / [(ln OR)^2 * (1
 #> - sum(p_bar^3))].
-#> • Step 5: Round up to integer: Total sample size N = 171, per group n = 86.
+#> • Step 5: Round up to integer: Total sample size N = 683, per group n = 342.
 #> Reference:
-#> Primary: Whitehead, J. (1993). Sample size calculations for ordered categorical data. Statistics in Medicine, 12(24), 2257-2271.
+#> Primary: Whitehead, J. (1993). Sample size calculations for ordered categorical data. Statistics in Medicine, 12(24), 2257-2271 (Eq 9-10, p. 2260; Example 1, p. 2261).
 #> 
-#>  Also: Machin et al. (2018) Chapter 4 (Ordered Categorical Outcomes).
+#>  Book: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 4, Eq 4.3-4.4, p. 57; Example 4.1, p. 59.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-- **输出解读与招募安排**：公式总人数下界为 171，每组向上取整为 86
-  人。若严格按 1:1 分配，实际应安排 172 人，之后再按组考虑终点缺失预留。
+- **输出解读与招募安排**：公式总人数下界为 683，每组向上取整为 342
+  人。若严格按 1:1 分配，实际应安排 684 人，之后再按组考虑终点缺失预留。
 
 ### 6.5 临床预测模型开发：Riley 2020 BMJ 准则（二分类结局）
 
@@ -3045,7 +3093,9 @@ summary(res_1_1)
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> 
 #> ── Reference
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#> 
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
 ```
 

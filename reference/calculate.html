@@ -6,12 +6,14 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Unified sample size calculator (three-axis API) — calculate"><meta name="description" content="Computes sample size (or events/cases) for a study design identified by the
-triple design / task / outcome. See docs/DESIGN_MATRIX.md (source
-repository) for the complete combination table, formulas, and literature
-sources."><meta property="og:description" content="Computes sample size (or events/cases) for a study design identified by the
-triple design / task / outcome. See docs/DESIGN_MATRIX.md (source
-repository) for the complete combination table, formulas, and literature
-sources."></head><body>
+triple design / task / outcome. See the installed reference manual
+system.file(&quot;reference&quot;, &quot;DESIGN_MATRIX.md&quot;, package = &quot;sampleSizeCalc&quot;)
+for the complete combination table, formulas, and literature sources
+(also on the pkgdown site under reference/)."><meta property="og:description" content="Computes sample size (or events/cases) for a study design identified by the
+triple design / task / outcome. See the installed reference manual
+system.file(&quot;reference&quot;, &quot;DESIGN_MATRIX.md&quot;, package = &quot;sampleSizeCalc&quot;)
+for the complete combination table, formulas, and literature sources
+(also on the pkgdown site under reference/)."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,9 +56,10 @@ sources."></head><body>
 
     <div class="ref-description section level2">
     <p>Computes sample size (or events/cases) for a study design identified by the
-triple design / task / outcome. See <code>docs/DESIGN_MATRIX.md</code> (source
-repository) for the complete combination table, formulas, and literature
-sources.</p>
+triple design / task / outcome. See the installed reference manual
+<code>system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")</code>
+for the complete combination table, formulas, and literature sources
+(also on the pkgdown site under <code>reference/</code>).</p>
     </div>
 
     <div class="section level2">
@@ -91,6 +94,14 @@ or <code>"events"</code>; optional for unambiguous designs.</p></li>
 non-inferiority trials spending a full two-sided 0.05.</p></li>
 <li><p><code>power</code>: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
 confirmatory trials.</p></li>
+<li><p><code>alternative</code>: <code>"one.sided"</code> (the package's historical default and the
+Akoglu 2022 Table 2 Eq 2 convention) or <code>"two.sided"</code> (Hajian-Tilaki
+2014 Eq 6.8 convention), or <code>NULL</code> to keep the design default.
+Currently consumed by <code>diagAccuracy</code> + <code>test</code> + <code>proportion</code> only;
+other designs ignore it.</p></li>
+<li><p><code>dropout</code>: anticipated dropout/non-response proportion in [0, 1),
+inflating by 1/(1-d). Currently applied by <code>cohort</code> + <code>test</code> +
+<code>proportion</code> only; other designs ignore it.</p></li>
 </ul><p><strong>Design-specific parameters</strong> (all validated; ranges shown):</p><ul><li><p><em>RCT, test, mean</em>: <code>mean1</code>, <code>mean2</code> real-valued group means (e.g.
 mmHg); <code>sd</code> &gt; 0 pooled standard deviation.</p></li>
 <li><p><em>RCT, test, proportion</em>: <code>p1</code>, <code>p2</code> in (0, 1) response rates, must
@@ -222,7 +233,9 @@ and recorded adjustments.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> (accounting for degrees of freedom df = 2n - 2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reference</span>:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term). </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -253,7 +266,9 @@ and recorded adjustments.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> delta_E^2 = 2 * (1.6449 + 0.8416)^2 * 3^2 / (1.50)^2 = 49.46.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Step 5: Round up to integer: n = 50 per group, total sample size N = 100.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reference</span>:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Chow, S. C., Shao, J., Wang, H., &amp; Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.2 noninferiority, Eq 3.12, p. 50.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Also: Machin et al. (2018) Eq 11.3, p. 173. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -291,7 +306,7 @@ and recorded adjustments.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reference</span>:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986 (Section 6.3 'Cross-over trials', Eq 6.1-6.9; the non-central t power expression is Eq 6.8).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Chow &amp; Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
@@ -365,7 +380,7 @@ and recorded adjustments.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Primary: Zhou, X.-H., Obuchowski, N. A., &amp; McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Original variance: Hanley, J. A., &amp; McNeil, B. J. (1982). Radiology, 143(1), 29-36.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

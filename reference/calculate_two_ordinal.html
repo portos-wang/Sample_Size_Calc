@@ -5,9 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Two-group comparison of an ordered categorical outcome (Whitehead) — calculate_two_ordinal"><meta name="description" content="N = 3 (Za/2 + Zb)^2 / ((log OR)^2 (1 - sum(p_bar^3))), where p_bar are the
-anticipated average category proportions across the two groups."><meta property="og:description" content="N = 3 (Za/2 + Zb)^2 / ((log OR)^2 (1 - sum(p_bar^3))), where p_bar are the
-anticipated average category proportions across the two groups."></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Two-group comparison of an ordered categorical outcome (Whitehead) — calculate_two_ordinal"><meta name="description" content="Whitehead (1993) Eq 10 (p. 2260) with allocation ratio A:"><meta property="og:description" content="Whitehead (1993) Eq 10 (p. 2260) with allocation ratio A:"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -49,17 +47,57 @@ anticipated average category proportions across the two groups."></head><body>
     </div>
 
     <div class="ref-description section level2">
-    <p>N = 3 (Za/2 + Zb)^2 / ((log OR)^2 (1 - sum(p_bar^3))), where p_bar are the
-anticipated average category proportions across the two groups.</p>
+    <p>Whitehead (1993) Eq 10 (p. 2260) with allocation ratio A:</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_two_ordinal</span><span class="op">(</span><span class="va">or</span>, <span class="va">prop_bar</span>, <span class="va">alpha</span>, <span class="va">power</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_two_ordinal</span><span class="op">(</span><span class="va">or</span>, <span class="va">prop_bar</span>, <span class="va">alpha</span>, <span class="va">power</span>, allocation <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg-or">or<a class="anchor" aria-label="anchor" href="#arg-or"></a></dt>
+<dd><p>Anticipated odds ratio (proportional odds); &gt; 0, != 1.</p></dd>
+
+
+<dt id="arg-prop-bar">prop_bar<a class="anchor" aria-label="anchor" href="#arg-prop-bar"></a></dt>
+<dd><p>Anticipated average category proportions; positive,
+summing to 1.</p></dd>
+
+
+<dt id="arg-allocation">allocation<a class="anchor" aria-label="anchor" href="#arg-allocation"></a></dt>
+<dd><p>Allocation ratio phi = n_Test / n_Standard (Whitehead's A);
+number &gt; 0, default 1 (equal groups).</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<div class="sourceCode"><pre><code>
+  n = 3 (A + 1)^2 (u_{a/2} + u_b)^2 / [ A theta^2 (1 - sum pbar_i^3) ]
+</code></pre></div>
+
+<p>and Machin et al. (2018) Eq 4.3 (p. 57) with allocation ratio phi:</p>
+<div class="sourceCode"><pre><code>
+  N = Gamma (1 + phi)^2 / phi * (z_{1-a/2} + z_{1-b})^2 / (log OR)^2,
+  Gamma = 3 / (1 - sum pbar_i^3)                          (Eq 4.4)
+</code></pre></div>
+
+<p>The two are algebraically identical when A = phi: Whitehead's numerator
+<code>3 (A+1)^2</code> and Machin's <code>Gamma (1+phi)^2/phi</code> differ only by the allocation
+factor, which is 1 when the groups are equal.</p>
+<p>Anchors: Machin Example 4.1 (p. 59): kappa = 4, phi = 1, OR = 3.65,
+pbar = (0.2564, 0.2792, 0.2056, 0.2619), 2-sided alpha = 0.05, power = 0.80
+-&gt; N = 60.09 -&gt; 60 total. Whitehead Example 1 (p. 2261): OR = 0.887,
+pbar = (0.289, 0.486, 0.153, 0.072), alpha = 0.05, power = 0.90
+-&gt; n = 187 total (94 per group).</p>
+    </div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

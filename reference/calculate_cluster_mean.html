@@ -5,7 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cluster RCT wrapping the two-means kernel — calculate_cluster_mean"><meta name="description" content="Cluster RCT wrapping the two-means kernel"><meta property="og:description" content="Cluster RCT wrapping the two-means kernel"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cluster RCT wrapping the two-means kernel — calculate_cluster_mean"><meta name="description" content="Uses Machin Eq 12.10 (p. 199), i.e. the design effect plus the Student t
+correction term z^2/2, and rounds ONCE at the cluster level. Anchor:
+Machin Example 12.1 (p. 206) - delta=3.5, sigma=6.94, m=2, ICC=0.025,
+2-sided alpha=0.05, power=0.90 -&amp;gt; N=171.35 -&amp;gt; 172, K=86 (43 per arm)."><meta property="og:description" content="Uses Machin Eq 12.10 (p. 199), i.e. the design effect plus the Student t
+correction term z^2/2, and rounds ONCE at the cluster level. Anchor:
+Machin Example 12.1 (p. 206) - delta=3.5, sigma=6.94, m=2, ICC=0.025,
+2-sided alpha=0.05, power=0.90 -&amp;gt; N=171.35 -&amp;gt; 172, K=86 (43 per arm)."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -47,7 +53,10 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Cluster RCT wrapping the two-means kernel</p>
+    <p>Uses Machin Eq 12.10 (p. 199), i.e. the design effect plus the Student t
+correction term <code>z^2/2</code>, and rounds ONCE at the cluster level. Anchor:
+Machin Example 12.1 (p. 206) - delta=3.5, sigma=6.94, m=2, ICC=0.025,
+2-sided alpha=0.05, power=0.90 -&gt; N=171.35 -&gt; 172, K=86 (43 per arm).</p>
     </div>
 
     <div class="section level2">

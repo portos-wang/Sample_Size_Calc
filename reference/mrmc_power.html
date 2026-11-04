@@ -74,6 +74,7 @@ parameterisation for the paired-patient, paired-reader design
 <span>  <span class="va">rho1</span>,</span>
 <span>  <span class="va">rho2</span>,</span>
 <span>  <span class="va">rho3</span>,</span>
+<span>  rho_b <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  n_repeats <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -84,8 +85,8 @@ parameterisation for the paired-patient, paired-reader design
 
 
 <dl><dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>Cases per test; number &gt;= 1. In the paired-patient design this
-is the total number of patients, each imaged under both tests.</p></dd>
+<dd><p>Patients with the condition (paired-patient design: the same
+patients are imaged under both tests)</p></dd>
 
 
 <dt id="arg-j">J<a class="anchor" aria-label="anchor" href="#arg-j"></a></dt>
@@ -107,8 +108,10 @@ heuristic: (accuracy range / 4)^2 (Zhou p. 223, Beam 1996).</p></dd>
 
 
 <dt id="arg-sigma-c-">sigma_c2<a class="anchor" aria-label="anchor" href="#arg-sigma-c-"></a></dt>
-<dd><p>Patient-sampling (case) variance component; number &gt;= 0
-(e.g. 0.05 in the Zhou mammography example).</p></dd>
+<dd><p>Patient-sampling (case) variance component; number &gt;= 0.
+This is the variance of the accuracy estimate attributable to sampling
+patients, i.e. V(A)/n (Zhou p. 221), so it already carries the sample
+size. For the mammography example it is 0.00196 at n = 50.</p></dd>
 
 
 <dt id="arg-rho-">rho1<a class="anchor" aria-label="anchor" href="#arg-rho-"></a></dt>
@@ -123,6 +126,13 @@ heuristic: (accuracy range / 4)^2 (Zhou p. 223, Beam 1996).</p></dd>
 <dd><p>Correlation, different readers different tests; in [0, 1).
 The paired-patient, paired-reader parameterisation expects
 rho1 &gt; rho2 &gt; rho3 &gt; 0 (Zhou Table 6.4); violated orderings warn.</p></dd>
+
+
+<dt id="arg-rho-b">rho_b<a class="anchor" aria-label="anchor" href="#arg-rho-b"></a></dt>
+<dd><p>Correlation between the same readers' accuracies on the two
+tests (Zhou Table 6.3 <code>p_b</code>); in [0, 1). Defaults to <code>rho1</code>, which is the
+value implied when a single "same reader, different test" correlation is
+supplied. For the Zhou mammography example the book sets rho_b = 0.75.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
@@ -141,18 +151,34 @@ formula, noncentrality) is attached as a <code>sample_size_result</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Anchor: Zhou 2011 pp. 225 (mammography example) — n=50 cases, 8 readers,
-delta=0.10, sigma_b2=0.00123, sigma_w2=0.00087, sigma_c2 ~= 0.05,
-rho1=0.25, rho2=0.2, rho3=0.1 -&gt; power ~= 0.89 as reported in the book.</p>
+    <p>Eq 6.32 as printed (Zhou 2011, p. 221):</p>
+<div class="sourceCode"><pre><code><span></span>
+<span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu">J</span> <span class="op">(</span><span class="va">v1</span> <span class="op">-</span> <span class="va">v2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>    <span class="fu">sigma_b2</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">rho_b</span><span class="op">)</span> <span class="op">+</span> <span class="va">sigma_w2</span> <span class="op">/</span> <span class="va">Q</span> <span class="op">+</span></span>
+<span>    <span class="va">sigma_c2</span> <span class="op">[</span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">rho1</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">J</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">(</span><span class="va">rho2</span> <span class="op">-</span> <span class="va">rho3</span><span class="op">)</span><span class="op">]</span> <span class="op">}</span><span class="op">)</span></span></code></pre></div>
+
+<p>Note the two features that distinguish it from simpler MRMC formulae:
+the between-reader term is weighted by <code>(1 - rho_b)</code>, the correlation between
+the same readers' accuracies on the two tests, and the patient-sampling
+term <code>sigma_c2</code> is NOT divided by <code>n</code> (sigma_c2 is already the
+patient-sampling variance component, computed as V(A)/n; see Zhou p. 221).</p>
+<p>Anchor: Zhou 2011 p. 225 (mammography example) - n = 50 malignant and 50
+benign patients, J = 8 readers, delta = 0.10, sigma_b2 = 0.00123,
+sigma_w2 = 0.00087, sigma_c2 = 0.00196 (from Eq 6.5 with n = 50),
+rho1 = 0.5, rho2 = 0.3, rho3 = 0.25, rho_b = 0.75 -&gt; power = 0.893, which
+reproduces the book's "89% power".</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Mammography MRMC planning (Zhou 2011 p. 225): 50 cases, 8 readers,</span></span></span>
-<span class="r-in"><span><span class="co"># detect an AUC difference of 0.10 between two imaging techniques</span></span></span>
-<span class="r-in"><span><span class="fu">mrmc_power</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">50</span>, J <span class="op">=</span> <span class="fl">8</span>, delta <span class="op">=</span> <span class="fl">0.10</span>,</span></span>
-<span class="r-in"><span>  sigma_b2 <span class="op">=</span> <span class="fl">0.00123</span>, sigma_w2 <span class="op">=</span> <span class="fl">0.00087</span>, sigma_c2 <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
-<span class="r-in"><span>  rho1 <span class="op">=</span> <span class="fl">0.25</span>, rho2 <span class="op">=</span> <span class="fl">0.20</span>, rho3 <span class="op">=</span> <span class="fl">0.10</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Mammography MRMC planning (Zhou 2011 pp. 221-225): 50 malignant plus 50</span></span></span>
+<span class="r-in"><span><span class="co"># benign patients, 8 readers, detect an AUC difference of 0.10. Power</span></span></span>
+<span class="r-in"><span><span class="co"># reproduces the book's 89%.</span></span></span>
+<span class="r-in"><span><span class="fu">mrmc_power</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">50</span>, J <span class="op">=</span> <span class="fl">8</span>, delta <span class="op">=</span> <span class="fl">0.10</span>,</span></span>
+<span class="r-in"><span>  sigma_b2 <span class="op">=</span> <span class="fl">0.00123</span>, sigma_w2 <span class="op">=</span> <span class="fl">0.00087</span>, sigma_c2 <span class="op">=</span> <span class="fl">0.00196</span>,</span></span>
+<span class="r-in"><span>  rho1 <span class="op">=</span> <span class="fl">0.50</span>, rho2 <span class="op">=</span> <span class="fl">0.30</span>, rho3 <span class="op">=</span> <span class="fl">0.25</span>, rho_b <span class="op">=</span> <span class="fl">0.75</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
