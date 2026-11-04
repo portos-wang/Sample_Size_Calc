@@ -176,19 +176,6 @@ at least  1; <code>r2_cs</code> within its feasible maximum; <code>shrinkage</co
 <li><p><em>kappa, test</em>: <code>kappa1</code> != <code>kappa2</code> in (0, 1); same pi's.</p></li>
 <li><p><em>its</em>: <code>effect_sd</code> &gt; 0; <code>n_pre</code>, <code>n_post</code> integers &gt;= 3 (&gt;= 8
 recommended); <code>rho</code> in [0, 1). Returns achieved power.</p></li>
-</ul><p>[0, 1) inflates by 1/(1-d).</p><ul><li><p><em>cohort, rate</em>: <code>rate0</code>, <code>rate1</code> &gt; 0 events per person-time; <code>ratio</code>
-at least  1 person-time ratio.</p></li>
-<li><p><em>caseControl</em>: <code>p0</code> in (0, 1) control exposure rate; <code>OR</code> &gt; 0, != 1;
-<code>m</code> &gt;= 1 controls per case (default 1).</p></li>
-<li><p><em>caseControlMatched</em>: <code>p0</code>, <code>OR</code> as above; 1:1 matching built in.</p></li>
-<li><p><em>crosstab</em>: <code>p0</code>, <code>p1</code> in (0, 1) prevalence in unexposed/exposed.</p></li>
-<li><p><em>singleProportion</em>: <code>p</code> in (0, 1); <code>precision</code> &gt; 0; <code>precision_type</code> =
-"absolute" (default) or "relative".</p></li>
-<li><p><em>singleMean</em>: <code>sigma</code> &gt; 0; <code>precision</code> &gt; 0 margin of error.</p></li>
-<li><p><em>singleCorrelation</em>: <code>r</code> in (0, 1); exactly one of <code>precision</code>
-(absolute CI half-width in (0, 1)) or <code>epsilon</code> (relative).</p></li>
-<li><p><em>diagAccuracy, estimate</em>: <code>prob</code> in (0, 1) expected Se/Sp; <code>d</code> in
-(0, 1) CI half-width; <code>prevalence</code> in (0, 1]: R:0,%201)%20inflates%20by%201/(1-d).%0A%20%20*%20<em>cohort,%20rate</em>:%20%60rate0%60,%20%60rate1%60%20%3E%200%20events%20per%20person-time;%20%60ratio%60%0A%20%20%20%20at%20least%20%201%20person-time%20ratio.%0A%20%20*%20<em>caseControl</em>:%20%60p0%60%20in%20(0,%201)%20control%20exposure%20rate;%20%60OR%60%20%3E%200,%20!=%201;%0A%20%20%20%20%60m%60%20%3E=%201%20controls%20per%20case%20(default%201).%0A%20%20*%20<em>caseControlMatched</em>:%20%60p0%60,%20%60OR%60%20as%20above;%201:1%20matching%20built%20in.%0A%20%20*%20<em>crosstab</em>:%20%60p0%60,%20%60p1%60%20in%20(0,%201)%20prevalence%20in%20unexposed/exposed.%0A%20%20*%20<em>singleProportion</em>:%20%60p%60%20in%20(0,%201);%20%60precision%60%20%3E%200;%20%60precision_type%60%20=%0A%20%20%20%20%22absolute%22%20(default)%20or%20%22relative%22.%0A%20%20*%20<em>singleMean</em>:%20%60sigma%60%20%3E%200;%20%60precision%60%20%3E%200%20margin%20of%20error.%0A%20%20*%20<em>singleCorrelation</em>:%20%60r%60%20in%20(0,%201);%20exactly%20one%20of%20%60precision%60%0A%20%20%20%20(absolute%20CI%20half-width%20in%20(0,%201))%20or%20%60epsilon%60%20(relative).%0A%20%20*%20<em>diagAccuracy,%20estimate</em>:%20%60prob%60%20in%20(0,%201)%20expected%20Se/Sp;%20%60d%60%20in%0A%20%20%20%20(0,%201)%20CI%20half-width;%20%60prevalence%60%20in%20(0,%201</p></li>
 </ul></dd>
 
 </dl></div>
