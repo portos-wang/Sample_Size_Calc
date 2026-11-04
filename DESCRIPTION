@@ -47,7 +47,7 @@ Suggests:
     PowerTOST
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://portos-wang.github.io/Sample_Size_Calc/, https://github.com/portos-wang/Sample_Size_Calc
+URL: https://rpackages.portos.wang/sample_size_calc/, https://github.com/portos-wang/Sample_Size_Calc
 BugReports: https://github.com/portos-wang/Sample_Size_Calc/issues
 Language: en-US
 ByteCompile: true

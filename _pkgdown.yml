@@ -1,4 +1,17 @@
-url: https://portos-wang.github.io/Sample_Size_Calc/
+url: https://rpackages.portos.wang/sample_size_calc/
+
+# Repository-level markdown that pkgdown would otherwise auto-convert into
+# articles. These are internal working documents, not user-facing docs.
+# (NEWS.md and README.md stay: NEWS becomes the changelog page and README the
+# home page.)
+articles:
+  - title: "Guides / 完整指南"
+    navbar: ~
+    contents:
+      - sampleSizeCalc-guide-zh
+      - sampleSizeCalc-guide-en
+      - result-reporting
+      - sampleSizeCalc
 
 template:
   bootstrap: 5
