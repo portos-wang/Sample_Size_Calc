@@ -118,23 +118,6 @@ at least  1; \code{r2_cs} within its feasible maximum; \code{shrinkage} default 
 \item \emph{kappa, test}: \code{kappa1} != \code{kappa2} in (0, 1); same pi's.
 \item \emph{its}: \code{effect_sd} > 0; \code{n_pre}, \code{n_post} integers >= 3 (>= 8
 recommended); \code{rho} in [0, 1). Returns achieved power.
-}
-
-[0, 1) inflates by 1/(1-d).
-\itemize{
-\item \emph{cohort, rate}: \code{rate0}, \code{rate1} > 0 events per person-time; \code{ratio}
-at least  1 person-time ratio.
-\item \emph{caseControl}: \code{p0} in (0, 1) control exposure rate; \code{OR} > 0, != 1;
-\code{m} >= 1 controls per case (default 1).
-\item \emph{caseControlMatched}: \code{p0}, \code{OR} as above; 1:1 matching built in.
-\item \emph{crosstab}: \code{p0}, \code{p1} in (0, 1) prevalence in unexposed/exposed.
-\item \emph{singleProportion}: \code{p} in (0, 1); \code{precision} > 0; \code{precision_type} =
-"absolute" (default) or "relative".
-\item \emph{singleMean}: \code{sigma} > 0; \code{precision} > 0 margin of error.
-\item \emph{singleCorrelation}: \code{r} in (0, 1); exactly one of \code{precision}
-(absolute CI half-width in (0, 1)) or \code{epsilon} (relative).
-\item \emph{diagAccuracy, estimate}: \code{prob} in (0, 1) expected Se/Sp; \code{d} in
-(0, 1) CI half-width; \code{prevalence} in (0, 1]: R:0,\%201)\%20inflates\%20by\%201/(1-d).\%0A\%20\%20*\%20\emph{cohort,\%20rate}:\%20\%60rate0\%60,\%20\%60rate1\%60\%20\%3E\%200\%20events\%20per\%20person-time;\%20\%60ratio\%60\%0A\%20\%20\%20\%20at\%20least\%20\%201\%20person-time\%20ratio.\%0A\%20\%20*\%20\emph{caseControl}:\%20\%60p0\%60\%20in\%20(0,\%201)\%20control\%20exposure\%20rate;\%20\%60OR\%60\%20\%3E\%200,\%20!=\%201;\%0A\%20\%20\%20\%20\%60m\%60\%20\%3E=\%201\%20controls\%20per\%20case\%20(default\%201).\%0A\%20\%20*\%20\emph{caseControlMatched}:\%20\%60p0\%60,\%20\%60OR\%60\%20as\%20above;\%201:1\%20matching\%20built\%20in.\%0A\%20\%20*\%20\emph{crosstab}:\%20\%60p0\%60,\%20\%60p1\%60\%20in\%20(0,\%201)\%20prevalence\%20in\%20unexposed/exposed.\%0A\%20\%20*\%20\emph{singleProportion}:\%20\%60p\%60\%20in\%20(0,\%201);\%20\%60precision\%60\%20\%3E\%200;\%20\%60precision_type\%60\%20=\%0A\%20\%20\%20\%20\%22absolute\%22\%20(default)\%20or\%20\%22relative\%22.\%0A\%20\%20*\%20\emph{singleMean}:\%20\%60sigma\%60\%20\%3E\%200;\%20\%60precision\%60\%20\%3E\%200\%20margin\%20of\%20error.\%0A\%20\%20*\%20\emph{singleCorrelation}:\%20\%60r\%60\%20in\%20(0,\%201);\%20exactly\%20one\%20of\%20\%60precision\%60\%0A\%20\%20\%20\%20(absolute\%20CI\%20half-width\%20in\%20(0,\%201))\%20or\%20\%60epsilon\%60\%20(relative).\%0A\%20\%20*\%20\emph{diagAccuracy,\%20estimate}:\%20\%60prob\%60\%20in\%20(0,\%201)\%20expected\%20Se/Sp;\%20\%60d\%60\%20in\%0A\%20\%20\%20\%20(0,\%201)\%20CI\%20half-width;\%20\%60prevalence\%60\%20in\%20(0,\%201
 }}
 }
 \value{

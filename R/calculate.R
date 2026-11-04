@@ -643,7 +643,7 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       2014 Eq 6.8 convention), or `NULL` to keep the design default.
 #'       Currently consumed by `diagAccuracy` + `test` + `proportion` only;
 #'       other designs ignore it.
-#'     * `dropout`: anticipated dropout/non-response proportion in [0, 1),
+#'     * `dropout`: anticipated dropout/non-response proportion in &lbrack;0, 1),
 #'       inflating by 1/(1-d). Currently applied by `cohort` + `test` +
 #'       `proportion` only; other designs ignore it.
 #'   
@@ -678,7 +678,7 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'     * *singleArmPhaseII*: `p0` unacceptable rate; `p1` > p0 target rate;
 #'       `optimizer` = "optimal" or "minimax".
 #'     * *cohort, proportion*: `p0`, `p1` in (0, 1); `ratio` >= 1
-#'       unexposed:exposed; optional `dropout` in [0, 1) inflates by 1/(1-d).
+#'       unexposed:exposed; optional `dropout` in &lbrack;0, 1) inflates by 1/(1-d).
 #'     * *cohort, rate*: `rate0`, `rate1` > 0 events per person-time; `ratio`
 #'       at least  1 person-time ratio.
 #'     * *caseControl*: `p0` in (0, 1) control exposure rate; `OR` > 0, != 1;
@@ -702,11 +702,11 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       case:control (default 1); `var_method` = "binormal" (recommended),
 #'       "exponential", or "conservative".
 #'     * *diagAUC, test*: `auc`, `auc0` in (0, 1), auc > auc0.
-#'     * *diagAUCCompare*: `auc1`, `auc2` in (0, 1); `r` in [0, 1) (default
+#'     * *diagAUCCompare*: `auc1`, `auc2` in (0, 1); `r` in &lbrack;0, 1) (default
 #'       0.5); margin tasks add `margin` in (0, 1).
 #'     * *diagLR, estimate*: `sens`, `spec` in (0, 1); `lr_type` = "positive"
 #'       or "negative"; `target_lr` > 0 the boundary the CI must not cross.
-#'     * *clusterRCT*: base two-group args plus `icc` in [0, 1) and
+#'     * *clusterRCT*: base two-group args plus `icc` in &lbrack;0, 1) and
 #'       `cluster_size` integer >= 1 (DE = 1 + (m-1)*ICC).
 #'     * *steppedWedge*: `theta` != 0; `tau2` > 0; `sigma2_ind` > 0; `m` >= 1;
 #'       `n_clusters` integer >= 2, a multiple of `clusters_per_step` >= 1.
@@ -718,11 +718,11 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       `precision_delta` in (0, 1); optional `n_parameters`/`epv` cross-check.
 #'     * *predictiveModel, events*: `n_parameters` >= 1; `epv` >= 1 (classic
 #'       10); `event_prevalence` in (0, 1).
-#'     * *kappa, estimate*: `pi1`, `pi2` in (0, 1); `kappa` in [0, 1); `d` in
+#'     * *kappa, estimate*: `pi1`, `pi2` in (0, 1); `kappa` in &lbrack;0, 1); `d` in
 #'       (0, 1).
 #'     * *kappa, test*: `kappa1` != `kappa2` in (0, 1); same pi's.
 #'     * *its*: `effect_sd` > 0; `n_pre`, `n_post` integers >= 3 (>= 8
-#'       recommended); `rho` in [0, 1). Returns achieved power.
+#'       recommended); `rho` in &lbrack;0, 1). Returns achieved power.
 #'   
 #'   
 #' @return Object of class `sample_size_result` with print, summary, and

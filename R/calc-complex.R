@@ -20,7 +20,7 @@
 #' }
 #'
 #' @param cluster_size Number of subjects per cluster (mbar if sizes vary).
-#' @param icc Intra-cluster correlation rho; in [0, 1).
+#' @param icc Intra-cluster correlation rho; in &lbrack;0, 1).
 #' @param cv_m Optional coefficient of variation of cluster size (Eq 12.7);
 #'   non-negative. `NULL` (default) gives the constant-size Eq 12.5.
 #' @return The design effect (numeric scalar >= 1).
@@ -625,13 +625,13 @@ calculate_predictive_epv <- function(n_parameters, epv, event_prevalence) {
 #'   This is the variance of the accuracy estimate attributable to sampling
 #'   patients, i.e. V(A)/n (Zhou p. 221), so it already carries the sample
 #'   size. For the mammography example it is 0.00196 at n = 50.
-#' @param rho1 Correlation, same reader different tests; in [0, 1).
-#' @param rho2 Correlation, different readers same test; in [0, 1).
-#' @param rho3 Correlation, different readers different tests; in [0, 1).
+#' @param rho1 Correlation, same reader different tests; in &lbrack;0, 1).
+#' @param rho2 Correlation, different readers same test; in &lbrack;0, 1).
+#' @param rho3 Correlation, different readers different tests; in &lbrack;0, 1).
 #'   The paired-patient, paired-reader parameterisation expects
 #'   rho1 > rho2 > rho3 > 0 (Zhou Table 6.4); violated orderings warn.
 #' @param rho_b Correlation between the same readers' accuracies on the two
-#'   tests (Zhou Table 6.3 `p_b`); in [0, 1). Defaults to `rho1`, which is the
+#'   tests (Zhou Table 6.3 `p_b`); in &lbrack;0, 1). Defaults to `rho1`, which is the
 #'   value implied when a single "same reader, different test" correlation is
 #'   supplied. For the Zhou mammography example the book sets rho_b = 0.75.
 #' @param alpha Type I error of the two-sided F test; in (0, 1), default 0.05.
