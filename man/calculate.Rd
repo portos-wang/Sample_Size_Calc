@@ -149,9 +149,10 @@ and recorded adjustments.
 }
 \description{
 Computes sample size (or events/cases) for a study design identified by the
-triple design / task / outcome. See \code{docs/DESIGN_MATRIX.md} (source
-repository) for the complete combination table, formulas, and literature
-sources.
+triple design / task / outcome. See the installed reference manual
+\code{system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")}
+for the complete combination table, formulas, and literature sources
+(also on the pkgdown site under \verb{reference/}).
 }
 \examples{
 # Antihypertensive RCT: placebo 10 mmHg vs new drug 12 mmHg SBP reduction,

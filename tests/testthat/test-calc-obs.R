@@ -1,5 +1,5 @@
 # Phase 3: observational designs + paired binary + single-arm.
-# Anchors: docs/NUMERIC_ANCHORS.md B3/B4/B8.
+# Anchors: inst/reference/NUMERIC_ANCHORS.md B3/B4/B8.
 
 # --- cohort (proportion) ---
 

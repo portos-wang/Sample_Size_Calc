@@ -1,5 +1,5 @@
 # Unified three-axis entry point: calculate(design, task, outcome, ...)
-# Axis decisions documented in docs/DESIGN_MATRIX.md:
+# Axis decisions documented in inst/reference/DESIGN_MATRIX.md:
 #   1. RCT family collapsed into a single `rct` design (task x outcome orthogonal)
 #   2. Diagnostic designs use explicit names (diagAccuracy, diagAUC, ...)
 #   3. Estimation tasks live under single* designs
@@ -231,7 +231,7 @@ ssr_resolve <- function(design, task = NULL, outcome = NULL) {
     cli::cli_abort(c(
       "Unknown design {.val {design}}.",
       "i" = "Valid designs: {.val {ssr_design_names}}",
-      "i" = "See {.emph docs/DESIGN_MATRIX.md} for the full combination table."
+      "i" = "See the reference manual 'DESIGN_MATRIX.md' (system.file(\"reference\", \"DESIGN_MATRIX.md\", package = \"sampleSizeCalc\")) for the full combination table."
     ))
   }
 
@@ -608,9 +608,10 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #' Unified sample size calculator (three-axis API)
 #'
 #' Computes sample size (or events/cases) for a study design identified by the
-#' triple design / task / outcome. See `docs/DESIGN_MATRIX.md` (source
-#' repository) for the complete combination table, formulas, and literature
-#' sources.
+#' triple design / task / outcome. See the installed reference manual
+#' `system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")`
+#' for the complete combination table, formulas, and literature sources
+#' (also on the pkgdown site under `reference/`).
 #'
 #' @param ... ...
 #'   Control and design arguments, resolved by EXACT name (partial

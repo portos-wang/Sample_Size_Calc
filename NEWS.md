@@ -111,7 +111,7 @@
   preserves existing numbers) or Hajian-Tilaki (2014) Eq 6.8 (two-sided).
   It is currently consumed by `diagAccuracy` + `test` + `proportion` only.
   The unimplemented `sampling` parameter has been removed from
-  `docs/DESIGN_MATRIX.md`, and the partial scope of `dropout` is now stated
+  `inst/reference/DESIGN_MATRIX.md`, and the partial scope of `dropout` is now stated
   explicitly there and in `?calculate`.
 
 ## Output & Reporting Enhancements
@@ -198,7 +198,7 @@
 
 - New unified three-axis entry point `calculate(design, task, outcome, ...)`.
   Combinations are validated against a master table; illegal combinations
-  error with the list of legal ones. See `docs/DESIGN_MATRIX.md`.
+  error with the list of legal ones. See `inst/reference/DESIGN_MATRIX.md`.
   (`sample_size_calculator()` remains fully and silently compatible: all 17
   legacy keywords now dispatch through the same shared code path, and
   golden-master tests assert identical results between both APIs.)
@@ -325,9 +325,9 @@
 
 ## Documentation
 
-- `docs/DESIGN_MATRIX.md`: full design x task x outcome combination table
+- `inst/reference/DESIGN_MATRIX.md`: full design x task x outcome combination table
   with formulas, sources, and the 17 legacy-keyword mappings.
-- `docs/NUMERIC_ANCHORS.md`: published worked examples used as numeric test
+- `inst/reference/NUMERIC_ANCHORS.md`: published worked examples used as numeric test
   anchors, including documented discrepancies (Bhardwaj 2024 dropout formula
   vs its own worked example).
 

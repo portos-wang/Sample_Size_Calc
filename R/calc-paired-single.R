@@ -1,5 +1,5 @@
 # Paired binary outcomes (McNemar/Connor family) and single-arm vs fixed value.
-# Anchors: docs/NUMERIC_ANCHORS.md B8/B4.
+# Anchors: inst/reference/NUMERIC_ANCHORS.md B8/B4.
 
 #' Paired-proportion kernel (Connor 1987 / Akoglu Table 6 parameterization)
 #'

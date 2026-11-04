@@ -13,7 +13,7 @@ test_that("inflate_n implements n/(1-d) with ceiling", {
   expect_equal(inflate_n(322.69), 323)
   # Bhardwaj 2024 states n/(1-d): 323/0.9 = 358.9 -> 359. The paper's own
   # worked example instead adds 10% (323+32=355); the discrepancy is
-  # documented in docs/NUMERIC_ANCHORS.md. We follow the stated formula.
+  # documented in inst/reference/NUMERIC_ANCHORS.md. We follow the stated formula.
   expect_equal(inflate_n(323, dropout = 0.10), 359)
   expect_equal(inflate_n(100, 0), 100)
   expect_equal(inflate_n(100, 0.5), 200)

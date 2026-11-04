@@ -4,6 +4,11 @@ template:
   bootstrap: 5
   bootswatch: flatly
   math-rendering: mathjax
+  bslib:
+    # Site-wide type scale. bslib's default is font_scale = 1, i.e.
+    # font-size-base = 1rem (16px). 0.875 gives 14px, about 1.5 typographic
+    # points smaller, which keeps the dense formula/anchor tables readable.
+    font_scale: 0.875
 
 navbar:
   structure:
@@ -112,11 +117,14 @@ reference:
 
   - title: "Complex & Modern Clinical Designs / 复杂与现代临床研究设计"
     desc: >
-      Methodologies for cluster randomised trials (design effects), stepped-wedge cluster trials,
+      Methodologies for cluster randomised trials (design effect, Machin Eq 12.10 with the
+      Student t correction, optional variable cluster size), stepped-wedge cluster trials,
       ordered categorical outcomes, clinical prediction model sample size, and interrupted time series.
     contents:
       - calculate_cluster_mean
       - calculate_cluster_proportion
+      - cluster_design_from_indiv
+      - cluster_size_inflation
       - apply_cluster_design
       - calculate_stepped_wedge
       - calculate_two_ordinal
@@ -135,4 +143,5 @@ reference:
       - validate_design_args
       - validate_alpha
       - validate_power
+      - validate_alternative
       - new_sample_size_result

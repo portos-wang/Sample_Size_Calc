@@ -8,17 +8,26 @@
 
 # ----------------------------------------------- cluster designs (Ch.12) ----
 
-# Machin et al. (2018) Chapter 12, Eq 12.10 (p. 199):
-#
-#   N = DE * [ (1+phi)^2/phi * (z_{1-a/2} + z_{1-b})^2 / (delta/sigma)^2
-#             + z^2_{1-a/2} / 2 ]
-#
-# Note that the t-correction term z^2_{1-a/2}/2 is OUTSIDE the (1+phi)^2/phi
-# allocation factor. This reproduces Machin Example 12.1 (p. 206) exactly:
-# DE=1.025, delta/sigma=3.5/6.94, 2-sided a=0.05, b=0.1 -> N=171.35 -> 172.
-#
-# The DE itself is Eq 12.5: DE = 1 + (m - 1) * rho. Eq 12.6/12.7 extend it to
-# variable cluster sizes via CV(m); Eq 12.8 inflates the cluster count.
+#' Design effect for a cluster randomised trial (Machin Eq 12.5 / 12.7)
+#'
+#' With a constant cluster size `m` this is Machin et al. (2018) Eq 12.5,
+#' `DE = 1 + (m - 1) * rho`. Supplying `cv_m` (the coefficient of variation of
+#' cluster size) switches to Eq 12.7, which allows for variable cluster sizes
+#' before the number of clusters is known:
+#'
+#' \preformatted{
+#'   DE = 1 + [(CV(m)^2 + 1) * mbar - 1] * rho
+#' }
+#'
+#' @param cluster_size Number of subjects per cluster (mbar if sizes vary).
+#' @param icc Intra-cluster correlation rho; in [0, 1).
+#' @param cv_m Optional coefficient of variation of cluster size (Eq 12.7);
+#'   non-negative. `NULL` (default) gives the constant-size Eq 12.5.
+#' @return The design effect (numeric scalar >= 1).
+#' @keywords internal
+#' @examples
+#' sampleSizeCalc:::cluster_size_inflation(20, 0.05) # 1.95 (Eq 12.5)
+#' sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35) # Eq 12.7
 cluster_size_inflation <- function(cluster_size, icc, cv_m = NULL) {
   if (is.null(cv_m)) {
     # Eq 12.5: constant cluster size.

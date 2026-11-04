@@ -1,6 +1,6 @@
 # Phase 3: observational designs (cohort, caseControlMatched, crosstab) and
 # the shared paired-proportion kernel (Connor/McNemar family).
-# Anchors: docs/NUMERIC_ANCHORS.md B3/B8.
+# Anchors: inst/reference/NUMERIC_ANCHORS.md B3/B8.
 
 # ---------------------------------------------------------------- cohort ----
 

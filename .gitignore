@@ -27,12 +27,11 @@ Thumbs.db
 .Rhistory
 
 # Documentation build
-# NOTE: `docs/` is pkgdown's output directory, but it also holds the two
-# hand-written reference manuals DESIGN_MATRIX.md and NUMERIC_ANCHORS.md that
-# ?calculate points at. The negation patterns below keep those two in git.
-/docs/*
-!/docs/DESIGN_MATRIX.md
-!/docs/NUMERIC_ANCHORS.md
+# NOTE: `docs/` is pkgdown's OUTPUT directory (built by CI and pushed to
+# gh-pages), so it must never contain hand-written files. The two reference
+# manuals that `?calculate` points at live in `inst/reference/` instead and are
+# installed with the package; the repository keeps a copy at `docs_src/`.
+/docs/
 site_local/
 vign_preview/
 *_files/
@@ -43,3 +42,6 @@ vignettes/*_files/
 tmp/
 temp/
 *.tmp
+
+# Local commit message drafts
+commit_msg*.txt

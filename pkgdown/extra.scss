@@ -1,0 +1,29 @@
+// sampleSizeCalc pkgdown site: small typographic adjustments.
+//
+// This file is merged into the bslib Sass ruleset by pkgdown, AFTER the
+// pkgdown defaults and the bootswatch preset. Note that it cannot change
+// Bootstrap's Sass *variables* (pkgdown calls bslib::bs_add_rules(), which
+// only appends plain CSS). Global type scale is therefore controlled by
+// `template.bslib.font_scale` in _pkgdown.yml; this file only handles the
+// details that variable cannot express.
+
+// Dense tables (formula tables, anchor lists, argument tables) are the
+// densest content on the reference and article pages: give them a slightly
+// tighter leading so the smaller base size does not leave gaps.
+table,
+.table {
+  line-height: 1.35;
+}
+
+// Long formula/LaTeX blocks and code output: keep them a notch below body
+// copy so they do not dominate the page.
+pre,
+.code-folding > .sourceCode {
+  font-size: 0.9em;
+}
+
+// Sidebar and reference index entries are navigation, not body copy.
+.sidebar,
+.toc {
+  font-size: 0.95em;
+}

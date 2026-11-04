@@ -1,5 +1,5 @@
 # Phase 2 diagnostic estimation upgrades.
-# Anchors: docs/NUMERIC_ANCHORS.md A3/A4/A5.
+# Anchors: inst/reference/NUMERIC_ANCHORS.md A3/A4/A5.
 # Legacy functions (calculate_diagnostic_accuracy_single, calculate_auc_single,
 # calculate_likelihood_ratio_test) keep their exact behavior for golden master
 # compatibility; the calculate() three-axis path routes to these upgraded

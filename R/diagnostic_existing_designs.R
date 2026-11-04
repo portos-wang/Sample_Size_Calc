@@ -84,7 +84,7 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
   # two-sided tests (Z_{alpha/2}); Akoglu (2022) Table 2 Eq 2 uses the
   # one-sided Z_alpha. Both conventions are exposed so either source can be
   # reproduced exactly. The default stays one-sided to preserve this package's
-  # pre-existing numbers (see docs/NUMERIC_ANCHORS.md).
+  # pre-existing numbers (see inst/reference/NUMERIC_ANCHORS.md).
   zAlpha <- if (alternative == "two.sided") qnorm(1 - alpha / 2) else qnorm(1 - alpha)
   zBeta <- qnorm(power)
   nTargetCases <- ((zAlpha * sqrt(p0_val * (1 - p0_val)) + zBeta * sqrt(p_val * (1 - p_val))) / (p_val - p0_val))^2

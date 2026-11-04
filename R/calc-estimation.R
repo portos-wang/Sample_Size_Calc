@@ -1,5 +1,5 @@
 # Estimation designs: single-sample precision-based sample size
-# (task = "estimate"). Formulas and anchors: docs/NUMERIC_ANCHORS.md A1/A2/A6.
+# (task = "estimate"). Formulas and anchors: inst/reference/NUMERIC_ANCHORS.md A1/A2/A6.
 
 #' Internal calculation: single proportion precision (absolute or relative)
 #'

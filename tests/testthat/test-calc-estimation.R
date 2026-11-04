@@ -1,5 +1,5 @@
 # Phase 2: estimation designs (singleProportion / singleMean /
-# singleCorrelation). Anchors: docs/NUMERIC_ANCHORS.md A1/A2/A6.
+# singleCorrelation). Anchors: inst/reference/NUMERIC_ANCHORS.md A1/A2/A6.
 
 test_that("singleProportion matches the Bhardwaj 2024 anchor (p=0.30, d=0.05 -> 323)", {
   res <- calculate("singleProportion", p = 0.30, precision = 0.05)

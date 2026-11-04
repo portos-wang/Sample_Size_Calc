@@ -1,4 +1,4 @@
-# Phase 5: complex designs. Anchors: docs/NUMERIC_ANCHORS.md Phase 5 section.
+# Phase 5: complex designs. Anchors: inst/reference/NUMERIC_ANCHORS.md Phase 5 section.
 
 # --- clusterRCT ---
 

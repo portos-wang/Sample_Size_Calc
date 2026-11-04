@@ -1,6 +1,6 @@
 # Legacy entry point: silently compatible shim over calculate().
 # The 17 keywords map to the three-axis API as documented in
-# docs/DESIGN_MATRIX.md; dispatch_calculation() shares one code path so
+# inst/reference/DESIGN_MATRIX.md; dispatch_calculation() shares one code path so
 # legacy and new calls produce identical results (golden master tests).
 
 #' Sample size calculator for clinical study designs (legacy API)
@@ -12,7 +12,7 @@
 #'
 #' `sample_size_calculator()` is the legacy single-keyword API retained for
 #' backward compatibility. New code should prefer the three-axis
-#' [calculate()] entry point; see docs/DESIGN_MATRIX.md for the keyword
+#' [calculate()] entry point; see inst/reference/DESIGN_MATRIX.md for the keyword
 #' mapping. Results are identical between the two entry points.
 #'
 #' @param design Study design keyword. One of:
