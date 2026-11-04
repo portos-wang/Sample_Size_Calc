@@ -47,6 +47,11 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
-          clean: false
+          # clean: true removes files that no longer exist in `docs/`. Without
+          # it, pages deleted from the site (e.g. internal working documents
+          # that were once published) would stay live on gh-pages forever.
+          # The custom domain is configured in the repository's Pages settings,
+          # so no CNAME file is needed here.
+          clean: true
           branch: gh-pages
           folder: docs
