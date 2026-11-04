@@ -691,7 +691,7 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'     * *singleCorrelation*: `r` in (0, 1); exactly one of `precision`
 #'       (absolute CI half-width in (0, 1)) or `epsilon` (relative).
 #'     * *diagAccuracy, estimate*: `prob` in (0, 1) expected Se/Sp; `d` in
-#'       (0, 1) CI half-width; `prevalence` in (0, 1]; optional `ci_method` =
+#'       (0, 1) CI half-width; `prevalence` in (0, 1&rbrack;; optional `ci_method` =
 #'       "precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses `power`).
 #'     * *diagAccuracy, test*: `prob`, `p0` in (0, 1); `method` = "asymptotic"
 #'       or "exact" (A'Hern); dual-endpoint adds `prob_spec`, `p0_spec`,
