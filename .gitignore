@@ -43,5 +43,9 @@ tmp/
 temp/
 *.tmp
 
+# Reference literature PDFs are kept locally only and never pushed.
+# (.Rbuildignore also excludes them from the package tarball.)
+references/
+
 # Local commit message drafts
 commit_msg*.txt
