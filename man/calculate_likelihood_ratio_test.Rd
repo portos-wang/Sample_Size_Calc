@@ -11,7 +11,8 @@ calculate_likelihood_ratio_test(sens, spec, prevalence, precision, alpha)
 
 \item{spec}{Expected specificity}
 
-\item{prevalence}{Disease prevalence}
+\item{prevalence}{Disease prevalence (used only to derive the
+non-diseased:diseased sampling ratio; omitted or 1 falls back to 1:1)}
 
 \item{precision}{Desired precision}
 
@@ -21,6 +22,8 @@ calculate_likelihood_ratio_test(sens, spec, prevalence, precision, alpha)
 List with calculation results
 }
 \description{
-Likelihood ratio test calculation
+Legacy precision-based minimum-case rule. Kept for golden-master
+compatibility; for the log-CI method of Hajian-Tilaki (2014) Eq 6.10-6.14
+use \code{lr_type}/\code{target_lr}, which routes to \code{\link[=calculate_likelihood_ratio_v2]{calculate_likelihood_ratio_v2()}}.
 }
 \keyword{internal}

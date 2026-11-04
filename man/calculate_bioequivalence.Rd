@@ -31,7 +31,8 @@ List with sample size results consumed by as_sample_size_result()
 }
 \description{
 Evaluates the exact power of the two one-sided tests (TOST) procedure using
-the noncentral t distribution (Phillips 1990; Julious 2004 Eq 13).
+the noncentral t distribution (Phillips 1990; Julious 2004 Section 6.3,
+Eq 6.2 and 6.8).
 Matches sampleN.TOST in the PowerTOST package exactly.
 }
 \keyword{internal}

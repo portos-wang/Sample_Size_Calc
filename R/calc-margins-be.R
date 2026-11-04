@@ -64,8 +64,10 @@ calculate_diag_compare_margin_prop <- function(p1, p2, margin, alpha, power,
     formula_latex = formula_latex,
     reference = paste(
       "Framework: Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017).",
-      "Sample Size Calculations in Clinical Research (3rd ed.). CRC Press",
-      "(margin designs); Machin et al. (2018) Ch.11.\n\n",
+      "Sample Size Calculations in Clinical Research (3rd ed.). CRC Press.",
+      "Chapter 4, Section 4.2.2 (noninferiority/superiority) and 4.2.3",
+      "(equivalence), Eq 4.8-4.9, pp. 78-79. Machin et al. (2018) Ch.11,",
+      "Eq 11.5-11.6, p. 174.\n\n",
       "Diagnostic application: Zhou, X.-H., Obuchowski, N. A., & McClish,",
       "D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.),",
       "Section 6.3 (non-inferiority/equivalency of two tests), pp. 214-218."
@@ -137,8 +139,9 @@ calculate_diag_auc_compare_margin <- function(auc1, auc2, r, margin, alpha,
       "$$n = \\frac{2(Z_{\\alpha}+Z_{\\beta/2})^2 V(1-r)}{(\\Delta-|AUC_1-AUC_2|)^2}$$"
     },
     reference = paste(
-      "Framework: margin designs per Chow et al. (2017); Machin et al. (2018)",
-      "Ch.11. AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.\n\n",
+      "Framework: margin designs per Chow et al. (2017) Ch.4 Eq 4.8-4.9",
+      "(pp. 78-79) and Machin et al. (2018) Ch.11 Eq 11.5-11.6 (p. 174).",
+      "AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.\n\n",
       "Diagnostic application: Zhou et al. (2011) Section 6.3, pp. 214-218."
     ),
     roles = c(
@@ -153,8 +156,17 @@ calculate_diag_auc_compare_margin <- function(auc1, auc2, r, margin, alpha,
 
 #' 2x2 crossover, continuous outcome (within-subject SD parameterization)
 #'
-#' Var(within-subject difference) = 2*sigma_w^2 (between-subject variance
-#' cancels), so n = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2.
+#' Var(within-subject difference) = 2*sigma_w^2 (the between-subject variance
+#' cancels), so the **total** number of subjects is
+#' n_total = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2, and each of the two sequences
+#' carries half of it. Julious (2004) Eq 6.6 writes the same expression with
+#' sigma_w being the within-subject SD on the log scale and n the total sample
+#' size; PowerTOST and Julious both then report the sample size per sequence
+#' (n_total / 2) for a 2x2 design.
+#'
+#' Anchor: Julious 2004 Section 3.3.3 equivalence worked example - with
+#' sigma_w^2 = 2 and a 20% acceptance criterion on the log scale, the total is
+#' 106 subjects (53 per sequence) at 2.5% Type I and 10% Type II error.
 #' @keywords internal
 calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
   if (!is.numeric(delta) || length(delta) != 1 || delta <= 0) {
@@ -166,28 +178,42 @@ calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
 
   z_a <- z_alpha(alpha, "two.sided")
   z_b <- z_power(power)
-  n <- 2 * (z_a + z_b)^2 * sigma_within^2 / delta^2
+  n_total <- 2 * (z_a + z_b)^2 * sigma_within^2 / delta^2
+  n_per_sequence <- ceiling(n_total / 2)
 
   list(
     design_type = "2x2 crossover trial (continuous)",
-    n_required = as.integer(ceiling(n)),
-    total_n = as.integer(ceiling(n)) * 2L, # per sequence; total = 2n
+    n_required = as.integer(n_per_sequence),
+    n_per_sequence = as.integer(n_per_sequence),
+    total_n = as.integer(2L * n_per_sequence),
     parameters = list(
       delta = delta, sigma_within = sigma_within, alpha = alpha, power = power
     ),
-    formula = "n = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 (per sequence)",
-    formula_latex = "$$n = \\frac{2(Z_{\\alpha/2}+Z_{\\beta})^2\\sigma_w^2}{\\delta^2}$$",
+    formula = "n_total = 2 (Za/2 + Zb)^2 sigma_w^2 / delta^2 ; n_per_sequence = n_total/2",
+    formula_latex = "$$n_{\\text{total}} = \\frac{2(Z_{\\alpha/2}+Z_{\\beta})^2\\sigma_w^2}{\\delta^2}, \\quad n_{\\text{sequence}} = \\frac{n_{\\text{total}}}{2}$$",
     reference = paste(
       "Primary: Senn, S. (2002). Cross-over Trials in Clinical Research",
-      "(2nd ed.). Wiley.\n\n",
+      "(2nd ed.). Wiley. Section 9.5 'Sample-size issues', Eq 9.18-9.20,",
+      "pp. 278-280 (sigma^2 = 2 sigma_w^2 for a basic estimator, Var = sigma^2/n,",
+      "df = n - 2, n = total patients with n/2 per sequence).\n\n",
       "Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes",
-      "for clinical trials with normal data. Statistics in Medicine, 23,",
-      "1921-1986 (crossover section)."
+      "for clinical trials with normal data. Statistics in Medicine, 23(12),",
+      "1921-1986 (Section 6.3 'Cross-over trials', Eq 6.3/6.6; n there is the",
+      "total sample size, and the reported quantity is per sequence)."
     ),
     roles = c(
       "delta = anticipated treatment difference (mu_T - mu_R)",
       "sigma_within = within-subject standard deviation",
-      "n is per sequence; total subjects = 2n (each receives both treatments)"
+      "n_required/n_per_sequence = subjects per sequence; total_n = 2 x that"
+    ),
+    hints = c(
+      paste(
+        "This is the normal-approximation form (Julious 2004 Eq 6.6; Machin",
+        "Eq 11.4). Senn (2002) Section 9.5.1, Eq 9.18-9.20, refines it with a",
+        "Student t correction (df = n - 2), which typically needs 1-2 extra",
+        "subjects; use the returned total as a lower bound and add 2 for exact",
+        "80% power."
+      )
     )
   )
 }
@@ -195,7 +221,8 @@ calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
 #' Bioequivalence (2x2 crossover, exact TOST noncentral t, 80-125%)
 #'
 #' Evaluates the exact power of the two one-sided tests (TOST) procedure using
-#' the noncentral t distribution (Phillips 1990; Julious 2004 Eq 13).
+#' the noncentral t distribution (Phillips 1990; Julious 2004 Section 6.3,
+#' Eq 6.2 and 6.8).
 #' Matches sampleN.TOST in the PowerTOST package exactly.
 #'
 #' @param cv Intra-subject coefficient of variation
@@ -226,7 +253,8 @@ calculate_bioequivalence <- function(cv, alpha, power, theta0 = 1.0,
   lth2 <- log(margin_high)
   diffm <- log(theta0)
 
-  # Exact TOST via noncentral t (Phillips 1990; Julious 2004 Eq 13)
+  # Exact TOST via noncentral t (Phillips 1990; Julious 2004 Section 6.3,
+  # Eq 6.2/6.8)
   # In a 2x2 crossover, df = N - 2, sem = sqrt(sigma_w_sq * 2 / N)
   # Even N is required for equal allocation across the 2 sequences
   tost_power_fn <- function(N) {
@@ -268,7 +296,9 @@ calculate_bioequivalence <- function(cv, alpha, power, theta0 = 1.0,
       "Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure",
       "in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.\n\n",
       "Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for",
-      "clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);\n",
+      "clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986",
+      "(Section 6.3 'Cross-over trials', Eq 6.1-6.9; the non-central t power",
+      "expression is Eq 6.8).\n",
       "Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;\n",
       "Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies."
     ),

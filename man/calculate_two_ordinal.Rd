@@ -4,10 +4,40 @@
 \alias{calculate_two_ordinal}
 \title{Two-group comparison of an ordered categorical outcome (Whitehead)}
 \usage{
-calculate_two_ordinal(or, prop_bar, alpha, power)
+calculate_two_ordinal(or, prop_bar, alpha, power, allocation = 1)
+}
+\arguments{
+\item{or}{Anticipated odds ratio (proportional odds); > 0, != 1.}
+
+\item{prop_bar}{Anticipated average category proportions; positive,
+summing to 1.}
+
+\item{allocation}{Allocation ratio phi = n_Test / n_Standard (Whitehead's A);
+number > 0, default 1 (equal groups).}
 }
 \description{
-N = 3 (Za/2 + Zb)^2 / ((log OR)^2 (1 - sum(p_bar^3))), where p_bar are the
-anticipated average category proportions across the two groups.
+Whitehead (1993) Eq 10 (p. 2260) with allocation ratio A:
+}
+\details{
+\preformatted{
+  n = 3 (A + 1)^2 (u_{a/2} + u_b)^2 / [ A theta^2 (1 - sum pbar_i^3) ]
+}
+
+and Machin et al. (2018) Eq 4.3 (p. 57) with allocation ratio phi:
+
+\preformatted{
+  N = Gamma (1 + phi)^2 / phi * (z_{1-a/2} + z_{1-b})^2 / (log OR)^2,
+  Gamma = 3 / (1 - sum pbar_i^3)                          (Eq 4.4)
+}
+
+The two are algebraically identical when A = phi: Whitehead's numerator
+\code{3 (A+1)^2} and Machin's \code{Gamma (1+phi)^2/phi} differ only by the allocation
+factor, which is 1 when the groups are equal.
+
+Anchors: Machin Example 4.1 (p. 59): kappa = 4, phi = 1, OR = 3.65,
+pbar = (0.2564, 0.2792, 0.2056, 0.2619), 2-sided alpha = 0.05, power = 0.80
+-> N = 60.09 -> 60 total. Whitehead Example 1 (p. 2261): OR = 0.887,
+pbar = (0.289, 0.486, 0.153, 0.072), alpha = 0.05, power = 0.90
+-> n = 187 total (94 per group).
 }
 \keyword{internal}

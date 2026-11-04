@@ -184,8 +184,8 @@ cat("所需总筛查人数 N =", s_n, "(普通除法 196/0.2 = 980，为保证90
 # 5.16 mrmc_power
 cat("\n======================================================================\n")
 cat("【场景】 5.16 多阅片者多病例(MRMC) - Obuchowski-Rockette混合模型效能分析\n")
-cat("【代码】 mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)\n【真实运行输出】\n")
-m_p <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
+cat("【代码】 mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.00196, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25, rho_b = 0.75)\n【真实运行输出】\n")
+m_p <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.00196, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25, rho_b = 0.75)
 print(m_p)
 
 # 6.1 clusterRCT mean

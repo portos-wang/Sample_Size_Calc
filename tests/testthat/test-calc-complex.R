@@ -2,9 +2,55 @@
 
 # --- clusterRCT ---
 
+test_that("clusterRCT reproduces Machin (2018) Example 12.1 (p. 206)", {
+  # delta = 3.5, sigma = 6.94, m = 2, ICC = 0.025, 2-sided alpha = 0.05,
+  # power = 0.90, phi = 1.  DE = 1 + (2-1)*0.025 = 1.025 (Eq 12.5).
+  # Eq 12.10: N = 1.025 * [4 * (1.96+1.2816)^2/(3.5/6.94)^2 + 1.96^2/2]
+  #           = 1.025 * 167.17 = 171.35 -> 172 children, K = 86 (43 per arm).
+  res <- calculate("clusterRCT", "test", "mean",
+    mean1 = 12.40, mean2 = 15.90, sd = 6.94,
+    icc = 0.025, cluster_size = 2, alpha = 0.05, power = 0.9
+  )
+  expect_equal(res$parameters$design_effect, 1.025)
+  expect_identical(res$total_n, 172L)
+  expect_identical(res$n_clusters, 43L) # per arm; 86 total
+  expect_identical(res$n_per_group, 86L)
+})
+
+test_that("clusterRCT ICC sensitivity matches the book (rho .1 -> 184, .2 -> 204)", {
+  # Machin p. 206: "If the ICC assumed was set as rho = 0.1 or 0.2, then these
+  # would increase N to 184 and 204 respectively."
+  for (case in list(c(0.025, 172L), c(0.1, 184L), c(0.2, 204L))) {
+    res <- calculate("clusterRCT", "test", "mean",
+      mean1 = 12.40, mean2 = 15.90, sd = 6.94,
+      icc = case[1], cluster_size = 2, alpha = 0.05, power = 0.9
+    )
+    expect_identical(res$total_n, as.integer(case[2]),
+      label = sprintf("ICC = %.3f", case[1]))
+  }
+})
+
+test_that("clusterRCT applies Eq 12.10 (Student t correction) and rounds once", {
+  # Eq 12.10 adds z^2/2 to the per-arm term and rounds at the CLUSTER level,
+  # not on the individual count. A double rounding would give 44 clusters
+  # instead of 43 in Example 12.1.
+  eq1210 <- function(delta, sigma, m, rho, alpha = 0.05, power = 0.9) {
+    de <- 1 + (m - 1) * rho
+    za <- qnorm(1 - alpha / 2); zb <- qnorm(power)
+    per_arm <- 2 * (za + zb)^2 * sigma^2 / delta^2 / 2
+    de * (4 * per_arm + za^2 / 2) / 2
+  }
+  n_arm <- eq1210(3.5, 6.94, 2, 0.025)
+  expect_equal(n_arm, 171.35 / 2, tolerance = 0.02)
+  res <- calculate("clusterRCT", "test", "mean",
+    mean1 = 12.40, mean2 = 15.90, sd = 6.94,
+    icc = 0.025, cluster_size = 2, alpha = 0.05, power = 0.9
+  )
+  expect_identical(res$n_clusters, as.integer(ceiling(n_arm / 2)))
+})
+
 test_that("clusterRCT applies DE = 1+(m-1)*ICC with cluster-level rounding", {
-  # twoMeans base 37/group; m=20, ICC=0.05 -> DE=1.95
-  # clusters = ceil(37*1.95/20) = ceil(3.6075) = 4 -> 80 individuals/group
+  # twoMeans base ~37/group; m=20, ICC=0.05 -> DE=1.95
   res <- calculate("clusterRCT", "test", "mean",
     mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20
   )
@@ -18,10 +64,21 @@ test_that("clusterRCT works for proportions", {
   res <- calculate("clusterRCT", "test", "proportion",
     p1 = 0.3, p2 = 0.5, icc = 0.01, cluster_size = 10
   )
-  # twoProportions base 93/group; DE = 1+9*0.01 = 1.09
-  # clusters = ceil(93*1.09/10) = ceil(10.137) = 11 -> 110/group
+  # DE = 1+9*0.01 = 1.09; cluster-level rounding
   expect_identical(res$n_clusters, 11L)
   expect_identical(res$n_per_group, 110L)
+  expect_equal(res$parameters$design_effect, 1.09)
+})
+
+test_that("cluster_size_inflation supports variable cluster sizes (Eq 12.7)", {
+  expect_equal(sampleSizeCalc:::cluster_size_inflation(20, 0.05), 1.95) # Eq 12.5
+  # Eq 12.7: DE = 1 + [(CV(m)^2 + 1)*m - 1]*rho
+  expect_equal(sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35),
+    1 + ((0.35^2 + 1) * 20 - 1) * 0.05)
+  expect_error(
+    sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = -1),
+    class = "rlang_error"
+  )
 })
 
 # --- singleArmPhaseII ---
@@ -92,12 +149,55 @@ test_that("rct NI proportions matches the margin framework", {
 
 # --- twoOrdinal (Whitehead) ---
 
-test_that("twoOrdinal matches the Whitehead formula transparently", {
-  # or=1.5, prop_bar=c(.2,.3,.3,.2): sum p^3 = 0.07
-  # N = 3*(1.96+0.8416)^2/(log(1.5)^2*0.93) = 3*7.849/(0.1644*0.93) = 154.1
-  res <- calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2, 0.3, 0.3, 0.2))
-  expect_equal(res$total_n, 155)
-  expect_identical(res$n_per_group, 78L)
+test_that("twoOrdinal matches Whitehead (1993) Example 1 (n=187, 94 per group)", {
+  # p. 2261: theta_R = log{0.85(1-0.7) / [0.7(1-0.85)]} = 0.887 is ALREADY the
+  # log odds ratio; pi_bar = (0.289, 0.486, 0.153, 0.072); 1 - sum(p^3) = 0.857;
+  # 2-sided alpha = 0.05, power = 0.90, A = 1.
+  # Eq 10: n = 3(1+1)^2 (1.960 + 1.282)^2 / (0.887^2 * 0.857) = 186.98 -> 187
+  res <- calculate("twoOrdinal", "test", "ordinal",
+    or = exp(0.887), prop_bar = c(0.289, 0.486, 0.153, 0.072), power = 0.9
+  )
+  expect_equal(res$total_n, 187)
+  expect_equal(res$n_per_group, 94)
+})
+
+test_that("twoOrdinal matches Machin (2018) Example 4.1 (N4 ~ 60-61)", {
+  # p. 59: kappa = 4, phi = 1, OR = 3.65, 2-sided alpha = 0.05, power = 0.80.
+  # The book reports N4 = 60.09 using the C-and-P averaged proportions
+  # (1 - sum p^3 = 0.9351) and N4 = 60.91 using the C proportions alone
+  # (1 - sum p^3 = 0.9147); the two variants differ by 0.8. Our package takes
+  # the supplied proportions as-is: with the C proportions alone it returns
+  # 61.42 -> 62 (the book's 60.91 uses a slightly different rounding chain).
+  # Use a +/-1 tolerance against both printed values. The book's averaged
+  # proportions (0.2564, 0.2792, 0.2056, 0.2619) are rounded and sum to
+  # 1.0031, so normalise before calling.
+  avg <- c(0.2564, 0.2792, 0.2056, 0.2619)
+  res_avg <- calculate("twoOrdinal", "test", "ordinal",
+    or = 3.65, prop_bar = avg / sum(avg), power = 0.8
+  )
+  expect_equal(res_avg$total_n, 60, tolerance = 1) # book: 60.09
+
+  res_c <- calculate("twoOrdinal", "test", "ordinal",
+    or = 3.65, prop_bar = c(0.14, 0.24, 0.24, 0.38), power = 0.8
+  )
+  expect_equal(res_c$total_n, 61, tolerance = 1) # book: 60.91
+})
+
+test_that("twoOrdinal includes the (1+phi)^2/phi allocation factor", {
+  # Machin Eq 4.3 = Gamma (1+phi)^2/phi (z+z)^2/(log OR)^2, which is
+  # Whitehead Eq 10 with A = phi. At phi = 1 the factor is 4; the earlier
+  # implementation omitted it and returned one quarter of the required size.
+  pb <- c(0.14, 0.24, 0.24, 0.38)
+  gamma <- 3 / (1 - sum(pb^3))
+  z <- qnorm(0.975) + qnorm(0.8)
+  for (phi in c(0.5, 1, 2)) {
+    expected <- gamma * (1 + phi)^2 / phi * z^2 / (log(3.65))^2
+    got <- calculate("twoOrdinal", "test", "ordinal", or = 3.65,
+      prop_bar = pb, power = 0.8, allocation = phi
+    )$total_n
+    expect_equal(got, ceiling(expected),
+      label = sprintf("phi = %.1f", phi))
+  }
 })
 
 test_that("twoOrdinal rejects proportions not summing to 1", {

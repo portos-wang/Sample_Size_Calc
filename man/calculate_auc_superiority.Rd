@@ -11,7 +11,8 @@ calculate_auc_superiority(auc, auc0, prevalence, alpha, power)
 
 \item{auc0}{Null hypothesis AUC value}
 
-\item{prevalence}{Disease prevalence}
+\item{prevalence}{Disease prevalence (used only to derive the
+non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)}
 
 \item{alpha}{Type I error}
 

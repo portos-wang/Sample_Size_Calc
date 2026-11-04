@@ -39,7 +39,12 @@ calculate_non_inferiority_means <- function(mean1, mean2, sd, margin, alpha, pow
     ),
     formula = "n = 2*(Z_a+Z_b)^2*sd^2/(mean1-mean2+margin)^2",
     formula_latex = "$$n = 2\\left(\\frac{(Z_{\\alpha} + Z_{\\beta})\\sigma}{\\mu_1 - \\mu_2 + \\Delta}\\right)^2$$",
-    reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
+    reference = paste(
+      "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size",
+      "Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3",
+      "(Comparing Means), Section 3.2.2 noninferiority, Eq 3.12, p. 50.\n\n",
+      "Also: Machin et al. (2018) Eq 11.3, p. 173."
+    )
   )
 }
 
@@ -82,7 +87,12 @@ calculate_superiority_means <- function(mean1, mean2, sd, margin, alpha, power) 
     ),
     formula = "n = 2*(Z_a+Z_b)^2*sd^2/(mean1-mean2-margin)^2",
     formula_latex = "$$n = 2\\left(\\frac{(Z_{\\alpha} + Z_{\\beta})\\sigma}{\\mu_1 - \\mu_2 - \\Delta}\\right)^2$$",
-    reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
+    reference = paste(
+      "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size",
+      "Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3",
+      "(Comparing Means), Section 3.2.2 superiority, Eq 3.12, p. 50.\n\n",
+      "Also: Machin et al. (2018) Eq 11.3, p. 173."
+    )
   )
 }
 
@@ -125,6 +135,12 @@ calculate_equivalence_means <- function(mean1, mean2, sd, margin, alpha, power) 
     ),
     formula = "n = 2*(Z_a+Z_b/2)^2*sd^2/(margin-|mean1-mean2|)^2",
     formula_latex = "$$n = 2\\left(\\frac{(Z_{\\alpha} + Z_{\\beta/2})\\sigma}{\\Delta - |\\mu_1 - \\mu_2|}\\right)^2$$",
-    reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
+    reference = paste(
+      "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size",
+      "Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3",
+      "(Comparing Means), Section 3.2.3 equivalence, Eq 3.13, p. 51; the",
+      "Z_{beta/2} convention is discussed in Section 3.6.1 (p. 67).\n\n",
+      "Also: Machin et al. (2018) Eq 11.5-11.6, p. 174."
+    )
   )
 }

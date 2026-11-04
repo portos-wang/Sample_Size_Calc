@@ -17,17 +17,25 @@ calculate_stepped_wedge(
 }
 \description{
 WLS-based Wald power for the treatment effect in a full CS stepped wedge
-design. Requires (I, T, cluster_size m, tau2, sigma2_ind) — the variance
+design. Requires (I, T, cluster_size m, tau2, sigma2_ind) - the variance
 of the treatment effect estimate is computed from the design matrix
 quadratic forms U/W/V, then power = Phi(|theta|/se - z_(1-a/2)).
 }
 \details{
-Anchor: H&H EPT example — I=24 counties, T=5 (baseline + 4 steps of 6),
-m=100, binary outcome p=0.05 (sigma2_ind = p(1-p) = 0.0475),
-CV=0.3 -> tau2 = (0.3*0.05)^2 = 2.25e-4. This implementation returns
-power = 0.959 at RR=0.64 and 0.870 at RR=0.70 (transparent Eq-8
-computation; the paper's Fig 2 "about 80\% at RR~0.64" is a figure
-reading and corresponds to RR ~ 0.73 under Eq 8 at 80\% — discrepancy
-documented in NUMERIC_ANCHORS.md).
+Eq 8 as printed (Hussey & Hughes 2007, p. 187):
+
+\preformatted{
+  Var(theta_hat) = I * sigma^2 * (sigma^2 + T * tau^2) /
+    [ (IU - W) * sigma^2 + (U^2 + ITU - TW - IV) * tau^2 ]
+}
+
+where sigma^2 is the variance of the cluster-level mean response
+(sigma^2_ind / m) and tau^2 is the between-cluster variance.
+
+Anchor: H&H EPT example - I = 24 counties, T = 5 (baseline + 4 steps of
+6), m = 100, binary outcome p = 0.05 (sigma2_ind = p(1-p) = 0.0475),
+CV = 0.3 -> tau2 = (0.3*0.05)^2 = 2.25e-4. Eq 8 returns power = 0.774 at
+RR = 0.64, matching the paper's "about 80\% power to detect a decrease in
+prevalence of roughly 36\% (from 0.05 to 0.032)".
 }
 \keyword{internal}

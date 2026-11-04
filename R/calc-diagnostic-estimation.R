@@ -79,7 +79,7 @@ calculate_diagnostic_accuracy_v2 <- function(prob, d, prevalence, alpha, power,
 auc_variance <- function(auc, ratio, var_method) {
   A <- auc
   R <- ratio
-  var_method <- rlang::arg_match(var_method, c("exponential", "binormal", "conservative"))
+  var_method <- rlang::arg_match(var_method, c("binormal", "exponential", "conservative"))
 
   if (var_method == "exponential") {
     # Eq 6.4: V = Q1/R + Q2 - A^2 * (1/R + 1); Q1 = A/(2-A), Q2 = 2A^2/(1+A)
@@ -140,7 +140,9 @@ calculate_auc_single_v2 <- function(auc, d, prevalence, alpha, ratio, var_method
       "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
       "Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).\n\n",
       "Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.\n",
-      "Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162."
+      "Binormal variance: Obuchowski, N. A. (1994). Computing sample size for",
+      "receiver operating characteristic studies. Investigative Radiology,",
+      "29(2), 238-243."
     ),
     roles = c(
       "auc = anticipated area under the ROC curve",
@@ -225,7 +227,7 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
       "48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).\n\n",
       "CI method: Simel, D. L., Samsa, G. P., & Matchar, D. B. (1991).",
       "Likelihood ratios with confidence: sample size estimation for accuracy",
-      "of a diagnostic test. Journal of Clinical Epidemiology, 44(11), 1123-1130."
+      "of a diagnostic test. Journal of Clinical Epidemiology, 44(8), 763-770."
     ),
     roles = c(
       "sens/spec = expected sensitivity/specificity (determine the observed LR)",

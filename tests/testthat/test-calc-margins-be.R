@@ -68,21 +68,24 @@ test_that("diagnostic margins reject margin <= |diff| for equivalence", {
 
 test_that("diagAUCCompareNI computes the AUC margin framework", {
   # auc1=0.85, auc2=0.80, r=0.5, margin=0.05: delta_e = 0.10
-  # V(6.4) at A_avg=0.825, R=1: Q1=0.825/1.175=0.70213, Q2=2*0.680625/1.825=0.74589
-  # V = 0.70213 + 0.74589 - 0.680625*2 = 0.08677
-  # n = 2*(1.6449+0.8416)^2*0.08677*0.5/0.01 = 2*6.1826*0.08677*0.5/0.01 = 53.6 -> 54
+  # Zhou Eq 6.5 (binormal, the default) at A_avg=0.825, R=1:
+  #   a = qnorm(0.825)*1.414; V = 0.0099*exp(-a^2/2)*([5a^2+8]+[a^2+8])
+  # n = 2*(1.6449+0.8416)^2*V*0.5/0.01
   res <- calculate("diagAUCCompare", "noninferiority", "auc",
     auc1 = 0.85, auc2 = 0.80, r = 0.5, margin = 0.05
   )
-  expect_identical(res$target_state_cases_needed, 54L)
+  A_avg <- (0.85 + 0.80) / 2
+  a <- qnorm(A_avg) * 1.414
+  V <- (0.0099 * exp(-a^2 / 2)) * ((5 * a^2 + 8) + (a^2 + 8) / 1)
+  expected <- ceiling(2 * (qnorm(0.95) + qnorm(0.8))^2 * V * 0.5 / 0.10^2)
+  expect_equal(res$target_state_cases_needed, expected)
 })
 
 test_that("diagAUCCompareEquiv computes with Z_{beta/2}", {
-  # transparent expectation via Zhou Eq 6.4 at A_avg = 0.835, R = 1:
+  # transparent expectation via Zhou Eq 6.5 (binormal) at A_avg = 0.835, R = 1
   A_avg <- (0.85 + 0.82) / 2
-  Q1 <- A_avg / (2 - A_avg)
-  Q2 <- 2 * A_avg^2 / (1 + A_avg)
-  V <- Q1 + Q2 - A_avg^2 * 2
+  a <- qnorm(A_avg) * 1.414
+  V <- (0.0099 * exp(-a^2 / 2)) * ((5 * a^2 + 8) + (a^2 + 8) / 1)
   za <- qnorm(0.95)
   zb <- qnorm(0.90)
   expected <- ceiling(2 * (za + zb)^2 * V * 0.5 / (0.05 - 0.03)^2) # delta_e = 0.02
@@ -94,11 +97,14 @@ test_that("diagAUCCompareEquiv computes with Z_{beta/2}", {
 
 # --- crossover / BE ---
 
-test_that("crossoverMean uses 2*sigma_w^2 parameterization", {
-  # delta=2, sigma_w=3: n = 2*(1.96+0.8416)^2*9/4 = 2*7.849*9/4 = 35.3 -> 36
+test_that("crossoverMean uses the 2*sigma_w^2 parameterization (total, then per sequence)", {
+  # delta=2, sigma_w=3: n_total = 2*(1.96+0.8416)^2*9/4 = 2*7.849*9/4 = 35.3
+  # -> 36 total, i.e. 18 per sequence in a 2x2 design. Julious (2004) Eq 6.6
+  # writes the same expression with n being the TOTAL sample size.
   res <- calculate("crossover", "test", "mean", delta = 2, sigma_within = 3)
-  expect_identical(res$n_required, 36L)
-  expect_identical(res$total_n, 72L) # per sequence x2
+  expect_identical(res$n_required, 18L)
+  expect_identical(res$results$n_per_sequence, 18L)
+  expect_identical(res$total_n, 36L) # 2 x per-sequence
 })
 
 test_that("bioequivalence CV=25% matches exact TOST (Phillips 1990) and PowerTOST", {

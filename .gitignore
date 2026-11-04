@@ -27,7 +27,12 @@ Thumbs.db
 .Rhistory
 
 # Documentation build
-docs/
+# NOTE: `docs/` is pkgdown's output directory, but it also holds the two
+# hand-written reference manuals DESIGN_MATRIX.md and NUMERIC_ANCHORS.md that
+# ?calculate points at. The negation patterns below keep those two in git.
+/docs/*
+!/docs/DESIGN_MATRIX.md
+!/docs/NUMERIC_ANCHORS.md
 site_local/
 vign_preview/
 *_files/

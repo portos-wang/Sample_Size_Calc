@@ -11,7 +11,9 @@ calculate_auc_single(auc, d, prevalence, alpha)
 
 \item{d}{Desired precision}
 
-\item{prevalence}{Disease prevalence}
+\item{prevalence}{Disease prevalence (used only to derive the
+non-diseased:diseased sampling ratio R = (1 - prevalence) / prevalence;
+omitted or 1 falls back to a 1:1 quota)}
 
 \item{alpha}{Type I error}
 }

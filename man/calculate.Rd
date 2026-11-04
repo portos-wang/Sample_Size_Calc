@@ -32,6 +32,14 @@ or \code{"events"}; optional for unambiguous designs.
 non-inferiority trials spending a full two-sided 0.05.
 \item \code{power}: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
 confirmatory trials.
+\item \code{alternative}: \code{"one.sided"} (the package's historical default and the
+Akoglu 2022 Table 2 Eq 2 convention) or \code{"two.sided"} (Hajian-Tilaki
+2014 Eq 6.8 convention), or \code{NULL} to keep the design default.
+Currently consumed by \code{diagAccuracy} + \code{test} + \code{proportion} only;
+other designs ignore it.
+\item \code{dropout}: anticipated dropout/non-response proportion in [0, 1),
+inflating by 1/(1-d). Currently applied by \code{cohort} + \code{test} +
+\code{proportion} only; other designs ignore it.
 }
 
 \strong{Design-specific parameters} (all validated; ranges shown):

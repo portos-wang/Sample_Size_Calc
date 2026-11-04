@@ -74,9 +74,13 @@ calculate_cohort_proportion <- function(p0, p1, ratio, alpha, power, dropout) {
 
 #' Cohort study: incidence rate comparison (person-time, Poisson)
 #'
-#' Equal person-time: T = (Za/2 + Zb)^2 (l1 + l2) / (l1 - l2)^2 per group.
-#' Unequal allocation r = T_exposed/T_unexposed:
-#' T_unexposed = (Za/2 + Zb)^2 (l1/r + l2) / (l1 - l2)^2.
+#' Machin et al. (2018) Eq 6.2 (p. 84): total person-time for a 1:phi
+#' allocation is `PU = (z_1-a/2 + z_1-b)^2 (lambda_T + lambda_S/phi) /
+#' (lambda_T - lambda_S)^2`. This implementation reports the unexposed (S)
+#' and exposed (T) components separately, with \code{r} being the
+#' exposed:unexposed person-time ratio.
+#'
+#' T_unexposed = (Za/2 + Zb)^2 (l1/r + l0) / (l1 - l0)^2, T_exposed = r*T0.
 #' @keywords internal
 calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
   if (!is.numeric(rate0) || length(rate0) != 1 || rate0 <= 0) {
@@ -89,7 +93,18 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
     cli::cli_abort("{.arg rate1} and {.arg rate0} must differ.")
   }
   if (!is.numeric(ratio) || length(ratio) != 1 || ratio < 1) {
-    cli::cli_abort("{.arg ratio} (unexposed:exposed person-time ratio) must be >= 1.")
+    cli::cli_abort("{.arg ratio} (exposed:unexposed person-time ratio) must be >= 1.")
+  }
+
+  # Machin Eq 6.2 uses (lambda_T - lambda_S)^2, so the arithmetic is
+  # symmetric, but the labels "exposed"/"unexposed" only match the intent
+  # when rate1 is the higher rate. Swap and say so, rather than silently
+  # mislabelling the two person-time columns.
+  swapped <- rate1 < rate0
+  if (swapped) {
+    tmp <- rate0
+    rate0 <- rate1
+    rate1 <- tmp
   }
 
   r <- ratio
@@ -119,10 +134,19 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
     roles = c(
       "rate0 = unexposed-group incidence rate (events per person-time)",
       "rate1 = exposed-group incidence rate",
-      "ratio = unexposed:exposed person-time ratio",
+      "ratio = exposed:unexposed person-time ratio (r >= 1)",
       "effect measure: incidence rate ratio IRR",
       "person-time = total follow-up time; for fixed duration FT, subjects needed = person-time / FT"
-    )
+    ),
+    hints = if (swapped) {
+      paste(
+        "`rate1` was lower than `rate0`, so the two rates were swapped internally",
+        "to keep the exposed/unexposed person-time labels meaningful; the",
+        "reported IRR is therefore the larger over the smaller rate."
+      )
+    } else {
+      character()
+    }
   )
 }
 

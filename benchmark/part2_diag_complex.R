@@ -162,7 +162,7 @@ ours <- calculate("its", "test", "rate", effect_sd = 2, n_pre = 12, n_post = 12,
 cat("sampleSizeCalc power =", ours$power_achieved, "\n")
 
 cat("\n########## 41. MRMC mrmc_power ##########\n")
-ours <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.2, rho3 = 0.1)
+ours <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.00196, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25, rho_b = 0.75)
 cat("sampleSizeCalc power =", ours$power, "\n")
 
 cat("\n########## 42. 筛查换算 screen_required ##########\n")

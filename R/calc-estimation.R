@@ -73,7 +73,19 @@ calculate_single_proportion <- function(p, precision, precision_type, alpha) {
 
 #' Internal calculation: single mean precision
 #'
-#' n = Z^2 * sigma^2 / d^2 (Bhardwaj 2024 p.2558; Machin 2018 Ch.9).
+#' Machin et al. (2018) Eq 9.18 (p. 152):
+#'
+#' \preformatted{
+#'   N = (t_{N-1, 1-a/2} * sigma / d)^2
+#' }
+#'
+#' The right-hand z form is the starting value N0; when N0 < 40 the Student t
+#' quantile depends on N and the equation must be iterated (Machin p. 152:
+#' "if this is large (>= 40) then this is taken as the sample size. If N0 < 40,
+#' then the Student t quantile with N0 - 1 df is obtained ... and a revised
+#' sample size N1 obtained"). This implementation iterates until N stabilises,
+#' which reproduces Machin's worked Example 9.8 behaviour.
+#'
 #' @keywords internal
 calculate_single_mean <- function(sigma, precision, alpha) {
   if (!is.numeric(sigma) || length(sigma) != 1 || sigma <= 0) {
@@ -90,19 +102,51 @@ calculate_single_mean <- function(sigma, precision, alpha) {
   }
 
   z <- z_alpha(alpha, "two.sided")
+
+  # Machin Eq 9.18: iterate N = (t_{N-1} * sigma / d)^2. The normal-theory
+  # start is used as the seed; the loop is monotone and terminates quickly.
   n <- (z * sigma / precision)^2
+  n_initial <- n
+  for (iter in seq_len(50)) {
+    df <- max(ceiling(n) - 1, 1)
+    t_q <- stats::qt(1 - alpha / 2, df)
+    n_next <- (t_q * sigma / precision)^2
+    if (ceiling(n_next) == ceiling(n)) {
+      n <- n_next
+      break
+    }
+    n <- n_next
+  }
 
   list(
     design_type = "Single mean estimation (precision)",
     n_required = inflate_n(n),
     parameters = list(sigma = sigma, precision = precision, alpha = alpha),
-    formula = "n = (Z * sigma / d)^2",
-    formula_latex = "$$n = \\left(\\frac{Z_{1-\\alpha/2} \\cdot \\sigma}{d}\\right)^2$$",
-    reference = "Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 9.\n\nAlso: Bhardwaj et al. (2024), p. 2558 (continuous outcome precision).",
+    formula = "n = (t_(n-1, 1-a/2) * sigma / d)^2 (iterated from the z starting value)",
+    formula_latex = "$$n = \\left(\\frac{t_{n-1,\\,1-\\alpha/2}\\cdot\\sigma}{d}\\right)^2$$",
+    reference = paste(
+      "Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018).",
+      "Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.).",
+      "Wiley. Chapter 9 (Confidence Intervals), Eq 9.18, p. 152 (iterative",
+      "Student t form; Eq 9.19 for relative precision).\n\n",
+      "Also: Bhardwaj et al. (2024), p. 2558 (continuous outcome precision,",
+      "normal approximation)."
+    ),
     roles = c(
       "sigma = population standard deviation (from pilot/literature)",
       "precision = margin of error d"
-    )
+    ),
+    hints = if (ceiling(n_initial) < 40) {
+      sprintf(
+        paste(
+          "n0 = %d is below 40, so the Student t quantile was iterated",
+          "(Machin Eq 9.18); the z-only approximation would give %d."
+        ),
+        ceiling(n_initial), ceiling(n)
+      )
+    } else {
+      character()
+    }
   )
 }
 

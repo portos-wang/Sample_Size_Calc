@@ -26,6 +26,19 @@ validate_alpha <- function(alpha) {
   alpha
 }
 
+#' Validate the `alternative` argument
+#'
+#' @param alternative `"two.sided"` or `"one.sided"`; `NULL` means "use the
+#'   design's own convention" (each kernel's historical default).
+#' @return Validated alternative value (character scalar or NULL)
+#' @keywords internal
+validate_alternative <- function(alternative) {
+  if (is.null(alternative)) {
+    return(NULL)
+  }
+  rlang::arg_match(alternative, c("two.sided", "one.sided"))
+}
+
 #' Validate power parameter
 #'
 #' @param power Statistical power (1 - beta); single numeric strictly inside

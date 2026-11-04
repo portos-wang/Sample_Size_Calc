@@ -7,7 +7,8 @@
 apply_cluster_design(base, cluster_size, icc)
 }
 \description{
-DE = 1 + (m - 1) * ICC (Machin 2018 Ch.12). Cluster-level rounding:
-n_clusters = ceiling(n_individuals * DE / m), individuals = n_clusters * m.
+DE = 1 + (m - 1) * ICC (Machin 2018 Eq 12.5). Cluster-level rounding:
+n_clusters = ceiling(n_individuals_raw * DE / m), individuals = n_clusters * m.
+The raw (unrounded) individual count is used so that rounding happens once.
 }
 \keyword{internal}

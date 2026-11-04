@@ -68,9 +68,43 @@ test_that("diagAUC conservative bound matches Zhou anchor (62/124)", {
   expect_identical(res$total_subjects_to_screen, 123L) # 62*(1+R) with raw n
 })
 
-test_that("diagAUC legacy behavior is untouched (golden master)", {
+test_that("diagAUC legacy path uses the Zhou Eq 6.5 binormal variance", {
+  # Zhou Eq 6.5 at A=0.80 with R = (1-0.2)/0.2 = 4:
+  #   a = qnorm(0.8)*1.414 = 1.19
+  #   V = 0.0099*exp(-a^2/2)*([5a^2+8] + [a^2+8]/R) = 0.085022
+  #   n = (1.96/0.05)^2 * 0.085022 = 130.6 -> 131
+  # The previous implementation used a mis-expanded Eq 6.4 variance
+  # (A(1-A) + (1/K)(Q1-A^2) + (Q2-A^2) = 0.23778 -> 366), which both
+  # overstated the sample size and divided by K = 0 whenever prevalence was
+  # omitted.
   res <- calculate("diagAUC", "estimate", "auc", auc = 0.8, d = 0.05, prevalence = 0.2)
-  expect_equal(res$target_state_cases_needed, 366) # legacy path (double)
+  expect_equal(res$parameters$ratio_R, 4)
+  expect_equal(res$target_state_cases_needed, 131) # legacy path returns double
+  expect_equal(res$total_subjects_to_screen, 654) # 130.6 / 0.2, unrounded
+})
+
+test_that("diagAUC with prevalence omitted falls back to a 1:1 quota, not Inf", {
+  # Historical default prevalence = 1 made R = 0 and every AUC variance term
+  # infinite. The fallback uses R = 1 and says so in `hints`.
+  res <- calculate("diagAUC", "estimate", "auc", auc = 0.80, d = 0.10)
+  expect_true(is.finite(res$target_state_cases_needed))
+  expect_identical(res$parameters$ratio_R, 1)
+  # Zhou Eq 6.5 at A = 0.80, R = 1 -> V = 0.11946 -> n = 45.9 -> 46
+  expect_equal(res$target_state_cases_needed, 46)
+  expect_true(any(grepl("fell back to 1", res$hints)))
+
+  res_test <- calculate("diagAUC", "test", "auc", auc = 0.80, auc0 = 0.70)
+  expect_true(is.finite(res_test$target_state_cases_needed))
+
+  res_cmp <- calculate("diagAUCCompare", "test", "auc", auc1 = 0.80, auc2 = 0.70, r = 0.5)
+  expect_true(is.finite(res_cmp$target_state_cases_needed))
+})
+
+test_that("diagAUC superiority reproduces the Zhou p.200 CTC anchor (13 cases)", {
+  # Zhou Eq 6.8 with A0 = 0.50, A1 = 0.80, R = 1: V0 = 0.1584, V1 = 0.11946
+  #   n = ((1.96*sqrt(0.1584) + 0.84*sqrt(0.11946))/0.30)^2 = 12.74 -> 13
+  res <- calculate("diagAUC", "test", "auc", auc = 0.80, auc0 = 0.50, prevalence = 1)
+  expect_equal(res$target_state_cases_needed, 13)
 })
 
 # --- A5: diagLR log-CI rewrite (Hajian-Tilaki 6.4) ---
@@ -99,6 +133,15 @@ test_that("diagLR legacy path is untouched (golden master)", {
   )
   expect_null(res$parameters$target_lr)
   expect_false(is.null(res$recommended_cases))
+})
+
+test_that("diagLR legacy path no longer returns Inf when prevalence is omitted", {
+  # prevalence = 1 (the historical default) used to make the control
+  # multiplier P/(1-P) infinite.
+  res <- calculate("diagLR", "estimate", "lr", sens = 0.9, spec = 0.5)
+  expect_true(is.finite(res$recommended_cases))
+  expect_identical(res$parameters$ratio_R, 1)
+  expect_true(any(grepl("fell back to 1", res$hints)))
 })
 
 test_that("diagLR without target_lr errors informatively", {

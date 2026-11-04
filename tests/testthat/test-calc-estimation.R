@@ -31,10 +31,15 @@ test_that("singleProportion rejects invalid inputs", {
   expect_snapshot(error = TRUE, calculate("singleProportion", p = 0.3, precision = -0.1))
 })
 
-test_that("singleMean computes Z^2*sigma^2/d^2", {
-  # sigma=10, d=2, alpha=0.05: (1.959964*10/2)^2 = 96.04 -> 97
+test_that("singleMean iterates the Student t quantile (Machin Eq 9.18)", {
+  # sigma=10, d=2, alpha=0.05: the z start is (1.959964*10/2)^2 = 96.04, but
+  # Machin Eq 9.18 requires N = (t_{N-1}*sigma/d)^2, which iterates up to 99.
   res <- calculate("singleMean", sigma = 10, precision = 2)
-  expect_identical(res$n_required, 97L)
+  expect_identical(res$n_required, 99L)
+
+  # Large-N case: the t correction becomes negligible
+  res_big <- calculate("singleMean", sigma = 100, precision = 2)
+  expect_identical(res_big$n_required, 9607L)
 })
 
 test_that("singleCorrelation matches Machin 2018 Ch.19 Eqs 19.5-19.8 and presize::prec_cor", {

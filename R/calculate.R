@@ -390,7 +390,8 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
         calculate_diagnostic_superiority_single(
           prob = args$prob, p0 = args$p0, prevalence = args$prevalence,
           alpha = alpha, power = power,
-          method = args$method %||% "asymptotic"
+          method = args$method %||% "asymptotic",
+          alternative = args$alternative %||% "one.sided"
         )
       }
     },
@@ -522,12 +523,12 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
     "diagAUCCompareNI" = calculate_diag_auc_compare_margin(
       auc1 = args$auc1, auc2 = args$auc2, r = args$r %||% 0.5,
       margin = args$margin, alpha = alpha, power = power,
-      task = "noninferiority", var_method = args$var_method %||% "exponential"
+      task = "noninferiority", var_method = args$var_method %||% "binormal"
     ),
     "diagAUCCompareEquiv" = calculate_diag_auc_compare_margin(
       auc1 = args$auc1, auc2 = args$auc2, r = args$r %||% 0.5,
       margin = args$margin, alpha = alpha, power = power,
-      task = "equivalence", var_method = args$var_method %||% "exponential"
+      task = "equivalence", var_method = args$var_method %||% "binormal"
     ),
     "crossoverMean" = calculate_crossover_mean(
       delta = args$delta, sigma_within = args$sigma_within,
@@ -557,7 +558,8 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       alpha = alpha, power = power
     ),
     "twoOrdinalWhitehead" = calculate_two_ordinal(
-      or = args$or, prop_bar = args$prop_bar, alpha = alpha, power = power
+      or = args$or, prop_bar = args$prop_bar, alpha = alpha, power = power,
+      allocation = args$allocation %||% 1
     ),
     "predictiveEPV" = calculate_predictive_epv(
       n_parameters = args$n_parameters, epv = args$epv %||% 10,
@@ -635,6 +637,14 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       non-inferiority trials spending a full two-sided 0.05.
 #'     * `power`: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
 #'       confirmatory trials.
+#'     * `alternative`: `"one.sided"` (the package's historical default and the
+#'       Akoglu 2022 Table 2 Eq 2 convention) or `"two.sided"` (Hajian-Tilaki
+#'       2014 Eq 6.8 convention), or `NULL` to keep the design default.
+#'       Currently consumed by `diagAccuracy` + `test` + `proportion` only;
+#'       other designs ignore it.
+#'     * `dropout`: anticipated dropout/non-response proportion in [0, 1),
+#'       inflating by 1/(1-d). Currently applied by `cohort` + `test` +
+#'       `proportion` only; other designs ignore it.
 #'   
 #'     **Design-specific parameters** (all validated; ranges shown):
 #'   
@@ -767,6 +777,7 @@ calculate <- function(...) {
   outcome <- take_exact("outcome")
   alpha <- take_exact("alpha", 0.05)
   power <- take_exact("power", 0.8)
+  alternative <- take_exact("alternative")
 
   # Positional support: leading unnamed one-element character arguments fill
   # design, then task, then outcome (calculate("rct", "test", "mean", ...)).
@@ -792,8 +803,12 @@ calculate <- function(...) {
   row <- ssr_resolve(design, task, outcome)
   alpha <- validate_alpha(alpha)
   power <- validate_power(power)
+  alternative <- validate_alternative(alternative)
 
   args <- validate_design_args(row$legacy, args)
+  # `alternative` is a control argument, not a design argument: it is consumed
+  # by the kernels that accept it, so it must not reach validate_design_args().
+  args$alternative <- alternative
   calcResult <- dispatch_calculation(row$legacy, args, alpha, power, path = "three-axis")
 
   res <- as_sample_size_result(row$legacy, row$task, row$outcome, calcResult)

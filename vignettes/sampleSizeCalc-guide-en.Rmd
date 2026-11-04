@@ -784,14 +784,14 @@ cat("Average screening target: 980; 90% guaranteed enrollment target:", safe_n, 
 
 - **Population and decision**: An imaging study compares two breast-imaging techniques using 8 radiologists and the same 50 patients, accounting for both patient and reader variability.
 - **Procedures and endpoint**: Randomize reading order, control memory effects between sessions, and blind readers to reference status. Each reader evaluates both techniques for each patient.
-- **Planning inputs**: Reuse the Zhou textbook planning components: AUC difference `delta = 0.10`, reader/occasion/case variances 0.00123, 0.00087, and 0.05, and correlations 0.25, 0.20, and 0.10. These require compatible MRMC pilot information and are not replaceable by the SD of a single AUC estimate.
+- **Planning inputs**: Reuse the Zhou textbook mammography planning components: AUC difference `delta = 0.10`, reader/occasion/patient-sampling variances 0.00123, 0.00087, and 0.00196, and correlations `rho1 = 0.5`, `rho2 = 0.3`, `rho3 = 0.25`, `rho_b = 0.75`. These require compatible MRMC pilot information and are not replaceable by the SD of a single AUC estimate.
 - **Why this design**: `mrmc_power()` evaluates power at fixed patient and reader counts; it does not solve for minimum enrollment. One reading occasion entails 50×8×2=800 interpretations.
 - **Formula** (non-central $F$, Zhou Eq 6.32):
-$$\lambda = \frac{J\delta^2}{2\left[\sigma_b^2(1-\rho_1) + \sigma_w^2/Q + \frac{\sigma_c^2(1-\rho_1)}{n} + \rho_2\sigma_b^2\left((1-\rho_1)+(J-1)(\rho_2-\rho_3)\right)\right]}, \quad \text{power} = P(F_{1,J-1}(\lambda) > F_{1-\alpha})$$
-  Zhou et al. (2011), Section 6.5, p. 225.
+$$\lambda = \frac{J\delta^2}{2\left[\sigma_b^2(1-\rho_b) + \sigma_w^2/Q + \sigma_c^2\left((1-\rho_1)+(J-1)(\rho_2-\rho_3)\right)\right]}, \quad \text{power} = P(F_{1,J-1}(\lambda) > F_{1-\alpha})$$
+  Zhou et al. (2011), Section 6.5, Eq 6.32, p. 221 (worked example p. 225).
 
 ```{r mrmc-en}
-res_5_16 <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.05, rho1 = 0.25, rho2 = 0.20, rho3 = 0.10)
+res_5_16 <- mrmc_power(n = 50, J = 8, delta = 0.10, sigma_b2 = 0.00123, sigma_w2 = 0.00087, sigma_c2 = 0.00196, rho1 = 0.50, rho2 = 0.30, rho3 = 0.25, rho_b = 0.75)
 print(res_5_16)
 ```
 
@@ -806,10 +806,10 @@ print(res_5_16)
 - **Population and decision**: A multicenter ICU study randomizes wards to a care workflow to reduce contamination between patients treated by the same staff, with about 20 eligible patients per ward.
 - **Procedures and endpoint**: Define a patient-level continuous recovery score with higher values indicating benefit, standardized timing, and assessor training. Assume control mean 10 and intervention mean 12.
 - **Planning inputs**: Use patient-level SD=3, `icc = 0.05`, and `cluster_size = 20`, giving design effect 1.95. ICC evidence should match the ward structure, outcome, and recruitment period.
-- **Why this design**: The function inflates an individually randomized requirement and rounds to complete clusters. Also assess whether the cluster count, unequal sizes, and intended cluster or mixed-model analysis support the actual trial.
-- **Formula** (design effect):
-$$DE = 1 + (m-1) \times ICC = 1.95, \quad n_{clusters} = \left\lceil \frac{n_{individual} \times DE}{m} \right\rceil$$
-  Donner & Klar (2000); Machin et al. (2018), Ch. 12.
+- **Why this design**: The function applies the design effect to the individually randomized requirement, adds Machin's Student t correction, and rounds **once** at the cluster level (each extra cluster adds a further m patients). Also assess whether the cluster count, unequal sizes, and intended cluster or mixed-model analysis support the actual trial.
+- **Formula** (Machin Eq 12.10, p. 199):
+$$DE = 1 + (m-1)\rho, \quad N = DE\left[\frac{(1+\varphi)^2}{\varphi}\cdot\frac{(Z_{\alpha/2}+Z_{\beta})^2}{(\delta/\sigma)^2} + \frac{Z^2_{\alpha/2}}{2}\right], \quad K = \left\lceil \frac{N/(1+\varphi)}{m} \right\rceil$$
+  Machin et al. (2018), Ch. 12, Eq 12.4-12.13, pp. 197-200; Donner & Klar (2000).
 
 ```{r cluster-mean-en}
 res_6_1 <- calculate("clusterRCT", "test", "mean", mean1 = 10, mean2 = 12, sd = 3, icc = 0.05, cluster_size = 20, alpha = 0.05, power = 0.8)

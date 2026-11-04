@@ -1,5 +1,119 @@
 # sampleSizeCalc 3.1.1 (Development)
 
+## Corrections (P0 series: wrong formulas / wrong citations)
+
+- **`steppedWedge` had `sigma^2` and `tau^2` swapped in Hussey & Hughes Eq 8.**
+  The printed equation (p. 187) is
+  `Var = I*sigma^2*(sigma^2 + T*tau^2) / [(IU-W)*sigma^2 + (U^2+ITU-TW-IV)*tau^2]`,
+  where `sigma^2` is the cluster-mean variance (`sigma2_ind/m`) and `tau^2` the
+  between-cluster variance. The previous code had the two factors
+  interchanged. For the paper's own Washington EPT example (I=24, T=5, m=100,
+  p=0.05, CV=0.3) it returned SE=0.00486 and power=0.959 at RR=0.64, whereas
+  Eq 8 gives SE=0.006638 and **power=0.774**, consistent with the paper's
+  "about 80% power to detect a decrease in prevalence of roughly 36%". The
+  spurious "80% crossing at RR=0.73" claim is withdrawn.
+- **`twoOrdinal` was missing the allocation factor `(1+phi)^2/phi`.**
+  Machin et al. (2018) Eq 4.3 (p. 57) is
+  `N = Gamma (1+phi)^2/phi (z_{1-a/2}+z_{1-b})^2/(log OR)^2` with
+  `Gamma = 3/(1-sum pbar^3)` (Eq 4.4); Whitehead (1993) Eq 10 (p. 2260) is
+  `n = 3(A+1)^2 (u_{a/2}+u_b)^2 / [A theta^2 (1-sum pbar^3)]`. They are
+  algebraically identical with `A = phi`, and at `phi = 1` the factor is 4.
+  The previous code omitted it and returned one quarter of the required size
+  (e.g. 16 instead of 61 for Machin Example 4.1). New `allocation` argument
+  (default 1) exposes unequal allocation. Verified against Machin Example 4.1
+  (N4 = 60.09 -> 60) and Whitehead Example 1 (n = 187, 94 per group).
+- **`kappa_Q()` now implements Cantor (1996) Eq 3 verbatim.** The previous
+  `p_o(1-p_o)/(1-p_e)^2` coincides with Cantor's Q only when both marginal
+  rating proportions are 0.5. Cantor's expression is
+  `Q = (1-pi_e)^(-4) * { sum_i pi_ii[(1-pi_e) - (pi_i. + pi_.i)(1-pi_o)]^2
+  + (1-pi_o)^2 * sum_{i!=j} pi_ij(pi_.i + pi_j.)^2 - (pi_o pi_e - 2pi_e + pi_o)^2 }`
+  with the Eq 4 identities. The implementation now reproduces **Cantor
+  Table 1** at all 18 spot-checked cells and **Table 2** at all 5 maxima
+  (`(0.3,0.3) 1.07003 at kappa=0.187`, `(0.4,0.4) 1.00558 at 0.067`,
+  `(0.5,0.5) 1.00000 at 0`, `(0.7,0.3) 0.52438 at 0`, `(0.9,0.1) 0.04819 at 0`),
+  plus both worked examples (165 and 214). The earlier claim that "pi = 0.3
+  gives Q = 1.0" was arithmetically impossible.
+- **AUC variance default is now binormal (Zhou Eq 6.5).** The exponential form
+  (Eq 6.4) systematically under-estimates variance for ordinal results (Zhou
+  p. 197), and the binormal form is what Zhou's own CTC example (p. 198,
+  n = 46) and Hajian-Tilaki's Table 7 use. `var_method` remains selectable.
+  This makes `diagAUC` reproduce the book's `n = 13` CTC superiority anchor
+  (the previous one-sided `Z_alpha` convention gave 10) and `diagAUCCompare`
+  reproduce Hajian's `n = 211` example (was 185).
+- **`singleMean` now iterates the Student t quantile** (Machin 2018 Eq 9.18,
+  p. 152), instead of using the normal z once. Machin explicitly requires the
+  iteration when N0 < 40. sigma=3, d=0.5 now gives 141 (was 139; Bhardwaj's
+  z-only arithmetic prints 138.29 -> 138). The `hints` field reports the
+  starting value when it is below 40.
+- **`cohort` + `rate` swaps the two rates when `rate1 < rate0`** and says so in
+  `hints`, so the exposed/unexposed person-time columns stay meaningful.
+  `ratio` is now documented consistently as the exposed:unexposed person-time
+  ratio (Machin Eq 6.2, p. 84).
+- **`singleArmPhaseII` minimax now matches Simon/clinfun exactly.** The tie-break
+  is "minimise N, then minimise EN(p0)", reproducing Machin 2018 Example 17.2
+  `(1/15, 5/25)` and clinfun::ph2simon for both (0.1, 0.3) and (0.2, 0.4).
+- **`clusterRCT` upgraded to Machin (2018) Eq 12.10 (Student t correction).**
+  The previous implementation wrapped the individually-randomised answer in
+  `DE = 1+(m-1)ICC` and rounded twice (once on subjects, once on clusters),
+  which over-stated the cluster count. The new implementation follows
+  Eq 12.10 (p. 199):
+  `N = DE * [ (1+phi)^2/phi * (z_{1-a/2}+z_{1-b})^2/(delta/sigma)^2
+  + z^2_{1-a/2}/2 ]`, rounds **once at the cluster level**, and reproduces
+  **Machin Example 12.1 (p. 206) exactly**: delta=3.5, sigma=6.94, m=2,
+  ICC=0.025, 2-sided alpha=0.05, power=0.90 -> **N=172, K=86, 43 per arm**
+  (was 176/44). The ICC sensitivity in the same example is also reproduced
+  (rho=0.1 -> 184, rho=0.2 -> 204). New `cluster_size_inflation()` exposes
+  Eq 12.5 (constant m) and Eq 12.7 (variable m via `cv_m`), and Eq 12.12/12.13
+  give the binary `sigma_Plan` and `rho_Binary`.
+- **`crossover` reported a double-counted total.** Julious (2004) Eq 6.6
+  (Section 6.3 "Cross-over trials") writes `n` as the **total** sample size,
+  so `n_required` is now the per-sequence count and `total_n = 2 * n_required`.
+  The previous code used the total as `n_required` and then doubled it again.
+  Example: delta=2, sigma_w=3 now gives 18 per sequence / 36 total (was 36/72).
+  Senn (2002) Section 9.5.1 (Eq 9.18-9.20, pp. 278-280) confirms the
+  parameterisation (`sigma^2 = 2 sigma_w^2`, `Var = sigma^2/n`, `df = n-2`,
+  `n` = total with `n/2` per sequence) and refines it with a Student t
+  correction; the `hints` field now says so.
+- **`mrmc_power()` now implements Zhou Eq 6.32 verbatim.** The previous code
+  used `(1 - rho1)` instead of `(1 - rho_b)`, divided the patient-sampling
+  variance `sigma_c2` by `n`, and added a spurious
+  `rho2*sigma_b2*((1-rho1)+(J-1)(rho2-rho3))` term. With the book's own
+  mammography parameters it returned 0.979 (the book reports 89%); the old
+  "0.888" anchor came from a different parameter set. The function now has a
+  `rho_b` argument (Table 6.3 `p_b`), which defaults to `rho1` for
+  backward compatibility, and reproduces the book exactly:
+  `lambda = 14.0672`, `power = 0.893`.
+- **Legacy AUC and likelihood-ratio paths no longer return `Inf`.**
+  `calculate_auc_single()`, `calculate_auc_superiority()` and
+  `calculate_auc_comparison()` used a mis-expanded Zhou Eq 6.4 variance
+  (`A(1-A) + (1/K)(Q1-A^2) + (Q2-A^2)`) and divided by `K = (1-P)/P`, which is
+  zero at the historical default `prevalence = 1`. They now use the printed
+  Eq 6.4 variance function `Q1/R + Q2 - A^2(1/R + 1)`; when `prevalence` is
+  omitted the non-diseased:diseased ratio `R` falls back to 1 (a 1:1
+  case:control quota) and the deviation is reported in `hints`.
+  `calculate_likelihood_ratio_test()` had the same `P/(1-P)` division and now
+  falls back identically. This changes previously published numbers:
+  `auc_single(auc=0.8, d=0.05, prevalence=0.2)` is 120 (was 366),
+  `aucSuperiority` 26 (was 66), `aucComparison` 65 (was 122),
+  `likelihoodRatioTest` 35 (was 120).
+- **A'Hern (2001) citation corrected** in `calculate_ahern()`,
+  `calculate_diagnostic_superiority_single()` and the Chinese guide: the paper
+  is *Statistics in Medicine* 20(6), 859-866 (doi:10.1002/sim.721), not
+  *British Journal of Cancer* 85(2), 223-226.
+- **Two more citation corrections** verified against the source PDFs:
+  Obuchowski (1994) is *Investigative Radiology* 29(2), 238-243 (not
+  *Medical Decision Making* 14(2), 154-162); Simel et al. (1991) is
+  *Journal of Clinical Epidemiology* 44(8), 763-770 (not 44(11), 1123-1130).
+  Julious (2004) bioequivalence/crossover is Section 6.3 with Eq 6.1-6.9
+  (the non-central t power expression is Eq 6.8), not "Eq 13, p. 1941".
+- **`alternative` is now a real control argument** of `calculate()`. It
+  reproduces either Akoglu (2022) Table 2 Eq 2 (one-sided, the default that
+  preserves existing numbers) or Hajian-Tilaki (2014) Eq 6.8 (two-sided).
+  It is currently consumed by `diagAccuracy` + `test` + `proportion` only.
+  The unimplemented `sampling` parameter has been removed from
+  `docs/DESIGN_MATRIX.md`, and the partial scope of `dropout` is now stated
+  explicitly there and in `?calculate`.
+
 ## Output & Reporting Enhancements
 
 - **Comprehensive Output Display**: Default `print()` and `summary()` methods now

@@ -33,7 +33,14 @@ calculate_two_means <- function(mean1, mean2, sd, alpha, power) {
     ),
     formula = "n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2",
     formula_latex = "$$n = 2\\left(\\frac{Z_{\\alpha/2} + Z_{\\beta}}{\\delta}\\right)^2 = 2\\left(\\frac{(Z_{\\alpha/2} + Z_{\\beta}) \\cdot \\sigma}{\\mu_1 - \\mu_2}\\right)^2$$",
-    reference = "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press."
+    reference = paste(
+      "Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size",
+      "Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3",
+      "(Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11",
+      "(p. 48; the Student t refinement is Table 3.2, p. 49).\n\n",
+      "Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t",
+      "correction term)."
+    )
   )
 }
 

@@ -13,7 +13,8 @@ calculate_auc_comparison(auc1, auc2, r, prevalence, alpha, power)
 
 \item{r}{Correlation between tests}
 
-\item{prevalence}{Disease prevalence}
+\item{prevalence}{Disease prevalence (used only to derive the
+non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)}
 
 \item{alpha}{Type I error}
 
