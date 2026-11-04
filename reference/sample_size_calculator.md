@@ -51,7 +51,7 @@ sampleSizeCalculator(design, alpha = 0.05, power = 0.8, ...)
   | `equivalenceProportions` | equivalence, binary | `p1`, `p2`, `margin` |
 
   New code should prefer the three-axis
-  [`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+  [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   API.
 
 - alpha:
@@ -67,7 +67,7 @@ sampleSizeCalculator(design, alpha = 0.05, power = 0.8, ...)
 - ...:
 
   Design-specific arguments (see the table in `design` and
-  [`?calculate`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+  [`?calculate`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   for domains; e.g. `mean1`, `mean2`, `sd` for twoMeans). Parameters
   outside their validated domain abort with a structured `cli` error
   naming the offending argument.
@@ -80,15 +80,15 @@ LaTeX source (`formula_latex`), calculation process
 (`calculation_steps`, alias `calculation`), and literature references
 (`reference`). These fields can also be extracted directly from the
 object. See
-[`print.sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/print.sample_size_result.md)
+[`print.sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/print.sample_size_result.md)
 and
-[`summary.sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/summary.sample_size_result.md).
+[`summary.sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/summary.sample_size_result.md).
 
 ## Details
 
 `sample_size_calculator()` is the legacy single-keyword API retained for
 backward compatibility. New code should prefer the three-axis
-[`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+[`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
 entry point; see inst/reference/DESIGN_MATRIX.md for the keyword
 mapping. Results are identical between the two entry points.
 

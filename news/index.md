@@ -77,7 +77,7 @@
   (`sigma^2 = 2 sigma_w^2`, `Var = sigma^2/n`, `df = n-2`, `n` = total
   with `n/2` per sequence) and refines it with a Student t correction;
   the `hints` field now says so.
-- **[`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md)
+- **[`mrmc_power()`](https://rpackages.portos.wang/sample_size_calc/reference/mrmc_power.md)
   now implements Zhou Eq 6.32 verbatim.** The previous code used
   `(1 - rho1)` instead of `(1 - rho_b)`, divided the patient-sampling
   variance `sigma_c2` by `n`, and added a spurious
@@ -88,10 +88,10 @@
   for backward compatibility, and reproduces the book exactly:
   `lambda = 14.0672`, `power = 0.893`.
 - **Legacy AUC and likelihood-ratio paths no longer return `Inf`.**
-  [`calculate_auc_single()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_auc_single.md),
-  [`calculate_auc_superiority()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_auc_superiority.md)
+  [`calculate_auc_single()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_single.md),
+  [`calculate_auc_superiority()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_superiority.md)
   and
-  [`calculate_auc_comparison()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_auc_comparison.md)
+  [`calculate_auc_comparison()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_comparison.md)
   used a mis-expanded Zhou Eq 6.4 variance
   (`A(1-A) + (1/K)(Q1-A^2) + (Q2-A^2)`) and divided by `K = (1-P)/P`,
   which is zero at the historical default `prevalence = 1`. They now use
@@ -99,15 +99,15 @@
   `prevalence` is omitted the non-diseased:diseased ratio `R` falls back
   to 1 (a 1:1 case:control quota) and the deviation is reported in
   `hints`.
-  [`calculate_likelihood_ratio_test()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_likelihood_ratio_test.md)
+  [`calculate_likelihood_ratio_test()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_likelihood_ratio_test.md)
   had the same `P/(1-P)` division and now falls back identically. This
   changes previously published numbers:
   `auc_single(auc=0.8, d=0.05, prevalence=0.2)` is 120 (was 366),
   `aucSuperiority` 26 (was 66), `aucComparison` 65 (was 122),
   `likelihoodRatioTest` 35 (was 120).
 - **A’Hern (2001) citation corrected** in
-  [`calculate_ahern()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_ahern.md),
-  [`calculate_diagnostic_superiority_single()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_diagnostic_superiority_single.md)
+  [`calculate_ahern()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_ahern.md),
+  [`calculate_diagnostic_superiority_single()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_diagnostic_superiority_single.md)
   and the Chinese guide: the paper is *Statistics in Medicine* 20(6),
   859-866 (<doi:10.1002/sim.721>), not *British Journal of Cancer*
   85(2), 223-226.
@@ -119,14 +119,14 @@
   with Eq 6.1-6.9 (the non-central t power expression is Eq 6.8), not
   “Eq 13, p. 1941”.
 - **`alternative` is now a real control argument** of
-  [`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md).
+  [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md).
   It reproduces either Akoglu (2022) Table 2 Eq 2 (one-sided, the
   default that preserves existing numbers) or Hajian-Tilaki (2014) Eq
   6.8 (two-sided). It is currently consumed by `diagAccuracy` + `test` +
   `proportion` only. The unimplemented `sampling` parameter has been
   removed from `inst/reference/DESIGN_MATRIX.md`, and the partial scope
   of `dropout` is now stated explicitly there and in
-  [`?calculate`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md).
+  [`?calculate`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md).
 
 ### Output & Reporting Enhancements
 
@@ -212,7 +212,7 @@
   precise cumulative incidence under an exponential model (exact
   binomial-CI search; anchor: rate=0.10/yr, t=10y, delta=0.05 -\> 2366
   person-years, exactly the paper’s Figure 1 worked example).
-- [`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md):
+- [`mrmc_power()`](https://rpackages.portos.wang/sample_size_calc/reference/mrmc_power.md):
   power calculation for MRMC studies (paired-patient, paired-reader)
   using the Obuchowski-Rockette mixed model / non-central F framework
   (Zhou et al. 2011 Eq 6.32, Tables 6.3-6.4). Verified against the
@@ -236,11 +236,11 @@
   `calculate(design, task, outcome, ...)`. Combinations are validated
   against a master table; illegal combinations error with the list of
   legal ones. See `inst/reference/DESIGN_MATRIX.md`.
-  ([`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+  ([`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
   remains fully and silently compatible: all 17 legacy keywords now
   dispatch through the same shared code path, and golden-master tests
   assert identical results between both APIs.)
-- [`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+- [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   resolves arguments by exact name only. This fixes a latent
   partial-matching bug where design-specific arguments such as `d` could
   be silently swallowed into the `design` formal.
@@ -356,9 +356,9 @@
 ### New features (infrastructure)
 
 - New `sample_size_result` internals:
-  [`new_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/new_sample_size_result.md),
-  [`validate_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_sample_size_result.md),
-  [`assert_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/assert_sample_size_result.md)
+  [`new_sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/new_sample_size_result.md),
+  [`validate_sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/validate_sample_size_result.md),
+  [`assert_sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/assert_sample_size_result.md)
   (internal three-piece constructor family) with canonical result fields
   (`n_1`, `events`, `cases`, `subjects_to_screen`, …) derived from
   legacy storage fields, preparing for new design modules in 3.0.
@@ -380,7 +380,7 @@
 ### Tests
 
 - Golden master suite: all 17 legacy keywords asserted identical between
-  [`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+  [`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
   and
-  [`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+  [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   (228 assertions in the calculate suite alone).

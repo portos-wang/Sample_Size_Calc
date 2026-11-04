@@ -160,7 +160,7 @@ cat(res_1_1$reference)
 
 R 控制台显示可复制的 LaTeX 源码。在 R Markdown 文档中，可以通过
 `results = "asis"` 代码块内的 `cat(res_1_1$formula_latex)` 排版公式。
-[结果报告指南](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.md)提供可执行示例和保存报告的方法。
+[结果报告指南](https://rpackages.portos.wang/sample_size_calc/articles/result-reporting.md)提供可执行示例和保存报告的方法。
 
 ### 1.2 两独立样本比例比较（二分类治愈率）
 
@@ -2324,7 +2324,7 @@ cat("理论平均筛查数：980 人；90% 概率安全保障筛查数：", safe
   0.00123、0.00087、0.00196，相关系数
   `rho1 = 0.5`、`rho2 = 0.3`、`rho3 = 0.25`、`rho_b = 0.75`；这些分量需要相容的
   MRMC 先导资料，不能用单个 AUC 的 SD 替代。
-- **设计选择**：[`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md)
+- **设计选择**：[`mrmc_power()`](https://rpackages.portos.wang/sample_size_calc/reference/mrmc_power.md)
   在给定病例与读者数后求效能，不会自动求最小病例数。一次阅读场次下，工作量为
   50×8×2=800 次判读。
 - **数学公式与出处**：Obuchowski-Rockette 混合效应模型非中心 \\F\\

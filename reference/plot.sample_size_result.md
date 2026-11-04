@@ -15,9 +15,9 @@ plot(x, type = c("power", "sample_size"), ...)
 - x:
 
   Object of class `sample_size_result` from
-  [`calculate`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+  [`calculate`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   or
-  [`sample_size_calculator`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md).
+  [`sample_size_calculator`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md).
 
 - type:
 

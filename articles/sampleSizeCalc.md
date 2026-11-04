@@ -10,10 +10,10 @@ in clinical and epidemiological research.
 > researchers?** - **📖
 > [中文完全使用指南：临床科研样本量计算从入门到精通 (Comprehensive Guide
 > in
-> Chinese)](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.md)**:
+> Chinese)](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.md)**:
 > 零基础入门，覆盖全部设计、参数白话解释、公式推导、生动临床案例、输出逐行精读与标书模板。 -
 > **📘 [English Comprehensive Guide (Zero-to-Hero
-> Tutorial)](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.md)**:
+> Tutorial)](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.md)**:
 > End-to-end walkthrough covering all 39+ designs, intuitive statistical
 > analogies, primary mathematical formulas, worked clinical scenarios,
 > and protocol boilerplates.
@@ -171,7 +171,7 @@ process, and literature references. Parameter roles (for example, `p0`
 is unexposed incidence in a cohort but control-group exposure in a
 case-control study) and methodological hints are included where
 available. See the [reporting
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.md)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/result-reporting.md)
 for field extraction and a rendered formula example.
 
 ## Introduction (legacy examples)
@@ -1001,7 +1001,7 @@ cat(result$reference)
 
 `calculation` is an alias for `calculation_steps`. Both the three-axis
 API and
-[`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+[`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
 provide these report fields.
 
 ------------------------------------------------------------------------
@@ -1132,7 +1132,7 @@ correction).
 ## Getting Help
 
 - **Function documentation**:
-  [`?sample_size_calculator`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+  [`?sample_size_calculator`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
 - **Complete formula reference**: `docs/formula_reference_guide.md`
 - **Literature verification**: `docs/literature_verification_report.md`
 - **Report issues**: [GitHub

@@ -29,9 +29,9 @@ These are teaching protocols with illustrative clinical inputs. In a
 real study, document compatible evidence for the expected effects,
 variability, prevalence, and margins; a citation for the formula does
 not establish those clinical assumptions. The
-[English](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
+[English](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.html)
 and
-[Chinese](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html)
+[Chinese](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.html)
 guides expand 52 scenarios into population, endpoint, parameter, design,
 and recruitment decisions.
 
@@ -347,9 +347,9 @@ Plan 46 cases and the same number of non-cases, each contributing a
 complete score and reference result.
 
 Illegal combinations error with the list of legal ones. The [English
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.html)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.html)
 and [Chinese
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.html)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.html)
 cover design choices, parameters, formulas, and worked clinical
 examples. The [regression
 tests](https://github.com/portos-wang/Sample_Size_Calc/tree/master/tests/testthat)
@@ -419,7 +419,7 @@ sample_size_calculator("survival", hr = 0.7)                        # 247 events
 
 ## Result object
 
-[`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+[`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
 returns a `sample_size_result` S3 object. Printing the object (or
 calling [`print()`](https://rdrr.io/r/base/print.html)) displays the
 design, sample size, and all four report components:
@@ -432,7 +432,7 @@ design, sample size, and all four report components:
 | Literature sources | `Reference` | `reference` |
 
 The same reporting components are available through
-[`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md).
+[`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md).
 Assigning a result to a variable stores it; print that variable to
 display the report. [`summary()`](https://rdrr.io/r/base/summary.html)
 additionally shows all input parameters, classification axes, and
@@ -502,7 +502,7 @@ cat(res$reference)
 The R console displays LaTeX as copyable source. In an R Markdown
 document, use `cat(res$formula_latex)` in a chunk with
 `results = "asis"` to typeset it. See the [reporting
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.html)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/result-reporting.html)
 for an executed example and instructions in English and Chinese.
 
 ## Study designs (family overview)

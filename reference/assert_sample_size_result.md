@@ -13,7 +13,7 @@ assert_sample_size_result(x)
 - x:
 
   Object to assert; see
-  [`validate_sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/validate_sample_size_result.md)
+  [`validate_sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/validate_sample_size_result.md)
   for the required structure.
 
 ## Value

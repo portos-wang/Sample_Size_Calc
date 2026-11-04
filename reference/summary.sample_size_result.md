@@ -2,7 +2,7 @@
 
 Includes the plain-text formula, LaTeX source, calculation process, and
 references shown by
-[`print.sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/print.sample_size_result.md),
+[`print.sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/print.sample_size_result.md),
 with all input parameters, design axes, and recorded adjustments.
 
 ## Usage

@@ -205,7 +205,7 @@ methods. Default printing shows sample sizes, the plain-text formula
 references (`reference`). New-style objects also carry axis metadata
 (`task`, `outcome`, `design_canonical`, `results`, `roles`,
 `adjustments`).
-[`summary.sample_size_result()`](https://portos-wang.github.io/Sample_Size_Calc/reference/summary.sample_size_result.md)
+[`summary.sample_size_result()`](https://rpackages.portos.wang/sample_size_calc/reference/summary.sample_size_result.md)
 additionally lists all input parameters and recorded adjustments.
 
 ## Examples

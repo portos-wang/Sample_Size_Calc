@@ -2,17 +2,17 @@
 
 ## Default output / 默认输出
 
-[`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+[`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
 and
-[`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+[`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
 return a `sample_size_result` object. Printing it displays the study
 design, required sample size, and four report components. Assigning the
 result to a variable stores it; `print(res)` or entering `res` in the R
 console displays the report.
 
-[`calculate()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate.md)
+[`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
 和
-[`sample_size_calculator()`](https://portos-wang.github.io/Sample_Size_Calc/reference/sample_size_calculator.md)
+[`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
 返回 `sample_size_result` 对象。
 默认打印会显示研究设计、所需样本量，以及以下四项内容。赋值仅保存结果；
 输入对象名称或调用 `print(res)` 即可查看完整输出。
@@ -258,7 +258,7 @@ writeLines(enc2utf8(report), "sample-size-report.txt", useBytes = TRUE)
 ```
 
 See the [English
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-en.md)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.md)
 or
-[中文完整指南](https://portos-wang.github.io/Sample_Size_Calc/articles/sampleSizeCalc-guide-zh.md)
+[中文完整指南](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.md)
 for examples across study designs.

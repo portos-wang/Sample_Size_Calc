@@ -3,7 +3,7 @@
 Legacy precision-based minimum-case rule. Kept for golden-master
 compatibility; for the log-CI method of Hajian-Tilaki (2014) Eq
 6.10-6.14 use `lr_type`/`target_lr`, which routes to
-[`calculate_likelihood_ratio_v2()`](https://portos-wang.github.io/Sample_Size_Calc/reference/calculate_likelihood_ratio_v2.md).
+[`calculate_likelihood_ratio_v2()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_likelihood_ratio_v2.md).
 
 ## Usage
 

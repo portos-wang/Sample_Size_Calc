@@ -159,7 +159,7 @@ cat(res_1_1$reference)
 The R console displays copyable LaTeX source. To typeset it in R
 Markdown, use `cat(res_1_1$formula_latex)` in a chunk with
 `results = "asis"`. The [reporting
-guide](https://portos-wang.github.io/Sample_Size_Calc/articles/result-reporting.md)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/result-reporting.md)
 includes an executed example and instructions for saving the report.
 
 ### 1.2 Two Independent Proportions (Binary Endpoint)
@@ -2612,7 +2612,7 @@ cat("Average screening target: 980; 90% guaranteed enrollment target:", safe_n, 
   `rho_b = 0.75`. These require compatible MRMC pilot information and
   are not replaceable by the SD of a single AUC estimate.
 - **Why this design**:
-  [`mrmc_power()`](https://portos-wang.github.io/Sample_Size_Calc/reference/mrmc_power.md)
+  [`mrmc_power()`](https://rpackages.portos.wang/sample_size_calc/reference/mrmc_power.md)
   evaluates power at fixed patient and reader counts; it does not solve
   for minimum enrollment. One reading occasion entails 50×8×2=800
   interpretations.
