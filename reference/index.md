@@ -2,8 +2,8 @@
 
 ## Unified Three-Axis API / 统一三轴入口
 
-Primary entry points supporting 39+ study design combinations (design x
-task x outcome) and legacy single-keyword compatibility.
+Primary entry points supporting 46 legal study design combinations
+(design x task x outcome) and legacy single-keyword compatibility.
 
 - [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   : Unified sample size calculator (three-axis API)

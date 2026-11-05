@@ -1,14 +1,14 @@
-# sampleSizeCalc
+# SampleSizeCalc
 
 > Sample Size Calculator for Clinical Research
 
-A comprehensive R package for sample size determination across **39
-design combinations**: experimental trials (superiority /
-non-inferiority / equivalence), observational studies (cohort,
-case-control, cross-sectional), diagnostic accuracy studies (estimation,
-testing, comparison, AUC), and complex designs (cluster RCT, Simon
-two-stage, bioequivalence, ordered outcomes, prediction models,
-interrupted time series).
+A comprehensive R package for sample size determination across **46
+legal design-task-outcome combinations**: experimental trials
+(superiority / non-inferiority / equivalence), observational studies
+(cohort, case-control, cross-sectional), diagnostic accuracy studies
+(estimation, testing, comparison, AUC), and complex designs (cluster
+RCT, Simon two-stage, bioequivalence, ordered outcomes, prediction
+models, interrupted time series).
 
 Every result displays the formula in plain text and LaTeX, a calculation
 process, and literature references in the default R console output.
@@ -16,11 +16,21 @@ Parameter roles and methodological hints are included where available.
 
 ## Installation
 
+Once the package is available on CRAN, install the released version
+with:
+
 ``` r
 
-devtools::install_github("portos-wang/Sample_Size_Calc")
+install.packages("SampleSizeCalc")
+```
+
+Until then, or to install the development version, use GitHub:
+
+``` r
+
+remotes::install_github("portos-wang/Sample_Size_Calc")
 # or from a local source
-devtools::install_local("path/to/Sample_Size_Calc")
+remotes::install_local("path/to/Sample_Size_Calc")
 ```
 
 ## Quick start: clinical study planning
@@ -47,7 +57,7 @@ required.
 
 ``` r
 
-library(sampleSizeCalc)
+library(SampleSizeCalc)
 
 # design x task x outcome
 trial_mean <- calculate("rct", "test", "mean",
@@ -64,7 +74,7 @@ trial_mean
 #> Formula (LaTeX):
 #> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =
 #> 0.05, power = 0.80).
 #> • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common
@@ -78,9 +88,11 @@ trial_mean
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#>
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 This requires 37 complete patients per arm. If 10% are expected to lack
@@ -113,7 +125,7 @@ trial_prop
 #> Formula (LaTeX):
 #> $$n = \frac{\left[Z_{\alpha/2}\sqrt{2\bar{p}(1-\bar{p})} + Z_{\beta}\sqrt{p_1(1-p_1) + p_2(1-p_2)}\right]^2}{(p_1 - p_2)^2}$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: State hypotheses: H0: p1 = p2 vs H1: p1 != p2 (two-sided alpha =
 #> 0.05, power = 0.80).
 #> • Step 2: Compute pooled proportion: p_bar = (p1 + p2) / 2 = (0.85 + 0.70) / 2
@@ -127,12 +139,12 @@ trial_prop
 #> • Step 6: Round up to integer: n = 121 per group, total sample size N = 242.
 #> Reference:
 #> Primary (formula as implemented, without continuity correction): Fleiss, J. L., Tytun, A., & Ury, H. K. (1980). A simple approximation for calculating sample sizes for comparing independent proportions. Biometrics, 36(2), 343-346.
-#> 
+#>
 #> With continuity correction: Casagrande, J. T., Pike, M. C., & Smith, P. G. (1978). An improved approximate formula for calculating sample sizes for comparing two binomial distributions. Biometrics, 34(3), 483-494.
-#> 
+#>
 #> Book: Fleiss, J. L., Levin, B., & Paik, M. C. (2003). Statistical methods for rates and proportions (3rd ed.). Wiley.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 The result is 121 patients per arm, 242 total. Endpoint completeness of
@@ -159,7 +171,7 @@ be_trial
 #> • Total sample size: 24
 #> • Power achieved: 0.8372
 #> Parameter roles
-#> 
+#>
 #> • cv = intra-subject coefficient of variation (log scale implied)
 #> • theta0 = anticipated geometric mean ratio (true ratio, default 1.0)
 #> • margin = [0.80, 1.25] average BE criteria
@@ -169,7 +181,7 @@ be_trial
 #> Formula (LaTeX):
 #> $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: Intra-subject variance on log scale: sigma_w = sqrt(ln(1 + CV^2)) =
 #> sqrt(ln(1 + 0.25^2)) = 0.2462.
 #> • Step 2: Standard BE log-scale boundaries: [ln(0.80), ln(1.25)] = [-0.2231,
@@ -182,12 +194,12 @@ be_trial
 #> Total N = 24).
 #> Reference:
 #> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
-#> 
-#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23, 1921-1986 (Eq 13, p. 1941);
+#>
+#>  Also: Julious, S. A. (2004). Tutorial in biostatistics: sample sizes for clinical trials with normal data. Statistics in Medicine, 23(12), 1921-1986 (Section 6.3 'Cross-over trials', Eq 6.1-6.9; the non-central t power expression is Eq 6.8).
 #>  Schuirmann, D. J. (1987). J Pharmacokinet Biopharm, 15(6), 657-680;
 #>  Chow & Liu (2009). Design and Analysis of Bioavailability and Bioequivalence Studies.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 This needs 12 complete subjects per sequence, 24 total, each completing
@@ -221,7 +233,7 @@ diag_precision
 #> Formula (LaTeX):
 #> $$n_{{{cases}}} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: Specify diagnostic accuracy prob (Se or Sp) = 0.85, margin of error d
 #> = 0.05, prevalence = 0.20 (alpha = 0.05).
 #> • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =
@@ -234,10 +246,10 @@ diag_precision
 #> screen = 980.
 #> Reference:
 #> Primary: Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143(1), 29-36.
-#> 
+#>
 #> Review: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 The requirement is 196 confirmed cases, with an expectation-based
@@ -264,7 +276,7 @@ survey
 #> • Design type: "Single proportion estimation (precision)"
 #> • Required sample size: 323
 #> Parameter roles
-#> 
+#>
 #> • p = expected proportion (e.g. prevalence)
 #> • precision = margin of error d (half-width of the CI)
 #> • confidence level = 95%
@@ -273,7 +285,7 @@ survey
 #> Formula (LaTeX):
 #> $$n = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: Specify anticipated proportion p = 0.30, margin of error d = 0.05
 #> (absolute precision), alpha = 0.05.
 #> • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =
@@ -284,10 +296,10 @@ survey
 #> • Step 5: Round up to integer: Required sample size n = 323.
 #> Reference:
 #> Bhardwaj et al. (2024). Determination of sample size for various study designs in medical research: A practical primer. Journal of Family Medicine and Primary Care, 13(7), 2555-2561 (p. 2558).
-#> 
+#>
 #> Also: Lwanga, S. K., & Lemeshow, S. (1991). Sample size determination in health studies: A practical manual. World Health Organization.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 Obtain 323 valid records; at a 90% response rate, invite about 359
@@ -314,7 +326,7 @@ auc_precision
 #> • Total subjects to screen: 92
 #> • Total subjects: 92
 #> Parameter roles
-#> 
+#>
 #> • auc = anticipated area under the ROC curve
 #> • precision = desired CI half-width L
 #> • ratio = case:control ratio R (cases:non-cases; default 1)
@@ -324,7 +336,7 @@ auc_precision
 #> Formula (LaTeX):
 #> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
 #> 1, alpha = 0.05.
 #> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
@@ -336,11 +348,11 @@ auc_precision
 #> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
-#> 
+#>
 #>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
-#>  Binormal variance: Obuchowski, N. A. (1994). Medical Decision Making, 14(2), 154-162.
+#>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 Plan 46 cases and the same number of non-cases, each contributing a
@@ -372,7 +384,7 @@ sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)  # 37/group
 #> Formula (LaTeX):
 #> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =
 #> 0.05, power = 0.80).
 #> • Step 2: Calculate mean difference delta = |mu1 - mu2| = |10 - 12| = 2; common
@@ -386,9 +398,11 @@ sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)  # 37/group
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
 #> Reference:
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#>
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 sample_size_calculator("survival", hr = 0.7)                        # 247 events
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
@@ -399,7 +413,7 @@ sample_size_calculator("survival", hr = 0.7)                        # 247 events
 #> Formula (LaTeX):
 #> $$E = \frac{(Z_{\alpha/2} + Z_{\beta})^2}{p_E(1-p_E)[\ln(HR)]^2}$$
 #> Calculation process:
-#> 
+#>
 #> • Step 1: State survival parameters: Hazard Ratio HR = 0.70, experimental arm
 #> allocation pE = 0.50 (alpha = 0.05, power = 0.80).
 #> • Step 2: Compute log hazard ratio: ln(HR) = ln(0.70) = -0.3567.
@@ -409,12 +423,12 @@ sample_size_calculator("survival", hr = 0.7)                        # 247 events
 #> • Step 5: Round up to integer: Target events needed E = 247.
 #> Reference:
 #> Primary: Schoenfeld, D. A. (1983). Sample-size formula for the proportional-hazards regression model. Biometrics, 39(2), 499-503.
-#> 
+#>
 #> Extensions:
 #> - Hsieh, F. Y., & Lavori, P. W. (2000). Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates. Controlled Clinical Trials, 21(6), 552-560.
 #> - Rubinstein, L. V., Gail, M. H., & Santner, T. J. (1981). Planning the duration of a comparative clinical trial with loss to follow-up and a period of continued observation. Journal of Chronic Diseases, 34(9-10), 469-479.
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 ```
 
 ## Result object
@@ -447,29 +461,29 @@ summary(res)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Summary
 #> ────────────────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ── Study Design
 #> • Type: "Two independent samples, mean comparison"
 #> • Design: "rct"
 #> • Task: "test" | Outcome: "mean"
-#> 
+#>
 #> ── Parameters
 #> • mean1: 10
 #> • mean2: 12
 #> • sd: 3
 #> • alpha: 0.05
 #> • power: 0.8
-#> 
+#>
 #> ── Sample Size Results
 #> • Sample size per group: 37
 #> • Total sample size: 74
-#> 
+#>
 #> ── Formula
 #> Plain text:
 #> `n = 2 * ((Z_alpha/2 + Z_beta) * sd / (mean1 - mean2))^2`
 #> LaTeX:
 #> $$n = 2\left(\frac{Z_{\alpha/2} + Z_{\beta}}{\delta}\right)^2 = 2\left(\frac{(Z_{\alpha/2} + Z_{\beta}) \cdot \sigma}{\mu_1 - \mu_2}\right)^2$$
-#> 
+#>
 #> ── Calculation Process
 #> • Step 1: State hypotheses: H0: mu1 = mu2 vs H1: mu1 != mu2 (two-sided alpha =
 #> 0.05, power = 0.80).
@@ -483,9 +497,11 @@ summary(res)
 #> • Step 5: Refine via exact two-sample Student's t-test power iteration
 #> (accounting for degrees of freedom df = 2n - 2).
 #> • Step 6: Round up to integer: n = 37 per group, total sample size N = 74.
-#> 
+#>
 #> ── Reference
-#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). *Sample size calculations in clinical research* (3rd ed.). CRC Press.
+#> Chow, S. C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). CRC Press. Chapter 3 (Comparing Means), Section 3.2.1 two-sample parallel design, Eq 3.11 (p. 48; the Student t refinement is Table 3.2, p. 49).
+#>
+#>  Also: Machin et al. (2018) Eq 5.4, p. 69 (same formula with the Student t correction term).
 #> ────────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -544,8 +560,8 @@ papers for each design (listed in every result’s `reference` field)
 along with the package:
 
 ``` bibtex
-@software{sampleSizeCalc,
-  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
+@software{SampleSizeCalc,
+  title = {SampleSizeCalc: Sample Size Calculator for Clinical Research},
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
@@ -563,8 +579,8 @@ MIT (see
 
 ## Unified Three-Axis API / 统一三轴入口
 
-Primary entry points supporting 39+ study design combinations (design x
-task x outcome) and legacy single-keyword compatibility.
+Primary entry points supporting 46 legal study design combinations
+(design x task x outcome) and legacy single-keyword compatibility.
 
 - [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   : Unified sample size calculator (three-axis API)
@@ -776,12 +792,12 @@ assertion utilities.
 
 ### Guides / 完整指南
 
-- [sampleSizeCalc
-  完整使用指南：全场景临床科研样本量计算（零基础到精通）](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.md):
-- [sampleSizeCalc: A Comprehensive Guide to Sample Size Determination in
+- [SampleSizeCalc
+  完整使用指南：全场景临床科研样本量计算（零基础到精通）](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-zh.md):
+- [SampleSizeCalc: A Comprehensive Guide to Sample Size Determination in
   Clinical
-  Research](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.md):
+  Research](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-en.md):
 - [Formulas, calculation steps, and references /
   公式、计算过程与参考文献](https://rpackages.portos.wang/sample_size_calc/articles/result-reporting.md):
 - [Comprehensive Guide to
-  sampleSizeCalc](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc.md):
+  SampleSizeCalc](https://rpackages.portos.wang/sample_size_calc/articles/overview.md):

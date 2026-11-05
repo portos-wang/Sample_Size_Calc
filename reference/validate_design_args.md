@@ -28,7 +28,7 @@ Validated arguments list (invisible)
 ## Examples
 
 ``` r
-sampleSizeCalc:::validate_design_args(
+SampleSizeCalc:::validate_design_args(
   "twoMeans", list(mean1 = 10, mean2 = 12, sd = 3)
 )
 #> $mean1
@@ -41,8 +41,8 @@ sampleSizeCalc:::validate_design_args(
 #> [1] 3
 #> 
 # Error: missing mean2 and sd
-try(sampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)))
-#> Error in sampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)) : 
+try(SampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)))
+#> Error in SampleSizeCalc:::validate_design_args("twoMeans", list(mean1 = 10)) : 
 #>   `sample_size_calculator()` with design "twoMeans" requires missing
 #> arguments:
 #> ✖ `mean2, sd`

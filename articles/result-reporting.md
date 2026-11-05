@@ -258,7 +258,7 @@ writeLines(enc2utf8(report), "sample-size-report.txt", useBytes = TRUE)
 ```
 
 See the [English
-guide](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.md)
+guide](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-en.md)
 or
-[中文完整指南](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.md)
+[中文完整指南](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-zh.md)
 for examples across study designs.

@@ -1,22 +1,22 @@
-# Comprehensive Guide to sampleSizeCalc
+# Comprehensive Guide to SampleSizeCalc
 
 ## Introduction
 
-The `sampleSizeCalc` package provides a comprehensive, rigorous toolkit
-for sample size determination across **39+ study design combinations**
-in clinical and epidemiological research.
+The `SampleSizeCalc` package provides sample size determination across
+**46 legal design-task-outcome combinations** in clinical and
+epidemiological research.
 
 > **Looking for in-depth tutorials tailored for clinical
 > researchers?** - **📖
 > [中文完全使用指南：临床科研样本量计算从入门到精通 (Comprehensive Guide
 > in
-> Chinese)](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-zh.md)**:
+> Chinese)](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-zh.md)**:
 > 零基础入门，覆盖全部设计、参数白话解释、公式推导、生动临床案例、输出逐行精读与标书模板。 -
 > **📘 [English Comprehensive Guide (Zero-to-Hero
-> Tutorial)](https://rpackages.portos.wang/sample_size_calc/articles/sampleSizeCalc-guide-en.md)**:
-> End-to-end walkthrough covering all 39+ designs, intuitive statistical
-> analogies, primary mathematical formulas, worked clinical scenarios,
-> and protocol boilerplates.
+> Tutorial)](https://rpackages.portos.wang/sample_size_calc/articles/clinical-guide-en.md)**:
+> End-to-end walkthrough covering the registered design combinations,
+> intuitive statistical analogies, primary mathematical formulas, worked
+> clinical scenarios, and protocol boilerplates.
 
 ## The Three-Axis API (v3.0+)
 
@@ -176,7 +176,7 @@ for field extraction and a rendered formula example.
 
 ## Introduction (legacy examples)
 
-The `sampleSizeCalc` package provides a comprehensive toolkit for sample
+The `SampleSizeCalc` package provides a comprehensive toolkit for sample
 size determination in clinical research. It supports **17 different
 study designs** across continuous outcomes, categorical outcomes,
 survival analysis, diagnostic accuracy, case-control studies, and AUC
@@ -909,7 +909,7 @@ result <- sample_size_calculator(
 plot(result, type = "power")
 ```
 
-![](sampleSizeCalc_files/figure-html/plot-power-1.png)
+![](overview_files/figure-html/plot-power-1.png)
 
 ### Plotting Sample Size vs. Effect Size
 
@@ -919,7 +919,7 @@ plot(result, type = "power")
 plot(result, type = "sample_size")
 ```
 
-![](sampleSizeCalc_files/figure-html/plot-sample-size-1.png)
+![](overview_files/figure-html/plot-sample-size-1.png)
 
 ### Using `summary()` for Parameters and Adjustments
 
@@ -1133,8 +1133,13 @@ correction).
 
 - **Function documentation**:
   [`?sample_size_calculator`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
-- **Complete formula reference**: `docs/formula_reference_guide.md`
-- **Literature verification**: `docs/literature_verification_report.md`
+- **Formula and parameter reference**:
+  [`?calculate`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
+  and the installed `reference/DESIGN_MATRIX.md` file, located with
+  `system.file("reference", "DESIGN_MATRIX.md", package = "SampleSizeCalc")`
+- **Literature verification**: the installed
+  `reference/NUMERIC_ANCHORS.md` file, located with
+  `system.file("reference", "NUMERIC_ANCHORS.md", package = "SampleSizeCalc")`
 - **Report issues**: [GitHub
   Issues](https://github.com/portos-wang/Sample_Size_Calc/issues)
 
@@ -1145,8 +1150,8 @@ correction).
 If you use this package in your research, please cite:
 
 ``` bibtex
-@software{sampleSizeCalc,
-  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
+@software{SampleSizeCalc,
+  title = {SampleSizeCalc: Sample Size Calculator for Clinical Research},
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
@@ -1161,5 +1166,5 @@ for complete citations).
 
 ------------------------------------------------------------------------
 
-**Last Updated**: 2026-11-04  
+**Last Updated**: 2026-11-05  
 **Version**: 3.1.1

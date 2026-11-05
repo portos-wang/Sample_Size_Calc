@@ -38,8 +38,8 @@ The design effect (numeric scalar \>= 1).
 ## Examples
 
 ``` r
-sampleSizeCalc:::cluster_size_inflation(20, 0.05) # 1.95 (Eq 12.5)
+SampleSizeCalc:::cluster_size_inflation(20, 0.05) # 1.95 (Eq 12.5)
 #> [1] 1.95
-sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35) # Eq 12.7
+SampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35) # Eq 12.7
 #> [1] 2.0725
 ```

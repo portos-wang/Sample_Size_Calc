@@ -93,7 +93,7 @@ A sample_size_result object
 ## Examples
 
 ``` r
-r <- sampleSizeCalc:::new_sample_size_result(
+r <- SampleSizeCalc:::new_sample_size_result(
   design = "rct", task = "test", outcome = "mean",
   design_type = "Two independent samples, mean comparison",
   parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),

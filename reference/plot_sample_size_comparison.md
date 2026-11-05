@@ -23,7 +23,7 @@ Invisibly returns the result object
 ``` r
 # \donttest{
 res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-sampleSizeCalc:::plot_sample_size_comparison(res)
+SampleSizeCalc:::plot_sample_size_comparison(res)
 
 # }
 ```

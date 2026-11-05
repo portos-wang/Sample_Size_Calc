@@ -2,11 +2,11 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  clinical-guide-en: clinical-guide-en.html
+  clinical-guide-zh: clinical-guide-zh.html
+  overview: overview.html
   result-reporting: result-reporting.html
-  sampleSizeCalc-guide-en: sampleSizeCalc-guide-en.html
-  sampleSizeCalc-guide-zh: sampleSizeCalc-guide-zh.html
-  sampleSizeCalc: sampleSizeCalc.html
-last_built: 2026-11-04T07:11Z
+last_built: 2026-11-05T02:56Z
 urls:
   reference: https://rpackages.portos.wang/sample_size_calc/reference
   article: https://rpackages.portos.wang/sample_size_calc/articles

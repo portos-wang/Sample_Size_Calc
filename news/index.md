@@ -1,6 +1,12 @@
 # Changelog
 
-## sampleSizeCalc 3.1.1 (Development)
+## SampleSizeCalc 3.1.1
+
+- The package is named `SampleSizeCalc`; use
+  [`library(SampleSizeCalc)`](https://rpackages.portos.wang/sample_size_calc/)
+  and
+  [`SampleSizeCalc::calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
+  in new scripts.
 
 ### Corrections (P0 series: wrong formulas / wrong citations)
 
@@ -195,7 +201,7 @@
     fixed-width CI estimation or assurance about every realized
     interval.
 
-## sampleSizeCalc 3.1.0
+## SampleSizeCalc 3.1.0
 
 ### 3.1 — new designs (mrmcPower, steppedWedge, kappa, Riley prediction models)
 

@@ -1,4 +1,4 @@
-# sampleSizeCalc: A Comprehensive Guide to Sample Size Determination in Clinical Research
+# SampleSizeCalc: A Comprehensive Guide to Sample Size Determination in Clinical Research
 
 ## Introduction: The Lifeblood of Clinical Research
 
@@ -10,7 +10,7 @@ wasting research grants and patient effort. Conversely, overpowered
 trials waste resources and expose unnecessary subjects to experimental
 risks.
 
-The `sampleSizeCalc` package supports the designs illustrated in **52
+The `SampleSizeCalc` package supports the designs illustrated in **52
 clinical scenarios** below. Each example explains the population, study
 procedures, endpoint, planning assumptions, and how the result
 translates into recruitment.
@@ -1013,7 +1013,7 @@ print(res_2_6)
 
 ``` r
 
-res_2_7 <- sampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)
+res_2_7 <- SampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)
 print(res_2_7)
 #> $design_type
 #> [1] "Single-arm phase II (A'Hern single-stage)"
@@ -1773,9 +1773,9 @@ print(res_5_1)
 ### 5.2 Diagnostic Superiority Test (Asymptotic Method)
 
 - **Population and decision**: An imaging team validates a lung-nodule
-  AI in a referral population using a frozen model and positive
-  threshold, with validation patients separate from development and
-  threshold-selection data.
+  diagnostic model in a referral population using a frozen model and
+  positive threshold, with validation patients separate from development
+  and threshold-selection data.
 - **Procedures and endpoint**: Compare sensitivity among
   reference-confirmed malignant cases. Define a patient-level result or
   one prespecified lesion per patient rather than treating multiple
@@ -1829,13 +1829,14 @@ print(res_5_2)
 
 ### 5.3 Diagnostic Superiority Test (A’Hern Exact Method)
 
-- **Population and decision**: The same locked-threshold lung-nodule AI
-  is evaluated with relatively few disease-positive cases, motivating a
-  direct exact-binomial requirement for the number correctly detected.
+- **Population and decision**: The same locked-threshold lung-nodule
+  diagnostic model is evaluated with relatively few disease-positive
+  cases, motivating a direct exact-binomial requirement for the number
+  correctly detected.
 - **Procedures and endpoint**: Each confirmed malignant patient is
   classified as a true positive or false negative, with reference and
-  unevaluable-result rules fixed before analysis. Do not move the AI
-  threshold after seeing whether the cutoff is met.
+  unevaluable-result rules fixed before analysis. Do not move the
+  diagnostic model threshold after seeing whether the cutoff is met.
 - **Planning inputs**: Retain sensitivity 85% versus null 70%, one-sided
   α=0.05, and 80% power, but specify `method = "exact"` to search the
   discrete design.
@@ -1888,9 +1889,9 @@ print(res_5_3)
 
 ### 5.4 Dual-Endpoint Diagnostic Trial (Se + Sp Co-Primary)
 
-- **Population and decision**: An independent breast-lesion AI
-  validation requires both sensitivity and specificity to exceed their
-  own benchmarks, consecutively enrolling patients scheduled for
+- **Population and decision**: An independent breast-lesion diagnostic
+  model validation requires both sensitivity and specificity to exceed
+  their own benchmarks, consecutively enrolling patients scheduled for
   reference assessment with one defined analysis unit per patient.
 - **Procedures and endpoint**: Reference-positive patients contribute
   sensitivity and reference-negative patients contribute specificity.
@@ -1955,10 +1956,10 @@ print(res_5_4)
 
 ### 5.5 Unpaired Comparison of Two Diagnostic Tests
 
-- **Population and decision**: Two pneumonia CT-AI systems are validated
-  in independent patient groups, for example by random allocation from
-  the same source population with each person assigned to one system’s
-  formal assessment.
+- **Population and decision**: Two pneumonia CT-based diagnostic systems
+  are validated in independent patient groups, for example by random
+  allocation from the same source population with each person assigned
+  to one system’s formal assessment.
 - **Procedures and endpoint**: Apply the same reference process in both
   groups and compare sensitivity in confirmed pneumonia cases. Severity
   distribution and reference ascertainment should not systematically
@@ -2013,9 +2014,9 @@ print(res_5_5)
 
 ### 5.6 Paired Comparison of Two Diagnostic Tests (Connor Kernel)
 
-- **Population and decision**: Both frozen AI systems now evaluate the
-  same patients’ CT images, and a common reference process establishes
-  pneumonia status.
+- **Population and decision**: Both frozen diagnostic model systems now
+  evaluate the same patients’ CT images, and a common reference process
+  establishes pneumonia status.
 - **Procedures and endpoint**: Compare paired sensitivity only in
   disease-positive patients, recording both-correct, system-1-only
   correct, system-2-only correct, and both-incorrect results.
@@ -2441,9 +2442,9 @@ print(res_5_12)
 
 ### 5.13 Two ROC-AUC Equivalence
 
-- **Population and decision**: Two AI scores are evaluated for
-  sufficiently similar AUCs on the same clinical validation sample, with
-  cases and non-cases recruited in equal proportions.
+- **Population and decision**: Two diagnostic model scores are evaluated
+  for sufficiently similar AUCs on the same clinical validation sample,
+  with cases and non-cases recruited in equal proportions.
 - **Procedures and endpoint**: Each patient receives both frozen
   continuous scores, and paired AUC differences are calculated against
   the same disease reference. AUCs from independent hospital samples are
@@ -3416,7 +3417,7 @@ case-yield guarantee.
 > mmHg with common change-score SD 3 mmHg. Two-sided α=0.05 and 80%
 > power require 37 analyzable patients per arm using two-sample t-test
 > planning. Allowing 10% missing primary endpoints, we plan 42 per arm,
-> 84 total. Calculations use sampleSizeCalc; the primary analysis
+> 84 total. Calculations use SampleSizeCalc; the primary analysis
 > population and missing-outcome handling are prespecified in the
 > analysis plan.
 
@@ -3492,11 +3493,11 @@ summary(res_1_1)
 plot(res_1_1, type = "power")
 ```
 
-![](sampleSizeCalc-guide-en_files/figure-html/plot-power-en-1.png)
+![](clinical-guide-en_files/figure-html/plot-power-en-1.png)
 
 ``` r
 
 plot(res_1_1, type = "sample_size")
 ```
 
-![](sampleSizeCalc-guide-en_files/figure-html/plot-effect-en-1.png)
+![](clinical-guide-en_files/figure-html/plot-effect-en-1.png)
