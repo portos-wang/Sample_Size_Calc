@@ -7,8 +7,8 @@ library(cli)
 library(rlang)
 library(stats)
 
-stopifnot(requireNamespace("sampleSizeCalc", quietly = TRUE))
-library(sampleSizeCalc)
+stopifnot(requireNamespace("SampleSizeCalc", quietly = TRUE))
+library(SampleSizeCalc)
 
 cat("=== BACKWARD COMPATIBILITY TEST (v3 API) ===\n\n")
 

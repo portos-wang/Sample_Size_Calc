@@ -26,8 +26,8 @@
 #' @return The design effect (numeric scalar >= 1).
 #' @keywords internal
 #' @examples
-#' sampleSizeCalc:::cluster_size_inflation(20, 0.05) # 1.95 (Eq 12.5)
-#' sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35) # Eq 12.7
+#' SampleSizeCalc:::cluster_size_inflation(20, 0.05) # 1.95 (Eq 12.5)
+#' SampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35) # Eq 12.7
 cluster_size_inflation <- function(cluster_size, icc, cv_m = NULL) {
   if (is.null(cv_m)) {
     # Eq 12.5: constant cluster size.
@@ -1021,8 +1021,9 @@ max_r2cs_binary <- function(prev) {
 #' Binary outcome: criteria B1 (overall proportion precision), B3 (shrinkage
 #' target S), with B2 (mean absolute prediction error, van Smeden formula)
 #' reported for P <= 30. Sample size = max(B1, B3).
-#' Anchors (exact): B1 φ=0.5,δ=0.05 -> 385; B3 P=30,R2cs=0.05,S=0.9 -> 5249;
-#' B2 MAPE=0.05,φ=0.3,P=10 -> 461.
+#' Anchors (exact): B1 phi=0.5, delta=0.05 -> 385;
+#' B3 P=30, R2cs=0.05, S=0.9 -> 5249;
+#' B2 MAPE=0.05, phi=0.3, P=10 -> 461.
 #' @keywords internal
 calculate_predictive_riley_binary <- function(prev, n_parameters, r2_cs,
                                               shrinkage, mape, precision_delta,

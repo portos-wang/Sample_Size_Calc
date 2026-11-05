@@ -1,0 +1,40 @@
+{
+  "software": "SampleSizeCalc",
+  "version": "3.1.1",
+  "archive_sha256": "2f7442cf87329780f4985a253196f01fe119f0ad3e692e46a57175c9c40378ba",
+  "legal_combinations": 46,
+  "design_identifiers": 24,
+  "numerical_comparisons": 12,
+  "comparisons_agree": true,
+  "comparators": {
+    "presize": "0.3.11",
+    "PowerTOST": "1.5-7"
+  },
+  "screening": {
+    "n": 1061,
+    "probability": 0.9009,
+    "previous_n_probability": 0.8983
+  },
+  "historical_package_checks": [
+    {
+      "environment": "windows-release",
+      "status": "0 errors; 0 warnings; 1 New submission note",
+      "check_date": "2026-11-05",
+      "log": "evidence/windows-release-00check.log"
+    },
+    {
+      "environment": "windows-devel",
+      "status": "0 errors; 0 warnings; 1 New submission note",
+      "check_date": "2026-11-05",
+      "log": "evidence/windows-devel-00check.log"
+    },
+    {
+      "environment": "linux-release",
+      "status": "0 errors; 0 warnings; 1 New submission note",
+      "check_date": "2026-11-05",
+      "log": "evidence/linux-release-00check.log"
+    }
+  ],
+  "historical_development_tests": "630 passed, 0 failures, 0 errors, 0 warnings, 0 skipped",
+  "reproduction_session": ["R version 4.6.1 (2026-06-24 ucrt)", "Platform: x86_64-w64-mingw32/x64", "Running under: Windows 11 x64 (build 26200)", "", "Matrix products: default", "  LAPACK version 3.12.1", "", "locale:", "[1] LC_COLLATE=Chinese (Simplified)_Singapore.utf8 ", "[2] LC_CTYPE=Chinese (Simplified)_Singapore.utf8   ", "[3] LC_MONETARY=Chinese (Simplified)_Singapore.utf8", "[4] LC_NUMERIC=C                                   ", "[5] LC_TIME=Chinese (Simplified)_Singapore.utf8    ", "", "time zone: Asia/Singapore", "tzcode source: internal", "", "attached base packages:", "[1] stats     graphics  grDevices utils     datasets  methods   base     ", "", "other attached packages:", "[1] SampleSizeCalc_3.1.1", "", "loaded via a namespace (and not attached):", " [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.6.1    ", " [5] tidyselect_1.2.1   Rcpp_1.1.2         PowerTOST_1.5-7    textshaping_1.0.5 ", " [9] systemfonts_1.3.2  scales_1.4.0       fastmap_1.2.0      ggplot2_4.0.3     ", "[13] R6_2.6.1           labeling_0.4.3     generics_0.1.4     presize_0.3.11    ", "[17] knitr_1.52         tibble_3.3.1       desc_1.4.3         rprojroot_2.1.1   ", "[21] pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0        xfun_0.61         ", "[25] S7_0.2.2           pkgload_1.5.3      otel_0.2.0         cli_3.6.6         ", "[29] withr_3.0.3        magrittr_2.0.5     digest_0.6.39      grid_4.6.1        ", "[33] cubature_2.1.4-1   mvtnorm_1.4-2      kappaSize_1.2      lifecycle_1.0.5   ", "[37] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      ", "[41] ragg_1.5.2         pkgbuild_1.4.8     rmarkdown_2.32     tools_4.6.1       ", "[45] pkgconfig_2.0.3    htmltools_0.5.9   "]
+}

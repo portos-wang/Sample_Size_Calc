@@ -1,5 +1,5 @@
 ---
-title: "Comprehensive Guide to sampleSizeCalc"
+title: "Comprehensive Guide to SampleSizeCalc"
 author: "Portos Wang (Yishan Wang), Bingxin Cai (Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital))"
 date: "`r Sys.Date()`"
 output: 
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Comprehensive Guide to sampleSizeCalc}
+  %\VignetteIndexEntry{Comprehensive Guide to SampleSizeCalc}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,17 +22,17 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-library(sampleSizeCalc)
+library(SampleSizeCalc)
 library(ggplot2)
 ```
 
 ## Introduction
 
-The `sampleSizeCalc` package provides a comprehensive, rigorous toolkit for sample size determination across **39+ study design combinations** in clinical and epidemiological research.
+The `SampleSizeCalc` package provides sample size determination across **46 legal design-task-outcome combinations** in clinical and epidemiological research.
 
 > **Looking for in-depth tutorials tailored for clinical researchers?**
-> - **📖 [中文完全使用指南：临床科研样本量计算从入门到精通 (Comprehensive Guide in Chinese)](sampleSizeCalc-guide-zh.html)**: 零基础入门，覆盖全部设计、参数白话解释、公式推导、生动临床案例、输出逐行精读与标书模板。
-> - **📘 [English Comprehensive Guide (Zero-to-Hero Tutorial)](sampleSizeCalc-guide-en.html)**: End-to-end walkthrough covering all 39+ designs, intuitive statistical analogies, primary mathematical formulas, worked clinical scenarios, and protocol boilerplates.
+> - **📖 [中文完全使用指南：临床科研样本量计算从入门到精通 (Comprehensive Guide in Chinese)](clinical-guide-zh.html)**: 零基础入门，覆盖全部设计、参数白话解释、公式推导、生动临床案例、输出逐行精读与标书模板。
+> - **📘 [English Comprehensive Guide (Zero-to-Hero Tutorial)](clinical-guide-en.html)**: End-to-end walkthrough covering the registered design combinations, intuitive statistical analogies, primary mathematical formulas, worked clinical scenarios, and protocol boilerplates.
 
 ## The Three-Axis API (v3.0+)
 
@@ -63,7 +63,7 @@ Every result displays the plain-text formula, LaTeX source, calculation process,
 
 ## Introduction (legacy examples)
 
-The `sampleSizeCalc` package provides a comprehensive toolkit for sample size determination in clinical research. It supports **17 different study designs** across continuous outcomes, categorical outcomes, survival analysis, diagnostic accuracy, case-control studies, and AUC comparisons.
+The `SampleSizeCalc` package provides a comprehensive toolkit for sample size determination in clinical research. It supports **17 different study designs** across continuous outcomes, categorical outcomes, survival analysis, diagnostic accuracy, case-control studies, and AUC comparisons.
 
 ### Key Features
 
@@ -591,8 +591,12 @@ When conducting multiple tests, consider adjusting α (e.g., Bonferroni correcti
 ## Getting Help
 
 - **Function documentation**: `?sample_size_calculator`
-- **Complete formula reference**: `docs/formula_reference_guide.md`
-- **Literature verification**: `docs/literature_verification_report.md`
+- **Formula and parameter reference**: `?calculate` and the installed
+  `reference/DESIGN_MATRIX.md` file, located with
+  `system.file("reference", "DESIGN_MATRIX.md", package = "SampleSizeCalc")`
+- **Literature verification**: the installed `reference/NUMERIC_ANCHORS.md`
+  file, located with
+  `system.file("reference", "NUMERIC_ANCHORS.md", package = "SampleSizeCalc")`
 - **Report issues**: [GitHub Issues](https://github.com/portos-wang/Sample_Size_Calc/issues)
 
 ---
@@ -602,8 +606,8 @@ When conducting multiple tests, consider adjusting α (e.g., Bonferroni correcti
 If you use this package in your research, please cite:
 
 ```bibtex
-@software{sampleSizeCalc,
-  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
+@software{SampleSizeCalc,
+  title = {SampleSizeCalc: Sample Size Calculator for Clinical Research},
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},
@@ -617,4 +621,4 @@ If you use this package in your research, please cite:
 ---
 
 **Last Updated**: `r Sys.Date()`  
-**Version**: `r as.character(packageVersion("sampleSizeCalc"))`
+**Version**: `r as.character(packageVersion("SampleSizeCalc"))`

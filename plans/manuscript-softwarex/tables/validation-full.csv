@@ -1,0 +1,13 @@
+"ID","Method","Unit","Package","Reference","Source","Difference"
+"V1","Proportion precision","Participants",323,323,"Normal precision formula",0
+"V2","Mean precision","Participants",141,141,"Machin, Eq. 9.18",0
+"V3","Sensitivity precision","Cases",246,246,"Zhou, Sec. 6.1.1",0
+"V4","AUC, binormal variance","Cases",46,46,"Zhou, Eq. 6.5",0
+"V5","AUC, exponential variance","Cases",38,38,"Zhou, Eq. 6.4",0
+"V6","Correlation, CI width 0.10","Participants",867,867,"presize 0.3.11",0
+"V7","Correlation, CI width 0.20","Participants",219,219,"presize 0.3.11",0
+"V8","Bioequivalence, GMR 1.00","Total participants",24,24,"PowerTOST 1.5-7",0
+"V9","Bioequivalence, GMR 0.95","Total participants",28,28,"PowerTOST 1.5-7",0
+"V10","Cluster trial","Total participants",172,172,"Machin, Ex. 12.1",0
+"V11","Simon optimal design","Maximum participants",29,29,"Machin, Ex. 17.2",0
+"V12","Screening assurance","Screened participants",1061,1061,"Binomial minimality",0

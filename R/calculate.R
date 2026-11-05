@@ -231,7 +231,7 @@ ssr_resolve <- function(design, task = NULL, outcome = NULL) {
     cli::cli_abort(c(
       "Unknown design {.val {design}}.",
       "i" = "Valid designs: {.val {ssr_design_names}}",
-      "i" = "See the reference manual 'DESIGN_MATRIX.md' (system.file(\"reference\", \"DESIGN_MATRIX.md\", package = \"sampleSizeCalc\")) for the full combination table."
+      "i" = "See the reference manual 'DESIGN_MATRIX.md' (system.file(\"reference\", \"DESIGN_MATRIX.md\", package = \"SampleSizeCalc\")) for the full combination table."
     ))
   }
 
@@ -609,7 +609,7 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'
 #' Computes sample size (or events/cases) for a study design identified by the
 #' triple design / task / outcome. See the installed reference manual
-#' `system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")`
+#' `system.file("reference", "DESIGN_MATRIX.md", package = "SampleSizeCalc")`
 #' for the complete combination table, formulas, and literature sources
 #' (also on the pkgdown site under `reference/`).
 #'

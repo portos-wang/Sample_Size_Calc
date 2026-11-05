@@ -18,7 +18,7 @@ Validated alpha value (invisible numeric scalar)
 Validate alpha (type I error) parameter
 }
 \examples{
-sampleSizeCalc:::validate_alpha(0.05)   # OK
-try(sampleSizeCalc:::validate_alpha(1.5))  # structured error
+SampleSizeCalc:::validate_alpha(0.05)   # OK
+try(SampleSizeCalc:::validate_alpha(1.5))  # structured error
 }
 \keyword{internal}

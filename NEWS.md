@@ -1,4 +1,7 @@
-# sampleSizeCalc 3.1.1 (Development)
+# SampleSizeCalc 3.1.1
+
+- The package is named `SampleSizeCalc`; use `library(SampleSizeCalc)` and
+  `SampleSizeCalc::calculate()` in new scripts.
 
 ## Corrections (P0 series: wrong formulas / wrong citations)
 
@@ -164,7 +167,7 @@
     anticipated sensitivity and specificity, distinct from fixed-width CI
     estimation or assurance about every realized interval.
 
-# sampleSizeCalc 3.1.0
+# SampleSizeCalc 3.1.0
 
 ## 3.1 — new designs (mrmcPower, steppedWedge, kappa, Riley prediction models)
 

@@ -3,7 +3,7 @@
 
 test_backward_compatibility <- function() {
   # Load the package
-  library(sampleSizeCalc)
+  library(SampleSizeCalc)
 
   # Test results storage
   test_results <- list()

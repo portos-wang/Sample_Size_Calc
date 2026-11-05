@@ -1,0 +1,18 @@
+{
+  "draft": "0.1",
+  "draft_date": "2026-11-05",
+  "pdf_pages": 10,
+  "docx_figures": 2,
+  "docx_tables": 4,
+  "main_body_approximate_words_including_tables": 2397,
+  "abstract_approximate_words": 179,
+  "word_count_method": "Regex token count over DOCX main body and tables, excluding abstract, code metadata, declarations and references; publisher/Word counts may differ.",
+  "legal_combinations": 46,
+  "design_identifiers": 24,
+  "numerical_comparisons": 12,
+  "all_selected_integer_comparisons_agree": true,
+  "source_archive_sha256": "2f7442cf87329780f4985a253196f01fe119f0ad3e692e46a57175c9c40378ba",
+  "author_completion_markers_in_paragraphs": 7,
+  "citation_markers_resolved_in_docx_and_pdf": true,
+  "layout_preview": "evidence/layout-preview/contact-sheet.png"
+}

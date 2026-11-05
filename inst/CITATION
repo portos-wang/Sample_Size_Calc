@@ -1,6 +1,6 @@
 bibentry(
   bibtype = "Manual",
-  title = "sampleSizeCalc: Sample Size Calculator for Clinical Research",
+  title = paste0(meta$Package, ": Sample Size Calculator for Clinical Research"),
   author = c(
     person(
       given = "Portos (Yishan)",
@@ -17,6 +17,6 @@ bibentry(
     )
   ),
   year = "2026",
-  note = "R package version 3.1.0",
+  note = paste("R package version", meta$Version),
   url = "https://github.com/portos-wang/Sample_Size_Calc"
 )

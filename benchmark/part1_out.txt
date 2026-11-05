@@ -1,89 +1,89 @@
 
 ########## 1. 两独立样本均数 rct/test/mean ##########
-sampleSizeCalc n/组 = 37  总N = 74 
-pwr::pwr.t.test n = 37 
-PASSED::power_Normal n1 = 37 
-samplesize::n.ttest n1 = 37 
-TrialSize::TwoSampleMean.Equality n = 36 
+SampleSizeCalc n/组 = 37  总N = 74
+pwr::pwr.t.test n = 37
+PASSED::power_Normal n1 = 37
+samplesize::n.ttest n1 = 37
+TrialSize::TwoSampleMean.Equality n = 36
 
 ########## 2. 两独立样本比例 rct/test/proportion ##########
-sampleSizeCalc n/组 = 294  总N = 588 
-pwr::pwr.2p.test(arcsine) n = 292 
-stats::power.prop.test n = 294 
-TrialSize::TwoSampleProportion.Equality n = 291 
+SampleSizeCalc n/组 = 294  总N = 588
+pwr::pwr.2p.test(arcsine) n = 292
+stats::power.prop.test n = 294
+TrialSize::TwoSampleProportion.Equality n = 291
 
 ########## 3. 生存 log-rank rct/test/survival ##########
-sampleSizeCalc 事件数 = 247 
-Schoenfeld 手工(等分配) = 247 
-Freedman 手工 = 64 
-gsDesign::gsSurv 事件数 = 246 
+SampleSizeCalc 事件数 = 247
+Schoenfeld 手工(等分配) = 247
+Freedman 手工 = 64
+gsDesign::gsSurv 事件数 = 246
 
 ########## 4. 配对均数 paired/test/mean ##########
-sampleSizeCalc 对数 = 73 
-pwr::pwr.t.test(paired) n = 73 
-PASSED::power_Normal(paired) n = 144 
+SampleSizeCalc 对数 = 73
+pwr::pwr.t.test(paired) n = 73
+PASSED::power_Normal(paired) n = 144
 
 ########## 5. 非劣效(均数) rct/noninferiority/mean ##########
-sampleSizeCalc n/组 = 50 
-TrialSize::TwoSampleMean.NIS(Chow口径 delta=0.5) n = 446 
-手工公式(我们的 delta_e=1.5) n = 50 
+SampleSizeCalc n/组 = 50
+TrialSize::TwoSampleMean.NIS(Chow口径 delta=0.5) n = 446
+手工公式(我们的 delta_e=1.5) n = 50
 
 ########## 6. 优效/等效(均数) ##########
-superiority: sampleSizeCalc n/组 = 112  (delta_e=1)
-equivalence: sampleSizeCalc n/组 = 241  (margin-|diff|=0.8)
-TrialSize::TwoSampleMean.Equivalence(delta=0.2,margin=1) n = 241 
+superiority: SampleSizeCalc n/组 = 112  (delta_e=1)
+equivalence: SampleSizeCalc n/组 = 241  (margin-|diff|=0.8)
+TrialSize::TwoSampleMean.Equivalence(delta=0.2,margin=1) n = 241
 
 ########## 7. 优效/等效/非劣效(比例) ##########
-NI比例: sampleSizeCalc n/组 = 135 
-手工 n = 135 
-优效比例: sampleSizeCalc n/组 = 916  (delta_e=0.05)
-等效比例: sampleSizeCalc n/组 = 669  (margin-|diff|=0.08)
-TrialSize::TwoSampleProportion.Equivalence n = 669 
+NI比例: SampleSizeCalc n/组 = 135
+手工 n = 135
+优效比例: SampleSizeCalc n/组 = 916  (delta_e=0.05)
+等效比例: SampleSizeCalc n/组 = 669  (margin-|diff|=0.08)
+TrialSize::TwoSampleProportion.Equivalence n = 669
 
 ########## 8. 单比例估计 singleProportion/estimate ##########
-sampleSizeCalc n = 323 
-pwr::pwr.p.test(检验口径, vs 0.5, 非CI精度) n = 47 
-presize::prec_prop(CI宽0.10=wald) n = 323 
-epiR::epi.sssimpleestb(相对精度5%) n = 323 
+SampleSizeCalc n = 323
+pwr::pwr.p.test(检验口径, vs 0.5, 非CI精度) n = 47
+presize::prec_prop(CI宽0.10=wald) n = 323
+epiR::epi.sssimpleestb(相对精度5%) n = 323
 
 ########## 9. 单均数估计 singleMean/estimate ##########
-sampleSizeCalc n = 97 
-presize::prec_mean(CI宽4) n = 99 
+SampleSizeCalc n = 99
+presize::prec_mean(CI宽4) n = 99
 
 ########## 10. 单相关估计 singleCorrelation/estimate ##########
-sampleSizeCalc n = 628 
-手工(Machin 19.2) n = 628 
-pwr::pwr.r.test(检验口径) n = 29 
+SampleSizeCalc n = 867
+手工(Machin 19.2) n = 628
+pwr::pwr.r.test(检验口径) n = 29
 
 ########## 11. 队列研究(比例) cohort/test/proportion ##########
-sampleSizeCalc 暴露组 n = 294  非暴露组 n = 294  总N = 588 
-epiR::epi.sscohortc 每组 n = 294  总N = 588 
-powerSurvEpi::ssizeCT n = 393 393 
+SampleSizeCalc 暴露组 n = 294  非暴露组 n = 294  总N = 588
+epiR::epi.sscohortc 每组 n = 294  总N = 588
+powerSurvEpi::ssizeCT n = 393 393
 
 ########## 12. 队列研究(人时/率) cohort/test/rate ##########
-sampleSizeCalc 人时 非暴露 = 236  暴露 = 236 
-手工公式(每组人时) = 236 
+SampleSizeCalc 人时 非暴露 = 236  暴露 = 236
+手工公式(每组人时) = 236
 
 ########## 13. 病例对照 caseControl/test/proportion ##########
-sampleSizeCalc 病例数 = 141  对照数 = 141 
-epiR::epi.sscc 病例数 = 141  对照数 = 141 
-powerSurvEpi::ssizeEpi(OR=2,p0=0.3,psi=0.5) 病例数 = 156 
+SampleSizeCalc 病例数 = 141  对照数 = 141
+epiR::epi.sscc 病例数 = 141  对照数 = 141
+powerSurvEpi::ssizeEpi(OR=2,p0=0.3,psi=0.5) 病例数 = 156
 
 ########## 14. 配对病例对照 caseControlMatched ##########
-sampleSizeCalc 配对数 = 144 
+SampleSizeCalc 配对数 = 144
 
 ########## 15. 横断面 crosstab ##########
-sampleSizeCalc n/组 = 294  总N = 588 
+SampleSizeCalc n/组 = 294  总N = 588
 
 ########## 16. 配对比例 paired/test/proportion ##########
-sampleSizeCalc 对数 = 47 
-TrialSize::McNemar.Test(psi=0.25,disc=0.1) n = 216 
+SampleSizeCalc 对数 = 47
+TrialSize::McNemar.Test(psi=0.25,disc=0.1) n = 216
 
 ########## 17. 单臂试验(均数/比例) rctSingleArm ##########
-sampleSizeCalc n = 18 
-TrialSize::OneSampleMean.Equality n = 18 
-PASSED::power_Normal(one.sample) n = 38 
+SampleSizeCalc n = 18
+TrialSize::OneSampleMean.Equality n = 18
+PASSED::power_Normal(one.sample) n = 38
 
-单臂比例: sampleSizeCalc n = 153 
-TrialSize::OneSampleProportion.Equality n = 165 
-pwr::pwr.p.test(差值arcsine) n = 146 
+单臂比例: SampleSizeCalc n = 153
+TrialSize::OneSampleProportion.Equality n = 165
+pwr::pwr.p.test(差值arcsine) n = 146

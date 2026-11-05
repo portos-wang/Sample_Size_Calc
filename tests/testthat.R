@@ -1,4 +1,4 @@
 library(testthat)
-library(sampleSizeCalc)
+library(SampleSizeCalc)
 
-test_check("sampleSizeCalc")
+test_check("SampleSizeCalc")

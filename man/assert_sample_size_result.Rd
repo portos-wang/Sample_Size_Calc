@@ -18,6 +18,6 @@ Assert an object is a valid sample_size_result
 }
 \examples{
 r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-sampleSizeCalc:::assert_sample_size_result(r)
+SampleSizeCalc:::assert_sample_size_result(r)
 }
 \keyword{internal}

@@ -1,52 +1,48 @@
-Package: sampleSizeCalc
+Package: SampleSizeCalc
 Title: Sample Size Calculator for Clinical Research
 Version: 3.1.1
 Authors@R: c(
     person(given = "Portos (Yishan)",
            family = "Wang",
            email = "portos.wang@gmail.com",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)")),
     person(given = "Bingxin",
            family = "Cai",
-           role = "aut",
+           role = c("aut", "cph"),
            comment = c(affiliation = "Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)"))
   )
-Author: Portos (Yishan) Wang [aut, cre], Bingxin Cai [aut]
-Maintainer: Portos (Yishan) Wang <portos.wang@gmail.com>
-Description: A comprehensive tool for calculating sample sizes across
-    various clinical study designs. Provides a three-axis application
-    programming interface (design, statistical task, and outcome type)
-    covering experimental trials (superiority, non-inferiority,
-    equivalence), observational studies (cohort, case-control,
-    cross-sectional), diagnostic accuracy studies (sensitivity and
-    specificity estimation and comparison, area under the receiver
-    operating characteristic curve, likelihood ratios), and complex
-    designs (cluster randomised trials, two-stage phase II designs,
-    bioequivalence, ordered categorical outcomes). Each calculation
-    returns the formula, parameter-role documentation, and precise
-    literature citations with section-level detail. Built following
-    tidy design principles with comprehensive parameter validation and
-    structured error handling.
+Description: Calculate sample sizes and statistical power for clinical and
+    epidemiological study designs, including randomised trials,
+    observational studies, diagnostic accuracy studies, and precision-based
+    estimation. A unified interface covers superiority, non-inferiority,
+    equivalence, paired and cluster designs, two-stage phase II trials,
+    and bioequivalence. Results include the formula, calculation steps,
+    parameter definitions, and methodological references. Implemented
+    methods include diagnostic accuracy planning described by
+    Hajian-Tilaki (2014) <doi:10.1016/j.jbi.2014.02.013>, survival study
+    planning by Schoenfeld (1983) <doi:10.2307/2531021>, and exact
+    single-stage phase II designs by A'Hern (2001) <doi:10.1002/sim.721>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 4.0.0)
 Imports:
+    cli,
     rlang,
-    cli
+    stats
 Suggests:
     ggplot2,
     scales,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    pkgdown,
     presize,
     PowerTOST
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/Needs/website: pkgdown
 URL: https://rpackages.portos.wang/sample_size_calc/, https://github.com/portos-wang/Sample_Size_Calc
 BugReports: https://github.com/portos-wang/Sample_Size_Calc/issues
 Language: en-US

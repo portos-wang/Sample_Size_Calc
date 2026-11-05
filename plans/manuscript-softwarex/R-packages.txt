@@ -1,0 +1,8 @@
+pkgload
+digest
+jsonlite
+ggplot2
+presize
+PowerTOST
+rmarkdown
+knitr

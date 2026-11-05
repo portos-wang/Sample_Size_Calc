@@ -11,14 +11,17 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+knitr::knit_hooks$set(document = function(x) {
+  gsub("(?m)^#> +$", "#>", x, perl = TRUE)
+})
 ```
 
-# sampleSizeCalc
+# SampleSizeCalc
 
 > Sample Size Calculator for Clinical Research
 
-A comprehensive R package for sample size determination across **39 design
-combinations**: experimental trials (superiority / non-inferiority /
+A comprehensive R package for sample size determination across **46 legal
+design-task-outcome combinations**: experimental trials (superiority / non-inferiority /
 equivalence), observational studies (cohort, case-control, cross-sectional),
 diagnostic accuracy studies (estimation, testing, comparison, AUC), and
 complex designs (cluster RCT, Simon two-stage, bioequivalence, ordered
@@ -30,10 +33,18 @@ Parameter roles and methodological hints are included where available.
 
 ## Installation
 
+Once the package is available on CRAN, install the released version with:
+
+```{r installation-cran, eval = FALSE}
+install.packages("SampleSizeCalc")
+```
+
+Until then, or to install the development version, use GitHub:
+
 ```{r installation, eval = FALSE}
-devtools::install_github("portos-wang/Sample_Size_Calc")
+remotes::install_github("portos-wang/Sample_Size_Calc")
 # or from a local source
-devtools::install_local("path/to/Sample_Size_Calc")
+remotes::install_local("path/to/Sample_Size_Calc")
 ```
 
 ## Quick start: clinical study planning
@@ -57,7 +68,7 @@ The relevant SD is for the change score, not baseline BP. The decision
 is how many independent patients with complete endpoints are required.
 
 ```{r scenario-1}
-library(sampleSizeCalc)
+library(SampleSizeCalc)
 
 # design x task x outcome
 trial_mean <- calculate("rct", "test", "mean",
@@ -261,8 +272,8 @@ papers for each design (listed in every result's `reference` field) along
 with the package:
 
 ```bibtex
-@software{sampleSizeCalc,
-  title = {sampleSizeCalc: Sample Size Calculator for Clinical Research},
+@software{SampleSizeCalc,
+  title = {SampleSizeCalc: Sample Size Calculator for Clinical Research},
   author = {Portos (Yishan) Wang and Bingxin Cai},
   organization = {Gansu Provincial Maternity and Child-care Hospital (Gansu Provincial Central Hospital)},
   year = {2026},

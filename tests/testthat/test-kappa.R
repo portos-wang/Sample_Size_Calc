@@ -13,7 +13,7 @@ test_that("kappa_Q reproduces Cantor Table 1 (p. 152)", {
   )
   for (cs in cases) {
     expect_equal(
-      sampleSizeCalc:::kappa_Q(cs[1], cs[2], cs[3]), cs[4],
+      SampleSizeCalc:::kappa_Q(cs[1], cs[2], cs[3]), cs[4],
       tolerance = 0.0025,
       label = sprintf("Q(%.1f,%.1f,%.1f)", cs[1], cs[2], cs[3])
     )
@@ -24,7 +24,7 @@ test_that("kappa_Q reproduces Cantor Table 2 maxima (p. 153)", {
   # Table 2 lists Q_MAX and the kappa at which it occurs.
   max_q <- function(a, b) {
     ks <- seq(0, 0.999, by = 0.0005)
-    q <- vapply(ks, function(k) sampleSizeCalc:::kappa_Q(a, b, k), numeric(1))
+    q <- vapply(ks, function(k) SampleSizeCalc:::kappa_Q(a, b, k), numeric(1))
     q[!is.finite(q)] <- -Inf
     i <- which.max(q)
     c(Qmax = q[i], kappa = ks[i])

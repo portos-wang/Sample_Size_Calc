@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-**Objective**: Restructure `sampleSizeCalc` package into two distinct modules while maintaining backward compatibility and adding new study designs.
+**Objective**: Restructure `SampleSizeCalc` package into two distinct modules while maintaining backward compatibility and adding new study designs.
 
 **Current State**: Monolithic 896-line file with 17 study designs in single switch statement.
 
@@ -331,7 +331,7 @@ Create/update:
 
 ### B. Vignettes
 
-Update `sampleSizeCalc.Rmd`:
+Update `SampleSizeCalc.Rmd`:
 - Add section on two-module architecture
 - Add examples of new diagnostic designs
 - Add examples of new drug trial designs

@@ -6,7 +6,7 @@
       Error in `ssr_resolve()`:
       ! Unknown design "rctMean".
       i Valid designs: "rct", "paired", "caseControl", "diagAccuracy", "diagAccuracyCompare", "diagLR", "diagAUC", "diagAUCCompare", "singleProportion", "singleMean", "singleCorrelation", "cohort", "caseControlMatched", "crosstab", "rctSingleArm", "crossover", "bioequivalence", "clusterRCT", ..., "kappa", and "steppedWedge"
-      i See the reference manual 'DESIGN_MATRIX.md' (system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")) for the full combination table.
+      i See the reference manual 'DESIGN_MATRIX.md' (system.file("reference", "DESIGN_MATRIX.md", package = "SampleSizeCalc")) for the full combination table.
 
 # cohort outcome=mean is an illegal combination (rate/proportion only)
 

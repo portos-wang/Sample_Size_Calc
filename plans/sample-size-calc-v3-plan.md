@@ -1,4 +1,4 @@
-# sampleSizeCalc 3.0 Architecture and Refactoring Plan
+# SampleSizeCalc 3.0 Architecture and Refactoring Plan
 
 > **Objective**: Upgrade the package from a 17-keyword monolithic interface to a comprehensive sample size calculator spanning Estimation, Hypothesis Testing, and Equivalence/Non-inferiority margins across RCTs, Cohort, Case-Control, Cross-sectional, Diagnostic Accuracy, and Complex Designs.
 > **Methodology**: Posit agent principles (`r-package-development`, `r-testthat`, `r-tidyverse-style`, `r-lifecycle`): strict 1:1 file-to-test mirroring, primary-literature worked examples as regression tests, tidy styling, and detailed NEWS records.

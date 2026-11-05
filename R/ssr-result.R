@@ -40,7 +40,7 @@ ssr_canonical_map <- list(
 #' @return A sample_size_result object
 #' @keywords internal
 #' @examples
-#' r <- sampleSizeCalc:::new_sample_size_result(
+#' r <- SampleSizeCalc:::new_sample_size_result(
 #'   design = "rct", task = "test", outcome = "mean",
 #'   design_type = "Two independent samples, mean comparison",
 #'   parameters = list(mean1 = 10, mean2 = 12, sd = 3, alpha = 0.05, power = 0.8),
@@ -158,7 +158,7 @@ new_sample_size_result <- function(design,
 #' @keywords internal
 #' @examples
 #' r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-#' sampleSizeCalc:::validate_sample_size_result(r)  # invisible TRUE
+#' SampleSizeCalc:::validate_sample_size_result(r)  # invisible TRUE
 validate_sample_size_result <- function(x) {
   if (!inherits(x, "sample_size_result")) {
     cli::cli_abort(c(
@@ -205,7 +205,7 @@ validate_sample_size_result <- function(x) {
 #' @keywords internal
 #' @examples
 #' r <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
-#' sampleSizeCalc:::assert_sample_size_result(r)
+#' SampleSizeCalc:::assert_sample_size_result(r)
 #' @keywords internal
 assert_sample_size_result <- function(x) {
   validate_sample_size_result(x)

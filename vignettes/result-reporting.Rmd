@@ -11,7 +11,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-library(sampleSizeCalc)
+library(SampleSizeCalc)
 ```
 
 ## Default output / 默认输出
@@ -131,5 +131,5 @@ report <- c(
 writeLines(enc2utf8(report), "sample-size-report.txt", useBytes = TRUE)
 ```
 
-See the [English guide](sampleSizeCalc-guide-en.html) or
-[中文完整指南](sampleSizeCalc-guide-zh.html) for examples across study designs.
+See the [English guide](clinical-guide-en.html) or
+[中文完整指南](clinical-guide-zh.html) for examples across study designs.

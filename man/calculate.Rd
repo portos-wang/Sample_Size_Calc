@@ -133,7 +133,7 @@ and recorded adjustments.
 \description{
 Computes sample size (or events/cases) for a study design identified by the
 triple design / task / outcome. See the installed reference manual
-\code{system.file("reference", "DESIGN_MATRIX.md", package = "sampleSizeCalc")}
+\code{system.file("reference", "DESIGN_MATRIX.md", package = "SampleSizeCalc")}
 for the complete combination table, formulas, and literature sources
 (also on the pkgdown site under \verb{reference/}).
 }

@@ -1,4 +1,4 @@
-suppressPackageStartupMessages(library(sampleSizeCalc))
+suppressPackageStartupMessages(library(SampleSizeCalc))
 
 run_case <- function(name, code_expr) {
   cat("\n======================================================================\n")
@@ -76,7 +76,7 @@ run_case("2.6 单臂肿瘤II期 - Simon两阶段极小极大设计(Minimax)",
 
 # 2.7 ahern
 run_case("2.7 单臂肿瘤II期 - A\'Hern单阶段精确二项设计",
-         'sampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)')
+         'SampleSizeCalc:::calculate_ahern(p0 = 0.10, p1 = 0.30, alpha = 0.05, power = 0.8)')
 
 # 2.8 crossover test mean
 run_case("2.8 交叉设计 - 2x2交叉试验均数比较",

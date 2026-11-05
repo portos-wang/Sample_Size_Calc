@@ -71,12 +71,12 @@ test_that("clusterRCT works for proportions", {
 })
 
 test_that("cluster_size_inflation supports variable cluster sizes (Eq 12.7)", {
-  expect_equal(sampleSizeCalc:::cluster_size_inflation(20, 0.05), 1.95) # Eq 12.5
+  expect_equal(SampleSizeCalc:::cluster_size_inflation(20, 0.05), 1.95) # Eq 12.5
   # Eq 12.7: DE = 1 + [(CV(m)^2 + 1)*m - 1]*rho
-  expect_equal(sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35),
+  expect_equal(SampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = 0.35),
     1 + ((0.35^2 + 1) * 20 - 1) * 0.05)
   expect_error(
-    sampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = -1),
+    SampleSizeCalc:::cluster_size_inflation(20, 0.05, cv_m = -1),
     class = "rlang_error"
   )
 })

@@ -1,6 +1,7 @@
 # R build artifacts
 ..Rcheck/
 *.tar.gz
+!plans/manuscript-softwarex/evidence/SampleSizeCalc_*.tar.gz
 *.Rcheck/
 Rplots.pdf
 tests/testthat/Rplots.pdf
@@ -37,6 +38,12 @@ vign_preview/
 *_files/
 vignettes/*_files/
 *.html
+!pkgdown/assets/articles/*.html
+
+# Local manuscript build diagnostics
+/plans/manuscript-softwarex/*.pid
+/plans/manuscript-softwarex/*.log
+/plans/manuscript-softwarex/evidence/layout-preview/
 
 # Temporary files
 tmp/

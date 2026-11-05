@@ -8,10 +8,10 @@ articles:
   - title: "Guides / 完整指南"
     navbar: ~
     contents:
-      - sampleSizeCalc-guide-zh
-      - sampleSizeCalc-guide-en
+      - clinical-guide-zh
+      - clinical-guide-en
       - result-reporting
-      - sampleSizeCalc
+      - overview
 
 template:
   bootstrap: 5
@@ -32,19 +32,19 @@ navbar:
       text: Guides / 完整指南
       menu:
         - text: "📖 中文完全使用指南 (零基础临床科研必读)"
-          href: articles/sampleSizeCalc-guide-zh.html
+          href: articles/clinical-guide-zh.html
         - text: "📘 English Comprehensive Guide (Zero-to-Hero)"
-          href: articles/sampleSizeCalc-guide-en.html
+          href: articles/clinical-guide-en.html
         - text: "🧮 Formulas, steps & references / 公式、过程与文献"
           href: articles/result-reporting.html
         - text: "-----------------"
         - text: "🚀 Quick Start & Package Overview"
-          href: articles/sampleSizeCalc.html
+          href: articles/overview.html
 
 reference:
   - title: "Unified Three-Axis API / 统一三轴入口"
     desc: >
-      Primary entry points supporting 39+ study design combinations
+      Primary entry points supporting 46 legal study design combinations
       (design x task x outcome) and legacy single-keyword compatibility.
     contents:
       - calculate
