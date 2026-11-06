@@ -1,106 +1,144 @@
 # Design Matrix
 
-> Complete navigation for the `calculate()` three-axis API: Design × Task × Outcome × Formula × Source.
-> Confirmed design decisions: (1) Parallel RCT designs are consolidated under `rct`; (2) Diagnostic family uses explicit canonical names; (3) Single-sample estimation tasks route through `single*`; (4) Legacy keywords are silently backward compatible.
+`calculate(design, task, outcome, ...)` currently registers exactly the 46
+combinations below. Omit task and outcome together to use a design's default;
+an ambiguous partial specification is rejected.
 
-## API Skeleton
-
-```r
-calculate(
-  design,        # Design axis (see "Design" column below)
-  task,          # Task axis: estimate | test | noninferiority | superiority | equivalence
-  outcome,       # Outcome axis: mean | proportion | rate | survival | auc | lr | correlation
-  ...            # Design-specific arguments + generic parameters (dropout, alternative, var_method, etc.)
-)
-```
-
-> **Scope of the generic parameters.** Only `alpha`, `power`, `alternative`,
-> `var_method`, `ratio` and `dropout` are wired into kernels. `alternative`
-> currently reaches `diagAccuracy` + `test` only; `dropout` reaches
-> `cohort` + `test` + `proportion` only. Every other row in the table below
-> would be silently ignored, so it is not listed.
+The accompanying `VALIDATION_MATRIX.csv` records the internal dispatch key,
+planning unit, numerical evidence, and scope limit for every row. The tests
+exercise representative inputs for every combination and validate its result
+contract. This coverage does not establish independent statistical validation
+across every method's full parameter range.
 
 ## Complete Design Matrix Table
 
-| Design | Task | Outcome | Core Formula | Source | Status | Legacy Keyword Equivalent |
-|---|---|---|---|---|---|---|
-| `rct` | test | mean | n = 2(Zα/2+Zβ)²σ²/δ² | Machin Ch. 5; Chow 2017 | Active | twoMeans |
-| `rct` | test | proportion | Fleiss approximation formula | Machin Ch. 3; Fleiss 1980 | Active | twoProportions |
-| `rct` | test | survival | E = (Zα/2+Zβ)²/(pE(1−pE)·ln²HR) | Schoenfeld 1983; Machin Ch. 7 | Active | survival |
-| `rct` | noninferiority | mean | n = 2(Zα+Zβ)²σ²/(δ+Δ)² | Machin Ch. 11; Chow 2017 | Active | nonInferiorityMeans |
-| `rct` | superiority | mean | n = 2(Zα+Zβ)²σ²/(δ−Δ)² | Machin Ch. 11; Chow 2017 | Active | superiorityMeans |
-| `rct` | equivalence | mean | n = 2(Zα+Zβ/2)²σ²/(Δ−\|δ\|)² | Machin Ch. 11; Chow 2017 | Active | equivalenceMeans |
-| `rct` | superiority | proportion | Superiority proportions formula | Chow 2017 | Active | superiorityProportions |
-| `rct` | equivalence | proportion | Equivalence proportions formula | Chow 2017 | Active | equivalenceProportions |
-| `paired` | test | mean | n = ((Zα/2+Zβ)σ_d/δ)² | Rosner 2015 | Active | pairedMeans |
-| `paired` | test | proportion | Connor ψ formula (McNemar) | Connor 1987; Akoglu Eq 3b | Active | (New) |
-| `rctSingleArm` | test | mean | n = (Zα/2+Zβ)²σ²/δ² | Machin Ch. 5 (one-sample) | Active | (New) |
-| `rctSingleArm` | test | proportion | [Z√(P0Q0)+Z√(P1Q1)]²/(P1−P0)² | Hajian Eq 6.8 | Active | (New) |
-| `singleArmPhaseII` | — | proportion | Simon two-stage / A'Hern | Simon 1989; Machin Ch. 17 | Active | (New) |
-| `crossover` | test/equivalence | mean | Paired difference + σ_w=√(2σw²(1−ρ)) | Senn 2002; Julious | Active | (New; BE variant) |
-| `cohort` | test | proportion | 1:m two proportions formula (RR) | Bhardwaj p. 2559; Schlesselman | Active | (New) |
-| `cohort` | test | rate | Person-time rate ratio events | Machin Ch. 6; Breslow & Day V2 | Active | (New) |
-| `caseControl` | test | proportion | Schlesselman group-matched formula | Schlesselman 1982; Dupont 1988 | Active | caseControl |
-| `caseControlMatched` | test | proportion | Matched ψ formula | Dupont 1988 | Active | (New) |
-| `crosstab` | test | proportion | Cross-sectional association formula | Machin Ch. 3 | Active | (New) |
-| `singleProportion` | estimate | proportion | n = Z²p(1−p)/d² | Bhardwaj p. 2558; Lwanga & Lemeshow | Active | (New) |
-| `singleMean` | estimate | mean | n = Z²σ²/d² | Machin Ch. 9 | Active | (New) |
-| `singleCorrelation` | estimate | correlation | Fisher z transformation formula | Machin Ch. 19 | Active | (New) |
-| `clusterRCT` | (inherits core) | (inherits) | DE = 1+(m−1)ICC, then Machin Eq 12.10 (DE × [per-arm term + z²/2]); optional CV(m) via Eq 12.7 | Machin §12.3 Eq 12.4–12.13, pp. 197–200; Donner & Klar | Active | (New) |
-| `steppedWedge` | (inherits core) | (inherits) | DE + time correction | Machin Ch. 13; Hussey & Hughes | Active | (New) |
-| `kappa` | test | proportion | Cohen kappa sample size | Machin Ch. 20; Cantor 1996 | Active | (New) |
-| `predictive` | — | — | EPV≥10 / Riley 2019/2020 | Peduzzi 1996; Riley 2019/2020 BMJ | Active | (New) |
-| `its` | test | rate/proportion | Rule-of-thumb + ρ correction | Bernal 2017 | Experimental | (New) |
-| `diagAccuracy` | estimate | proportion | n = Z²Se(1−Se)/d² + prevalence conversion | Zhou §6.1.1 Eq 6.2; Hajian §6.1; Akoglu Eq 1/4 | Active | diagnosticAccuracySingle |
-| `diagAccuracy` | test | proportion | [Z√(P0Q0)+Z√(P1Q1)]²/(P1−P0)² | Hajian Eq 6.8; Akoglu Eq 2 | Active | diagnosticSuperioritySingle |
-| `diagAccuracyCompare` | test | proportion | Unpaired: two-proportions; Paired: Connor | Hajian §6.3; Akoglu Eq 3a/3b; Zhou §6.2.2 | Active | diagnosticComparisonTwo |
-| `diagAUC` | estimate | auc | n = Z²V(A)/d² (3 variance functions) | Zhou §6.1.2 Eq 6.4/6.5/6.6 | Active | auc_single |
-| `diagAUC` | test | auc | (Z√V(A0)+Z√V(A))²/(A−A0)² | Zhou §6.1.4; Hajian Table 6 | Active | aucSuperiority |
-| `diagAUCCompare` | test | auc | 2(Zα/2+Zβ)²V(1−r)/Δ² | Hajian Eq 7.6/7.8; Zhou §6.2.4 | Active | aucComparison |
-| `diagAccuracyCompare` | noninferiority/equivalence | proportion/auc | Zhou §6.3 framework | Zhou §6.3 pp. 214-218 | Active | (New) |
-| `diagLR` | estimate | lr | Log(LR) CI simultaneous solve | Hajian §6.4 Eq 6.13/6.14 | Active | likelihoodRatioTest |
-| `diagMRMC` | — | — | Obuchowski-Rockette | Zhou §6.5 pp. 219-228 | Active | (New) |
-
-## Generic Parameters (Available Across Study Designs)
-
-| Parameter | Meaning | Default | Source |
+| Design | Task | Outcome | Planning unit |
 |---|---|---|---|
-| `alpha` | Type I error rate | 0.05 | — |
-| `power` | Statistical power (1 - beta) | 0.8 | — |
-| `alternative` | Two-sided (`Z_{α/2}`) or one-sided (`Z_α`) test convention. `NULL` (default) keeps each kernel's documented convention; currently consumed by `diagAccuracy` + `test` only (default `"one.sided"`). | `NULL` (design-dependent) | Akoglu 2022 Table 2 Eq 2 (one-sided, default); Hajian 2014 p. 197 (two-sided) |
-| `dropout` | Anticipated dropout rate: n / (1 - d). **Currently implemented for `cohort` + `test` + `proportion` only.** | 0 | Bhardwaj p. 2557 |
-| `ratio` / `k` / `m` | Unequal allocation ratio (semantics depends on design) | 1 | Machin chapters |
-| `var_method` | exponential / binormal / conservative (AUC variance) | exponential | Zhou §6.1.2 |
+| `rct` | `test` | `mean` | participants |
+| `rct` | `test` | `proportion` | participants |
+| `rct` | `test` | `survival` | events |
+| `rct` | `noninferiority` | `mean` | participants |
+| `rct` | `superiority` | `mean` | participants |
+| `rct` | `equivalence` | `mean` | participants |
+| `rct` | `superiority` | `proportion` | participants |
+| `rct` | `equivalence` | `proportion` | participants |
+| `paired` | `test` | `mean` | distinct participants and paired measurements |
+| `caseControl` | `test` | `proportion` | participants |
+| `diagAccuracy` | `estimate` | `proportion` | target disease-state observations |
+| `diagAccuracy` | `test` | `proportion` | target disease-state observations |
+| `diagAccuracyCompare` | `test` | `proportion` | participants |
+| `diagLR` | `estimate` | `lr` | participants |
+| `diagAUC` | `estimate` | `auc` | cases and controls |
+| `diagAUC` | `test` | `auc` | cases and controls |
+| `diagAUCCompare` | `test` | `auc` | cases and controls |
+| `singleProportion` | `estimate` | `proportion` | participants |
+| `singleMean` | `estimate` | `mean` | participants |
+| `singleCorrelation` | `estimate` | `correlation` | participants |
+| `cohort` | `test` | `proportion` | participants |
+| `cohort` | `test` | `rate` | person-time |
+| `caseControlMatched` | `test` | `proportion` | participants in distinct matched pairs |
+| `crosstab` | `test` | `proportion` | participants |
+| `paired` | `test` | `proportion` | distinct participants and paired measurements |
+| `rctSingleArm` | `test` | `mean` | participants |
+| `rctSingleArm` | `test` | `proportion` | participants |
+| `diagAccuracyCompare` | `noninferiority` | `proportion` | participants |
+| `diagAccuracyCompare` | `equivalence` | `proportion` | participants |
+| `diagAUCCompare` | `noninferiority` | `auc` | cases and controls |
+| `diagAUCCompare` | `equivalence` | `auc` | cases and controls |
+| `crossover` | `test` | `mean` | participants |
+| `bioequivalence` | `equivalence` | `mean` | participants |
+| `clusterRCT` | `test` | `mean` | participants in clusters |
+| `clusterRCT` | `test` | `proportion` | participants in clusters |
+| `singleArmPhaseII` | `test` | `proportion` | stage and maximum participants |
+| `rct` | `noninferiority` | `proportion` | participants |
+| `twoOrdinal` | `test` | `ordinal` | participants |
+| `predictiveModel` | `plan` | `events` | participants |
+| `its` | `test` | `rate` | achieved power |
+| `kappa` | `estimate` | `proportion` | rated specimens or participants |
+| `kappa` | `test` | `proportion` | rated specimens or participants per group |
+| `steppedWedge` | `test` | `mean` | achieved power |
+| `steppedWedge` | `test` | `proportion` | achieved power |
+| `predictiveModel` | `plan` | `binary` | participants |
+| `predictiveModel` | `plan` | `rate` | person-time |
 
-## Parameter Roles Quick Reference (`p0` semantics varies by design)
+## Parameters and units
 
-| Design | `p0` Meaning | `p1` Meaning | Effect Metric | Role of `prevalence` |
-|---|---|---|---|---|
-| `cohort` | Incidence in unexposed group | Incidence in exposed group | RR | Excluded from sample size formula |
-| `caseControl` | **Exposure rate in control group** | Exposure rate in case group | OR | Excluded from sample size formula |
-| `crosstab` | Prevalence in unexposed group | Prevalence in exposed group | PR / OR | Excluded from sample size formula |
-| `rct` (proportion) | Response rate in control group | Response rate in experimental group | RD | Excluded from sample size formula |
-| `diagAccuracy` | None (expected Se/Sp) | — | Se / Sp | Determines screening population |
-| `diagAccuracy` (test) | Null hypothesis accuracy P0 | Alternative accuracy P1 | Se − P0 | Determines screening population |
+- `alpha` and `power` are general controls. Precision-estimation and achieved-
+  power designs need not consume a target power. A power-curve replay retains
+  the original alpha.
+- `alternative` is supported by the asymptotic single-endpoint diagnostic
+  superiority test. The exact binomial method is one-sided and rejects a
+  two-sided request. Other designs use their documented test convention.
+- `dropout` is implemented for `cohort` + `test` + `proportion` only.
+  Unknown, misspelled, duplicate, unnamed, and unused design arguments error.
+- `pairing = "within_subject"` (default) means one person per complete pair of
+  observations. `pairing = "matched_subjects"` means two distinct people per
+  pair. `total_n`/`total_individuals` count people; `n_measurements` counts
+  observations. This option applies to the two `paired` outcomes.
+- A cohort proportion `ratio` is unexposed:exposed. A cohort rate `ratio` is
+  exposed:unexposed person-time. Protective exposures retain their original
+  rates and group identities. Case-control `m` means controls per case.
+- Integer participant, cluster, pair, and event counts must be positive and
+  group totals must agree. Futility/response boundaries may be zero.
+  Expected counts and person-time are different planning quantities.
 
-## Legacy to New Mapping (17 Keyword Equivalents, Silently Compatible)
+## Diagnostic recruitment
 
-| Legacy Keyword | New Invocation | Behavior Contract |
-|---|---|---|
-| twoMeans | rct + test + mean | Golden master identical |
-| twoProportions | rct + test + proportion | Golden master identical |
-| pairedMeans | paired + test + mean | Golden master identical |
-| survival | rct + test + survival | Golden master identical |
-| nonInferiorityMeans | rct + noninferiority + mean | Golden master identical (one-sided alpha) |
-| superiorityMeans | rct + superiority + mean | Golden master identical |
-| equivalenceMeans | rct + equivalence + mean | Golden master identical |
-| superiorityProportions | rct + superiority + proportion | Golden master identical |
-| equivalenceProportions | rct + equivalence + proportion | Golden master identical |
-| diagnosticAccuracySingle | diagAccuracy + estimate + proportion | Golden master identical |
-| diagnosticSuperioritySingle | diagAccuracy + test + proportion | Golden master identical |
-| diagnosticComparisonTwo | diagAccuracyCompare + test + proportion | Golden master identical |
-| likelihoodRatioTest | diagLR + estimate + lr | Golden master identical |
-| auc_single | diagAUC + estimate + auc | Golden master identical |
-| aucSuperiority | diagAUC + test + auc | Golden master identical |
-| aucComparison | diagAUCCompare + test + auc | Golden master identical |
-| caseControl | caseControl + test + proportion | Golden master identical |
+For AUC estimation and testing, `ratio` is controls per case (default 1).
+Alternatively supply clinical `prevalence` in (0, 1), implying
+`R = (1-prevalence)/prevalence`; specifying both is an error. `var_method`
+defaults to `"binormal"`, independently of allocation. Cases and controls are
+rounded before summing `total_subjects`. Screening volume is returned only
+for clinical recruitment, meets both quotas in expectation, and is not an
+assurance probability. Historical AUC `prevalence = 1` selects a 1:1 quota.
+AUC margin designs currently use equal case and control quotas.
+
+For a dual sensitivity/specificity test, sensitivity drives the diseased-case
+quota and specificity drives the non-diseased-control quota. With clinical
+prevalence P, the expected screening requirement is
+`max(ceiling(n_Se/P), ceiling(n_Sp/(1-P)))` after rounding each stratum.
+Omit prevalence when recruiting the two strata separately. The default
+`dual_power = 0.90` is a per-endpoint planning value.
+
+For log-LR CI planning, `lr_type` and `target_lr` select the new method. A
+negative LR requires an upper limit above the anticipated LR; a positive LR
+requires a lower limit below it. This method plans approximate CI precision
+at anticipated sensitivity/specificity, rather than assurance over every
+realized interval. Omitting these arguments retains the legacy precision rule.
+
+## Method scope
+
+Binary Riley planning returns `max(B1, B3, B4)`: overall-risk precision,
+uniform shrinkage, and Nagelkerke R-squared optimism at most 0.05. B4 uses
+`S4 = R2cs/(R2cs + 0.05*max_R2cs)` in the shrinkage sample-size formula.
+B2 MAPE is informational for at most 30 parameters. The time-to-event branch
+covers baseline-risk precision T1 under an exponential model, not every
+model-development requirement. EPV planning remains a heuristic.
+
+Bioequivalence uses exact joint TOST power integrated over the variance
+estimate, searching balanced even totals. It errors if the target cannot be
+reached within 10000 participants. The ordinary crossover kernel remains a
+normal approximation with a documented t-correction limitation.
+
+Stepped-wedge power uses the simplified Hussey-Hughes model without explicit
+calendar-time fixed effects. ITS power is an experimental AR(1) level-shift
+approximation. Simon two-stage search is bounded at maximum N=100.
+Variable cluster-size inflation is available as an internal helper; the public
+cluster-RCT entry currently plans constant integer cluster sizes.
+
+## Separate exported calculation
+
+`mrmc_power()` is the exported MRMC achieved-power function, using the
+Obuchowski-Rockette framework and supplied variance/correlation components.
+Its result follows the common result/display contract. It is not a registered
+`calculate("diagMRMC", ...)` combination. Likewise, use `predictiveModel`,
+not `predictive`, for the registered prediction-model designs.
+
+## Legacy entry point
+
+`sample_size_calculator()` retains the 17 legacy keywords documented in its
+help page. The CSV dispatch keys are internal identifiers; not all are public
+legacy keywords. Shared calculation paths are checked for agreement between
+the two entry points. The legacy paired diagnostic-comparison kernel retains
+its historical psi parameterization; the three-axis paired path uses a
+discordant-pair proportion. Numerical identity is not promised for that branch.

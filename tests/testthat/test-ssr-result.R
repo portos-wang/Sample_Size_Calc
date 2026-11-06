@@ -1,3 +1,62 @@
+test_that("result construction rejects a negative count", {
+  expect_snapshot(
+    error = TRUE,
+    new_sample_size_result(
+      "singleMean",
+      "estimate",
+      "mean",
+      "Invalid count",
+      legacy = list(n_required = -1L)
+    )
+  )
+})
+
+test_that("result construction rejects a fractional participant total", {
+  expect_snapshot(
+    error = TRUE,
+    new_sample_size_result(
+      "caseControl",
+      "test",
+      "proportion",
+      "Invalid total",
+      legacy = list(
+        cases_needed = 117L,
+        controls_needed = 175L,
+        total_subjects = 292.5
+      )
+    )
+  )
+})
+
+test_that("result validation rejects inconsistent group totals", {
+  expect_snapshot(
+    error = TRUE,
+    new_sample_size_result(
+      "caseControl",
+      "test",
+      "proportion",
+      "Inconsistent total",
+      legacy = list(
+        cases_needed = 3L,
+        controls_needed = 4L,
+        total_subjects = 8L
+      )
+    )
+  )
+})
+
+test_that("mutation cannot desynchronize top-level and stored counts", {
+  res <- new_sample_size_result(
+    design = "singleMean",
+    task = "estimate",
+    outcome = "mean",
+    design_type = "Mutation check",
+    legacy = list(n_required = 10L)
+  )
+  res$n_required <- 11L
+  expect_snapshot(error = TRUE, validate_sample_size_result(res))
+})
+
 test_that("new_sample_size_result builds a valid object with legacy aliases", {
   res <- new_sample_size_result(
     design = "rct",
@@ -24,20 +83,29 @@ test_that("new_sample_size_result builds a valid object with legacy aliases", {
 
 test_that("canonical derivation covers pairs/events/cases fields", {
   res_pairs <- new_sample_size_result(
-    design = "rct", task = "test", outcome = "mean",
-    design_type = "Paired", legacy = list(pairs_count = 27L)
+    design = "rct",
+    task = "test",
+    outcome = "mean",
+    design_type = "Paired",
+    legacy = list(pairs_count = 27L)
   )
   expect_identical(res_pairs$results$pairs, 27L)
 
   res_events <- new_sample_size_result(
-    design = "rct", task = "test", outcome = "survival",
-    design_type = "Survival", legacy = list(target_events_needed = 25L)
+    design = "rct",
+    task = "test",
+    outcome = "survival",
+    design_type = "Survival",
+    legacy = list(target_events_needed = 25L)
   )
   expect_identical(res_events$results$events, 25L)
 
   res_cases <- new_sample_size_result(
-    design = "diagAccuracy", task = "estimate", outcome = "proportion",
-    design_type = "Diagnostic", legacy = list(
+    design = "diagAccuracy",
+    task = "estimate",
+    outcome = "proportion",
+    design_type = "Diagnostic",
+    legacy = list(
       target_state_cases_needed = 246L,
       total_subjects_to_screen = 1230L
     )
@@ -51,8 +119,11 @@ test_that("validate_sample_size_result rejects malformed objects", {
   expect_snapshot(error = TRUE, validate_sample_size_result("rct"))
 
   bad <- new_sample_size_result(
-    design = "rct", task = "test", outcome = "mean",
-    design_type = "ok", roles = NULL
+    design = "rct",
+    task = "test",
+    outcome = "mean",
+    design_type = "ok",
+    roles = NULL
   )
   # roles = NULL is dropped from the list by [<-, so emulate malformed field
   bad$roles <- 123
@@ -61,7 +132,9 @@ test_that("validate_sample_size_result rejects malformed objects", {
 
 test_that("assert_sample_size_result passes through valid objects", {
   res <- new_sample_size_result(
-    design = "cohort", task = "test", outcome = "proportion",
+    design = "cohort",
+    task = "test",
+    outcome = "proportion",
     design_type = "Cohort"
   )
   expect_identical(assert_sample_size_result(res), res)
@@ -102,4 +175,3 @@ test_that("new_sample_size_result sets and auto-derives calculation steps", {
   expect_identical(res_custom$calculation, custom_steps)
   expect_identical(res_custom$calculation_steps, custom_steps)
 })
-

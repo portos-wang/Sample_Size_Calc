@@ -58,8 +58,8 @@ supplied. For the Zhou mammography example the book sets rho_b = 0.75.}
 usually 1.}
 }
 \value{
-Numeric power (0-1), invisible. The full result object (parameters,
-formula, noncentrality) is attached as a \code{sample_size_result}.
+Invisibly returns a \code{sample_size_result} object with \code{power}
+(legacy alias), \code{power_achieved}, parameters, formula, and report fields.
 }
 \description{
 Computes the power of a multi-reader multi-case study to detect a given

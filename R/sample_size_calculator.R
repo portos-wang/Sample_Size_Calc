@@ -45,7 +45,9 @@
 #' @param ... Design-specific arguments (see the table in `design` and
 #'   `?calculate` for domains; e.g. `mean1`, `mean2`, `sd` for twoMeans).
 #'   Parameters outside their validated domain abort with a structured
-#'   `cli` error naming the offending argument.
+#'   `cli` error naming the offending argument. Names that only partially
+#'   match the control formals (`design`, `alpha`, `power`) also abort:
+#'   pass the design as `design = ...` and spell control arguments in full.
 #'
 #' @return Object of class `sample_size_result` with print, summary, and
 #'   plot methods. Default printing includes the plain-text formula
@@ -80,20 +82,47 @@ sample_size_calculator <- function(
   power = 0.8,
   ...
 ) {
+  args <- list(...)
+  # R's prefix matching binds named ... arguments to unmatched control formals
+  # BEFORE positional arguments fill in: `d` clobbers `design`, and a
+  # misspelled `p` silently becomes `power` (a silent plan change). This runs
+  # before arg_match() because the clobbering is already visible in sys.call().
+  # Reject any ... name that prefix-matches a control formal that was not
+  # supplied under its exact name; exact names keep design-specific arguments
+  # (e.g. auc_single's `d`) flowing into ... as intended.
+  call_tags <- names(as.list(sys.call())[-1])
+  control_formals <- c("design", "alpha", "power")
+  exact_named <- unique(
+    call_tags[!is.na(call_tags) & call_tags %in% control_formals]
+  )
+  named_dots <- unique(call_tags[!is.na(call_tags) & nzchar(call_tags)])
+  unmatched_formals <- setdiff(control_formals, exact_named)
+  for (nm in named_dots) {
+    hits <- unmatched_formals[startsWith(unmatched_formals, nm)]
+    if (length(hits) > 0L) {
+      cli::cli_abort(c(
+        "Argument {.arg {nm}} partially matches control argument {.arg {hits}}.",
+        "i" = "Name the design with {.code design = ...}, and spell {.arg alpha} and {.arg power} in full.",
+        "i" = "Design-specific arguments must use their documented names."
+      ))
+    }
+  }
   design <- rlang::arg_match(design)
   alpha <- validate_alpha(alpha)
   power <- validate_power(power)
 
-  args <- validate_design_args(design, list(...))
+  args <- validate_design_args(design, args)
   calcResult <- dispatch_calculation(design, args, alpha, power, path = "legacy")
-  calcResult$replay_args <- args
+  calcResult$replay_args <- c(args, list(alpha = alpha))
 
   calcResult$design <- design
   if (is.null(calcResult$calculation) && is.null(calcResult$calculation_steps)) {
     calcResult$calculation <- generate_calculation_steps(calcResult)
     calcResult$calculation_steps <- calcResult$calculation
   }
-  structure(calcResult, class = c("sample_size_result", "list"))
+  result <- structure(calcResult, class = c("sample_size_result", "list"))
+  validate_sample_size_result(result)
+  result
 }
 
 # Back-compatibility wrapper

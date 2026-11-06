@@ -13,13 +13,32 @@
 #' @return List with calculation results
 #' @name calculate_diagnostic_superiority_single
 #' @keywords internal
-calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha, power,
-                                                   method = c("asymptotic", "exact"),
-                                                   alternative = c("one.sided", "two.sided")) {
+calculate_diagnostic_superiority_single <- function(
+  prob,
+  p0,
+  prevalence,
+  alpha,
+  power,
+  method = c("asymptotic", "exact"),
+  alternative = c("one.sided", "two.sided")
+) {
   p_val <- prob
   p0_val <- p0
   prev_val <- if (is.null(prevalence)) 1 else prevalence
   method <- rlang::arg_match(method, c("asymptotic", "exact"))
+  alternative <- rlang::arg_match(alternative)
+
+  if (method == "exact" && alternative != "one.sided") {
+    cli::cli_abort(c(
+      "{.arg method = 'exact'} supports only {.arg alternative = 'one.sided'}.",
+      "i" = "Use the asymptotic method for the implemented two-sided convention."
+    ))
+  }
+  if (p_val <= p0_val) {
+    cli::cli_abort(
+      "{.arg prob} must exceed the null threshold {.arg p0} for diagnostic superiority."
+    )
+  }
 
   if (method == "exact") {
     # Exact binomial single-stage design (A'Hern 2001)
@@ -44,8 +63,18 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
       cli::cli_abort("No feasible exact design found within n = 2000.")
     }
 
-    actual_alpha <- stats::pbinom(r_found - 1L, size = n_found, prob = p0_val, lower.tail = FALSE)
-    actual_power <- stats::pbinom(r_found - 1L, size = n_found, prob = p_val, lower.tail = FALSE)
+    actual_alpha <- stats::pbinom(
+      r_found - 1L,
+      size = n_found,
+      prob = p0_val,
+      lower.tail = FALSE
+    )
+    actual_power <- stats::pbinom(
+      r_found - 1L,
+      size = n_found,
+      prob = p_val,
+      lower.tail = FALSE
+    )
 
     return(list(
       design_type = "Diagnostic superiority (single test, exact binomial)",
@@ -60,7 +89,8 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
         prevalence = prev_val,
         alpha = alpha,
         power = power,
-        method = "exact"
+        method = "exact",
+        alternative = alternative
       ),
       formula = "exact binomial: P(X >= r | p0) <= alpha and P(X >= r | prob) >= power",
       formula_latex = "$$P(X \\ge r \\mid p_0) \\le \\alpha \\quad \\text{and} \\quad P(X \\ge r \\mid p) \\ge 1-\\beta$$",
@@ -74,7 +104,11 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
       roles = c(
         "prob = expected diagnostic sensitivity/specificity",
         "p0 = unacceptable/null sensitivity or specificity threshold",
-        sprintf("critical_successes = declare superior if correct cases >= %d of %d", r_found, n_found)
+        sprintf(
+          "critical_successes = declare superior if correct cases >= %d of %d",
+          r_found,
+          n_found
+        )
       )
     ))
   }
@@ -85,9 +119,16 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
   # one-sided Z_alpha. Both conventions are exposed so either source can be
   # reproduced exactly. The default stays one-sided to preserve this package's
   # pre-existing numbers (see inst/reference/NUMERIC_ANCHORS.md).
-  zAlpha <- if (alternative == "two.sided") qnorm(1 - alpha / 2) else qnorm(1 - alpha)
+  zAlpha <- if (alternative == "two.sided") {
+    qnorm(1 - alpha / 2)
+  } else {
+    qnorm(1 - alpha)
+  }
   zBeta <- qnorm(power)
-  nTargetCases <- ((zAlpha * sqrt(p0_val * (1 - p0_val)) + zBeta * sqrt(p_val * (1 - p_val))) / (p_val - p0_val))^2
+  nTargetCases <- ((zAlpha *
+    sqrt(p0_val * (1 - p0_val)) +
+    zBeta * sqrt(p_val * (1 - p_val))) /
+    (p_val - p0_val))^2
 
   list(
     design_type = "Diagnostic superiority (single)",
@@ -131,12 +172,23 @@ calculate_diagnostic_superiority_single <- function(prob, p0, prevalence, alpha,
 #' @param power Statistical power
 #' @return List with calculation results
 #' @keywords internal
-calculate_diagnostic_comparison_two <- function(p1, p2, prevalence, paired, psi, alpha, power) {
+calculate_diagnostic_comparison_two <- function(
+  p1,
+  p2,
+  prevalence,
+  paired,
+  psi,
+  alpha,
+  power
+) {
   p1_val <- p1
   p2_val <- p2
   prev_val <- if (is.null(prevalence)) 1 else prevalence
   paired_val <- paired
   psi_val <- psi
+  if (p1_val == p2_val) {
+    cli::cli_abort("{.arg p1} and {.arg p2} must differ.")
+  }
 
   zAlphaHalf <- qnorm(1 - alpha / 2)
   zBeta <- qnorm(power)
@@ -148,16 +200,24 @@ calculate_diagnostic_comparison_two <- function(p1, p2, prevalence, paired, psi,
         "i" = "psi represents discordant pair proportion."
       ))
     }
-    nTargetCases <- ((zAlphaHalf * psi_val + zBeta * sqrt(psi_val^2 - (p1_val - p2_val)^2 / 4)) / (p1_val - p2_val))^2
+    nTargetCases <- ((zAlphaHalf *
+      psi_val +
+      zBeta * sqrt(psi_val^2 - (p1_val - p2_val)^2 / 4)) /
+      (p1_val - p2_val))^2
   } else {
     pBar <- (p1_val + p2_val) / 2
-    nTargetCases <- ((zAlphaHalf * sqrt(2 * pBar * (1 - pBar)) + zBeta * sqrt(p1_val * (1 - p1_val) + p2_val * (1 - p2_val))) / (p1_val - p2_val))^2
+    nTargetCases <- ((zAlphaHalf *
+      sqrt(2 * pBar * (1 - pBar)) +
+      zBeta * sqrt(p1_val * (1 - p1_val) + p2_val * (1 - p2_val))) /
+      (p1_val - p2_val))^2
   }
 
   list(
     design_type = "Two diagnostic measures",
     target_state_cases_needed = ceiling(nTargetCases),
-    total_subjects_to_screen = ceiling(nTargetCases / prev_val * ifelse(paired_val, 1, 2)),
+    total_subjects_to_screen = ceiling(
+      nTargetCases / prev_val * ifelse(paired_val, 1, 2)
+    ),
     parameters = list(
       p1 = p1_val,
       p2 = p2_val,
@@ -195,7 +255,13 @@ calculate_diagnostic_comparison_two <- function(p1, p2, prevalence, paired, psi,
 #' @param alpha Type I error
 #' @return List with calculation results
 #' @keywords internal
-calculate_likelihood_ratio_test <- function(sens, spec, prevalence, precision, alpha) {
+calculate_likelihood_ratio_test <- function(
+  sens,
+  spec,
+  prevalence,
+  precision,
+  alpha
+) {
   precision_val <- if (is.null(precision)) 0.1 else precision
 
   zAlphaHalf <- qnorm(1 - alpha / 2)
@@ -226,7 +292,11 @@ calculate_likelihood_ratio_test <- function(sens, spec, prevalence, precision, a
       alpha = alpha
     ),
     formula = "n_cases = max(Z_1-a/2^2 * Se*(1-Se)/d^2, Z_1-a/2^2 * Sp*(1-Sp)/d^2 * (P/(1-P)))",
-    formula_latex = sprintf("$$n_{cases} = \\max\\left\\{\\frac{Z_{1-\\alpha/2}^2 \\cdot Se(1-Se)}{%.2f^2}, \\frac{Z_{1-\\alpha/2}^2 \\cdot Sp(1-Sp)}{%.2f^2} \\cdot \\frac{P}{1-P}\\right\\}$$", precision_val, precision_val),
+    formula_latex = sprintf(
+      "$$n_{cases} = \\max\\left\\{\\frac{Z_{1-\\alpha/2}^2 \\cdot Se(1-Se)}{%.2f^2}, \\frac{Z_{1-\\alpha/2}^2 \\cdot Sp(1-Sp)}{%.2f^2} \\cdot \\frac{P}{1-P}\\right\\}$$",
+      precision_val,
+      precision_val
+    ),
     reference = paste(
       "Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic",
       "test studies of biomedical informatics. *Journal of Biomedical Informatics*,",

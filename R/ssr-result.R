@@ -6,9 +6,23 @@
 # New canonical fields derived from legacy storage fields.
 # Canonical name -> legacy name(s), first match wins.
 ssr_canonical_map <- list(
-  n_1 = c("n_per_group", "pairs_count", "cases_needed", "recommended_cases"),
-  n_2 = c("n_per_group", "controls_needed"),
-  total_n = c("total_n", "total_subjects", "n_required"),
+  n_1 = c(
+    "n_exposed",
+    "n_standard",
+    "n_per_group",
+    "pairs_count",
+    "cases_needed",
+    "target_state_cases_needed",
+    "recommended_cases"
+  ),
+  n_2 = c("n_unexposed", "n_test", "n_per_group", "controls_needed"),
+  total_n = c(
+    "total_n",
+    "n_total",
+    "total_subjects",
+    "total_individuals",
+    "n_required"
+  ),
   n_required = "n_required",
   pairs = "pairs_count",
   events = "target_events_needed",
@@ -49,20 +63,22 @@ ssr_canonical_map <- list(
 #'   reference = "Chow et al. (2017)"
 #' )
 #' stopifnot(inherits(r, "sample_size_result"))
-new_sample_size_result <- function(design,
-                                   task,
-                                   outcome,
-                                   design_type,
-                                   parameters = list(),
-                                   legacy = list(),
-                                   formula_ascii = NULL,
-                                   formula_latex = NULL,
-                                   calculation = NULL,
-                                   reference = NULL,
-                                   roles = character(),
-                                   adjustments = list(),
-                                   hints = character(),
-                                   calculation_steps = NULL) {
+new_sample_size_result <- function(
+  design,
+  task,
+  outcome,
+  design_type,
+  parameters = list(),
+  legacy = list(),
+  formula_ascii = NULL,
+  formula_latex = NULL,
+  calculation = NULL,
+  reference = NULL,
+  roles = character(),
+  adjustments = list(),
+  hints = character(),
+  calculation_steps = NULL
+) {
   results <- legacy
 
   # Derive canonical fields from the first matching legacy field
@@ -94,7 +110,7 @@ new_sample_size_result <- function(design,
     ))
   }
 
-  structure(
+  result <- structure(
     list(
       design = design,
       task = task,
@@ -111,42 +127,48 @@ new_sample_size_result <- function(design,
       adjustments = adjustments,
       hints = hints,
       # Legacy top-level fields (print/summary/plot and user code rely on these)
-      n_per_group = legacy$n_per_group,
-      total_n = legacy$total_n,
-      n_required = legacy$n_required,
-      n_sensitivity = legacy$n_sensitivity,
-      n_specificity = legacy$n_specificity,
-      n_exposed = legacy$n_exposed,
-      n_unexposed = legacy$n_unexposed,
-      person_time_exposed = legacy$person_time_exposed,
-      person_time_unexposed = legacy$person_time_unexposed,
-      expected_events = legacy$expected_events,
-      n_pairs = legacy$n_pairs,
-      n_clusters = legacy$n_clusters,
-      n_time_points = legacy$n_time_points,
-      n_stage_1 = legacy$n_stage_1,
-      r_stage_1 = legacy$r_stage_1,
-      n_total = legacy$n_total,
-      r_total = legacy$r_total,
-      events_required = legacy$events_required,
-      power_achieved = legacy$power_achieved,
-      person_time_required = legacy$person_time_required,
-      epp = legacy$epp,
-      pairs_count = legacy$pairs_count,
-      total_individuals = legacy$total_individuals,
-      target_events_needed = legacy$target_events_needed,
-      target_state_cases_needed = legacy$target_state_cases_needed,
-      total_subjects_to_screen = legacy$total_subjects_to_screen,
-      cases_needed = legacy$cases_needed,
-      controls_needed = legacy$controls_needed,
-      total_subjects = legacy$total_subjects,
-      recommended_cases = legacy$recommended_cases,
-      critical_successes = legacy$critical_successes,
-      actual_alpha = legacy$actual_alpha,
-      actual_power = legacy$actual_power
+      n_per_group = legacy[["n_per_group"]],
+      n_standard = legacy[["n_standard"]],
+      n_test = legacy[["n_test"]],
+      total_n = legacy[["total_n"]],
+      n_required = legacy[["n_required"]],
+      n_sensitivity = legacy[["n_sensitivity"]],
+      n_specificity = legacy[["n_specificity"]],
+      n_exposed = legacy[["n_exposed"]],
+      n_unexposed = legacy[["n_unexposed"]],
+      person_time_exposed = legacy[["person_time_exposed"]],
+      person_time_unexposed = legacy[["person_time_unexposed"]],
+      expected_events = legacy[["expected_events"]],
+      n_pairs = legacy[["n_pairs"]],
+      n_clusters = legacy[["n_clusters"]],
+      n_time_points = legacy[["n_time_points"]],
+      n_stage_1 = legacy[["n_stage_1"]],
+      r_stage_1 = legacy[["r_stage_1"]],
+      n_total = legacy[["n_total"]],
+      r_total = legacy[["r_total"]],
+      events_required = legacy[["events_required"]],
+      power_achieved = legacy[["power_achieved"]],
+      person_time_required = legacy[["person_time_required"]],
+      epp = legacy[["epp"]],
+      pairs_count = legacy[["pairs_count"]],
+      total_individuals = legacy[["total_individuals"]],
+      n_measurements = legacy[["n_measurements"]],
+      power = legacy[["power"]],
+      target_events_needed = legacy[["target_events_needed"]],
+      target_state_cases_needed = legacy[["target_state_cases_needed"]],
+      total_subjects_to_screen = legacy[["total_subjects_to_screen"]],
+      cases_needed = legacy[["cases_needed"]],
+      controls_needed = legacy[["controls_needed"]],
+      total_subjects = legacy[["total_subjects"]],
+      recommended_cases = legacy[["recommended_cases"]],
+      critical_successes = legacy[["critical_successes"]],
+      actual_alpha = legacy[["actual_alpha"]],
+      actual_power = legacy[["actual_power"]]
     ),
     class = c("sample_size_result", "list")
   )
+  validate_sample_size_result(result)
+  result
 }
 
 #' Validate a sample_size_result object
@@ -179,7 +201,12 @@ validate_sample_size_result <- function(x) {
   # Axis metadata is required for new-style objects; legacy results from the
   # pre-3.0 code path carry only the fields below, so validate when present.
   for (axis in c("task", "outcome")) {
-    if (!is.null(x[[axis]]) && !is.character(x[[axis]])) {
+    if (
+      !is.null(x[[axis]]) &&
+        (!is.character(x[[axis]]) ||
+          length(x[[axis]]) != 1L ||
+          is.na(x[[axis]]))
+    ) {
       cli::cli_abort(c(
         "{.field {axis}} must be a single character value.",
         "x" = "You provided {.cls {class(x[[axis]])}}."
@@ -194,6 +221,144 @@ validate_sample_size_result <- function(x) {
     ))
   }
 
+  if (!is.list(x$parameters)) {
+    cli::cli_abort("{.field parameters} must be a list.")
+  }
+  count_fields <- c(
+    "n_1",
+    "n_2",
+    "total_n",
+    "n_required",
+    "n_per_group",
+    "n_standard",
+    "n_test",
+    "n_exposed",
+    "n_unexposed",
+    "n_clusters",
+    "n_time_points",
+    "n_stage_1",
+    "n_total",
+    "events",
+    "events_required",
+    "pairs",
+    "pairs_count",
+    "n_pairs",
+    "total_individuals",
+    "n_measurements",
+    "target_events_needed",
+    "target_state_cases_needed",
+    "cases",
+    "cases_needed",
+    "controls_needed",
+    "recommended_cases",
+    "total_subjects",
+    "total_subjects_to_screen",
+    "subjects_to_screen",
+    "n_sensitivity",
+    "n_specificity",
+    "critical_successes",
+    "r_stage_1",
+    "r_total"
+  )
+  metrics <- x$results %||% list()
+  for (field in intersect(names(x), count_fields)) {
+    if (!is.null(x[[field]])) {
+      if (
+        !is.null(metrics[[field]]) &&
+          !isTRUE(all.equal(
+            metrics[[field]],
+            x[[field]],
+            check.attributes = FALSE
+          ))
+      ) {
+        cli::cli_abort(
+          "Top-level {.field {field}} disagrees with the stored result field."
+        )
+      }
+      metrics[[field]] <- x[[field]]
+    }
+  }
+  for (field in intersect(names(metrics), count_fields)) {
+    value <- metrics[[field]]
+    if (is.null(value)) {
+      next
+    }
+    minimum <- if (field %in% c("r_stage_1", "r_total", "critical_successes")) {
+      0
+    } else {
+      1
+    }
+    if (
+      !is.numeric(value) ||
+        is.complex(value) ||
+        length(value) != 1L ||
+        !is.finite(value) ||
+        value < minimum ||
+        value != floor(value)
+    ) {
+      cli::cli_abort(
+        "{.field {field}} must be a finite integer at least {.val {minimum}}."
+      )
+    }
+  }
+  for (groups in list(
+    c("n_exposed", "n_unexposed"),
+    c("n_standard", "n_test"),
+    c("cases_needed", "controls_needed"),
+    c("target_state_cases_needed", "controls_needed"),
+    c("n_1", "n_2")
+  )) {
+    if (all(vapply(metrics[groups], is.numeric, logical(1)))) {
+      expected <- sum(unlist(metrics[groups], use.names = FALSE))
+      for (total in intersect(c("total_n", "total_subjects"), names(metrics))) {
+        if (!is.null(metrics[[total]]) && metrics[[total]] != expected) {
+          cli::cli_abort(
+            "{.field {total}} must equal the sum of {.field {groups}}."
+          )
+        }
+      }
+    }
+  }
+  if (
+    !is.null(metrics$n_per_group) &&
+      !is.null(metrics$total_n) &&
+      is.null(metrics$n_exposed) &&
+      metrics$total_n != 2 * metrics$n_per_group
+  ) {
+    cli::cli_abort(
+      "{.field total_n} must equal twice {.field n_per_group} for equal independent groups."
+    )
+  }
+  for (field in c("power_achieved", "actual_alpha", "actual_power", "power")) {
+    value <- x[[field]] %||% metrics[[field]]
+    if (
+      !is.null(value) &&
+        (!is.numeric(value) ||
+          length(value) != 1L ||
+          !is.finite(value) ||
+          value < 0 ||
+          value > 1)
+    ) {
+      cli::cli_abort("{.field {field}} must be a finite probability in [0, 1].")
+    }
+  }
+  if (
+    all(vapply(
+      metrics[c("pairs_count", "total_individuals", "n_measurements")],
+      is.numeric,
+      logical(1)
+    ))
+  ) {
+    pairing <- x$parameters$pairing %||% "within_subject"
+    expected_people <- metrics$pairs_count *
+      if (pairing == "within_subject") 1 else 2
+    if (
+      metrics$total_individuals != expected_people ||
+        metrics$n_measurements != 2 * metrics$pairs_count
+    ) {
+      cli::cli_abort("Paired result counts disagree with the pairing unit.")
+    }
+  }
   invisible(TRUE)
 }
 

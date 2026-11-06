@@ -124,12 +124,12 @@ calculate_diag_auc_compare_margin <- function(auc1, auc2, r, margin, alpha,
 
   n_cases <- 2 * (z_a + z_b)^2 * V * (1 - r) / delta_e^2
 
-  list(
-    design_type = design_label,
-    target_state_cases_needed = as.integer(ceiling(n_cases)),
-    total_subjects_to_screen = as.integer(ceiling(n_cases * 2)),
+  c(list(
+    design_type = design_label
+  ), auc_sample_sizes(n_cases, auc_sampling(ratio = 1)), list(
     parameters = list(
       auc1 = auc1, auc2 = auc2, r = r, margin = margin, task = task,
+      ratio_R = 1, sampling = "case_control",
       var_method = var_method, alpha = alpha, power = power
     ),
     formula = formula_ascii,
@@ -147,9 +147,10 @@ calculate_diag_auc_compare_margin <- function(auc1, auc2, r, margin, alpha,
     roles = c(
       "auc1/auc2 = anticipated ROC areas of the new/reference test",
       "r = expected correlation between the two AUC estimates (paired designs)",
-      "margin = non-inferiority/equivalence margin on the AUC difference"
+      "margin = non-inferiority/equivalence margin on the AUC difference",
+      "equal case and control quotas are rounded before summing total_subjects"
     )
-  )
+  ))
 }
 
 # ----------------------------------------------------- crossover / BE ----
@@ -220,9 +221,11 @@ calculate_crossover_mean <- function(delta, sigma_within, alpha, power) {
 
 #' Bioequivalence (2x2 crossover, exact TOST noncentral t, 80-125%)
 #'
-#' Evaluates the exact power of the two one-sided tests (TOST) procedure using
-#' the noncentral t distribution (Phillips 1990; Julious 2004 Section 6.3,
-#' Eq 6.2 and 6.8).
+#' Evaluates exact joint power of the two one-sided tests (TOST) by
+#' integrating the conditional normal acceptance probability over the
+#' independent chi-square variance estimate (Phillips 1990).
+#' Uses balanced even totals and reports an error if the target power
+#' cannot be reached within 10000 participants.
 #' Matches sampleN.TOST in the PowerTOST package exactly.
 #'
 #' @param cv Intra-subject coefficient of variation
@@ -253,27 +256,43 @@ calculate_bioequivalence <- function(cv, alpha, power, theta0 = 1.0,
   lth2 <- log(margin_high)
   diffm <- log(theta0)
 
-  # Exact TOST via noncentral t (Phillips 1990; Julious 2004 Section 6.3,
-  # Eq 6.2/6.8)
-  # In a 2x2 crossover, df = N - 2, sem = sqrt(sigma_w_sq * 2 / N)
-  # Even N is required for equal allocation across the 2 sequences
+  # Conditional normal probabilities integrated over the variance estimate.
+  # The probability transform avoids a sharply concentrated chi-square density.
   tost_power_fn <- function(N) {
     df <- N - 2
     sem <- sqrt(sigma_w_sq * 2 / N)
     tval <- stats::qt(1 - alpha, df)
-    delta1 <- (diffm - lth1) / sem
-    delta2 <- (diffm - lth2) / sem
-    pow <- stats::pt(-tval, df, ncp = delta2) - stats::pt(tval, df, ncp = delta1)
-    max(0, pow)
+    variance_bound <- ((lth2 - lth1) / (2 * tval * sem))^2
+    upper_probability <- stats::pchisq(df * variance_bound, df)
+    if (upper_probability == 0) return(0)
+    integrand <- function(u) {
+      critical <- tval * sqrt(stats::qchisq(u, df) / df)
+      pmax(0, stats::pnorm((lth2 - diffm) / sem - critical) -
+        stats::pnorm((lth1 - diffm) / sem + critical))
+    }
+    stats::integrate(integrand, lower = 0, upper = upper_probability,
+      rel.tol = 1e-8, abs.tol = 1e-10, subdivisions = 200L)$value
   }
 
-  n_total <- 4L
-  while (tost_power_fn(n_total) < power && n_total < 10000L) {
-    n_total <- n_total + 2L
+  upper <- 2L
+  while (tost_power_fn(2L * upper) < power && upper < 5000L) {
+    upper <- min(2L * upper, 5000L)
   }
-
-  n_per_seq <- as.integer(n_total / 2L)
-  achieved_pow <- round(tost_power_fn(n_total), 4)
+  if (tost_power_fn(2L * upper) < power) {
+    cli::cli_abort(c(
+      "No bioequivalence design reaches the requested power within 10000 participants.",
+      "i" = "Power at the search limit is {.val {round(tost_power_fn(2L * upper), 4)}}; target is {.val {power}}."
+    ))
+  }
+  lower <- 2L
+  while (lower < upper) {
+    middle <- lower + as.integer(floor((upper - lower) / 2))
+    if (tost_power_fn(2L * middle) >= power) upper <- middle else lower <- middle + 1L
+  }
+  n_per_seq <- lower
+  n_total <- 2L * n_per_seq
+  exact_power <- tost_power_fn(n_total)
+  achieved_pow <- round(exact_power, 4)
 
   hints <- character()
   if (cv > 0.30) {
@@ -281,17 +300,25 @@ calculate_bioequivalence <- function(cv, alpha, power, theta0 = 1.0,
   }
 
   list(
-    design_type = "Bioequivalence (2x2 crossover, exact TOST noncentral t)",
+    design_type = "Bioequivalence (2x2 crossover, exact TOST integration)",
     n_required = n_per_seq,
     total_n = n_total,
     power_achieved = achieved_pow,
+    power_unrounded = exact_power,
+    calculation = c(
+      sprintf("Step 1: Log-scale within-subject SD = sqrt(log(1+CV^2)) = %.6f; anticipated log ratio = %.6f.", sqrt(sigma_w_sq), diffm),
+      sprintf("Step 2: TOST log limits are [%.6f, %.6f], each with one-sided alpha %.4f.", lth1, lth2, alpha),
+      "Step 3: Integrate the conditional normal acceptance probability over the chi-square variance estimate (df = N-2); negative-width acceptance intervals contribute zero.",
+      "Step 4: Search balanced even totals for the smallest N meeting the target power.",
+      sprintf("Step 5: n = %d per sequence, total N = %d, achieved power = %.6f (target %.4f).", n_per_seq, n_total, exact_power, power)
+    ),
     parameters = list(
       cv = cv, sigma_w_sq = sigma_w_sq,
       theta0 = theta0, margin_low = margin_low, margin_high = margin_high,
       alpha = alpha, power = power
     ),
-    formula = "exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)",
-    formula_latex = "$$\\text{Power} = F_t(-t_{1-\\alpha,\\, \\nu};\\, \\nu,\\, \\delta_2) - F_t(t_{1-\\alpha,\\, \\nu};\\, \\nu,\\, \\delta_1), \\quad \\nu = N-2$$",
+    formula = "power = E[max(0, Phi((U-mu)/SE-t*sqrt(V/df))-Phi((L-mu)/SE+t*sqrt(V/df)))], V ~ chi-square(df), df=N-2",
+    formula_latex = "$$\\mathrm{Power}=E\\!\\left[\\max\\!\\left\\{0,\\Phi\\!\\left(\\frac{U-\\mu}{SE}-t\\sqrt{V/\\nu}\\right)-\\Phi\\!\\left(\\frac{L-\\mu}{SE}+t\\sqrt{V/\\nu}\\right)\\right\\}\\right],\\quad V\\sim\\chi^2_\\nu,\\ \\nu=N-2$$",
     reference = paste(
       "Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure",
       "in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.\n\n",

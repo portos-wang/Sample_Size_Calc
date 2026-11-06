@@ -1,3 +1,25 @@
+test_that("singleMean returns the smallest integer meeting the t precision target", {
+  result <- calculate("singleMean", sigma = 1, precision = 1)
+  expect_identical(result$n_required, 7L)
+  expect_lte(qt(0.975, result$n_required - 1) / sqrt(result$n_required), 1)
+  expect_gt(qt(0.975, result$n_required - 2) / sqrt(result$n_required - 1), 1)
+  expect_lte(result$results$achieved_precision, 1)
+})
+
+test_that("singleMean never proposes a one-observation t interval", {
+  result <- calculate("singleMean", sigma = 1, precision = 5)
+  expect_identical(result$n_required, 3L)
+  expect_lte(qt(0.975, 2) / sqrt(3), 5)
+  expect_gt(qt(0.975, 1) / sqrt(2), 5)
+})
+
+test_that("an impossible precision requirement aborts inside the integer range", {
+  expect_snapshot(
+    error = TRUE,
+    calculate("singleMean", sigma = 1, precision = 1e-6)
+  )
+})
+
 # Phase 2: estimation designs (singleProportion / singleMean /
 # singleCorrelation). Anchors: inst/reference/NUMERIC_ANCHORS.md A1/A2/A6.
 
@@ -11,7 +33,12 @@ test_that("singleProportion matches the Bhardwaj 2024 anchor (p=0.30, d=0.05 -> 
 
 test_that("singleProportion relative precision variant", {
   # epsilon = 0.10 of p = 0.30 -> d = 0.03: n = (1.96^2*0.21)/0.0009 = 896.4 -> 897
-  res <- calculate("singleProportion", p = 0.30, precision = 0.10, precision_type = "relative")
+  res <- calculate(
+    "singleProportion",
+    p = 0.30,
+    precision = 0.10,
+    precision_type = "relative"
+  )
   expect_identical(res$n_required, 897L)
 })
 
@@ -25,10 +52,19 @@ test_that("singleProportion warns via hints for extreme prevalence conventions",
 })
 
 test_that("singleProportion rejects invalid inputs", {
-  expect_snapshot(error = TRUE, calculate("singleProportion", p = 1.2, precision = 0.05))
-  expect_snapshot(error = TRUE, calculate("singleProportion", p = 0.3, precision = 0))
+  expect_snapshot(
+    error = TRUE,
+    calculate("singleProportion", p = 1.2, precision = 0.05)
+  )
+  expect_snapshot(
+    error = TRUE,
+    calculate("singleProportion", p = 0.3, precision = 0)
+  )
   # precision larger than 1-p*... nonsense is caught by formula, but negative errors
-  expect_snapshot(error = TRUE, calculate("singleProportion", p = 0.3, precision = -0.1))
+  expect_snapshot(
+    error = TRUE,
+    calculate("singleProportion", p = 0.3, precision = -0.1)
+  )
 })
 
 test_that("singleMean iterates the Student t quantile (Machin Eq 9.18)", {

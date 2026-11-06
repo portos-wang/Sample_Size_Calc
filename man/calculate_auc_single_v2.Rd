@@ -2,13 +2,13 @@
 % Please edit documentation in R/calc-diagnostic-estimation.R
 \name{calculate_auc_single_v2}
 \alias{calculate_auc_single_v2}
-\title{Upgraded AUC estimation: three variance functions, user-set case:control
-ratio R — Zhou 2011 pp.196-199}
+\title{AUC estimation with fixed controls:cases allocation or clinical prevalence
+— Zhou 2011 pp.196-199}
 \usage{
 calculate_auc_single_v2(auc, d, prevalence, alpha, ratio, var_method)
 }
 \description{
-Upgraded AUC estimation: three variance functions, user-set case:control
-ratio R — Zhou 2011 pp.196-199
+AUC estimation with fixed controls:cases allocation or clinical prevalence
+— Zhou 2011 pp.196-199
 }
 \keyword{internal}

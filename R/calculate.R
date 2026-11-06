@@ -11,202 +11,323 @@
 ssr_combinations <- list(
   # --- Trial family (rct collapsed) ---
   list(
-    design = "rct", task = "test", outcome = "mean",
-    legacy = "twoMeans", default = TRUE
+    design = "rct",
+    task = "test",
+    outcome = "mean",
+    legacy = "twoMeans",
+    default = TRUE
   ),
   list(
-    design = "rct", task = "test", outcome = "proportion",
+    design = "rct",
+    task = "test",
+    outcome = "proportion",
     legacy = "twoProportions"
   ),
   list(
-    design = "rct", task = "test", outcome = "survival",
+    design = "rct",
+    task = "test",
+    outcome = "survival",
     legacy = "survival"
   ),
   list(
-    design = "rct", task = "noninferiority", outcome = "mean",
+    design = "rct",
+    task = "noninferiority",
+    outcome = "mean",
     legacy = "nonInferiorityMeans"
   ),
   list(
-    design = "rct", task = "superiority", outcome = "mean",
+    design = "rct",
+    task = "superiority",
+    outcome = "mean",
     legacy = "superiorityMeans"
   ),
   list(
-    design = "rct", task = "equivalence", outcome = "mean",
+    design = "rct",
+    task = "equivalence",
+    outcome = "mean",
     legacy = "equivalenceMeans"
   ),
   list(
-    design = "rct", task = "superiority", outcome = "proportion",
+    design = "rct",
+    task = "superiority",
+    outcome = "proportion",
     legacy = "superiorityProportions"
   ),
   list(
-    design = "rct", task = "equivalence", outcome = "proportion",
+    design = "rct",
+    task = "equivalence",
+    outcome = "proportion",
     legacy = "equivalenceProportions"
   ),
   # --- Paired ---
   list(
-    design = "paired", task = "test", outcome = "mean",
-    legacy = "pairedMeans", default = TRUE
+    design = "paired",
+    task = "test",
+    outcome = "mean",
+    legacy = "pairedMeans",
+    default = TRUE
   ),
   # --- Observational ---
   list(
-    design = "caseControl", task = "test", outcome = "proportion",
-    legacy = "caseControl", default = TRUE
+    design = "caseControl",
+    task = "test",
+    outcome = "proportion",
+    legacy = "caseControl",
+    default = TRUE
   ),
   # --- Diagnostic family (explicit names) ---
   list(
-    design = "diagAccuracy", task = "estimate", outcome = "proportion",
-    legacy = "diagnosticAccuracySingle", default = TRUE
+    design = "diagAccuracy",
+    task = "estimate",
+    outcome = "proportion",
+    legacy = "diagnosticAccuracySingle",
+    default = TRUE
   ),
   list(
-    design = "diagAccuracy", task = "test", outcome = "proportion",
+    design = "diagAccuracy",
+    task = "test",
+    outcome = "proportion",
     legacy = "diagnosticSuperioritySingle"
   ),
   list(
-    design = "diagAccuracyCompare", task = "test", outcome = "proportion",
-    legacy = "diagnosticComparisonTwo", default = TRUE
+    design = "diagAccuracyCompare",
+    task = "test",
+    outcome = "proportion",
+    legacy = "diagnosticComparisonTwo",
+    default = TRUE
   ),
   list(
-    design = "diagLR", task = "estimate", outcome = "lr",
-    legacy = "likelihoodRatioTest", default = TRUE
+    design = "diagLR",
+    task = "estimate",
+    outcome = "lr",
+    legacy = "likelihoodRatioTest",
+    default = TRUE
   ),
   list(
-    design = "diagAUC", task = "estimate", outcome = "auc",
-    legacy = "auc_single", default = TRUE
+    design = "diagAUC",
+    task = "estimate",
+    outcome = "auc",
+    legacy = "auc_single",
+    default = TRUE
   ),
   list(
-    design = "diagAUC", task = "test", outcome = "auc",
+    design = "diagAUC",
+    task = "test",
+    outcome = "auc",
     legacy = "aucSuperiority"
   ),
   list(
-    design = "diagAUCCompare", task = "test", outcome = "auc",
-    legacy = "aucComparison", default = TRUE
+    design = "diagAUCCompare",
+    task = "test",
+    outcome = "auc",
+    legacy = "aucComparison",
+    default = TRUE
   ),
   # --- Estimation family (decision 3: single* designs) ---
   list(
-    design = "singleProportion", task = "estimate", outcome = "proportion",
-    legacy = "singleProportion", default = TRUE
+    design = "singleProportion",
+    task = "estimate",
+    outcome = "proportion",
+    legacy = "singleProportion",
+    default = TRUE
   ),
   list(
-    design = "singleMean", task = "estimate", outcome = "mean",
-    legacy = "singleMean", default = TRUE
+    design = "singleMean",
+    task = "estimate",
+    outcome = "mean",
+    legacy = "singleMean",
+    default = TRUE
   ),
   list(
-    design = "singleCorrelation", task = "estimate", outcome = "correlation",
-    legacy = "singleCorrelation", default = TRUE
+    design = "singleCorrelation",
+    task = "estimate",
+    outcome = "correlation",
+    legacy = "singleCorrelation",
+    default = TRUE
   ),
   # --- Phase 3: observational family + paired binary + single-arm ---
   list(
-    design = "cohort", task = "test", outcome = "proportion",
-    legacy = "cohortProportion", default = TRUE
+    design = "cohort",
+    task = "test",
+    outcome = "proportion",
+    legacy = "cohortProportion",
+    default = TRUE
   ),
   list(
-    design = "cohort", task = "test", outcome = "rate",
+    design = "cohort",
+    task = "test",
+    outcome = "rate",
     legacy = "cohortRate"
   ),
   list(
-    design = "caseControlMatched", task = "test", outcome = "proportion",
-    legacy = "caseControlMatched", default = TRUE
+    design = "caseControlMatched",
+    task = "test",
+    outcome = "proportion",
+    legacy = "caseControlMatched",
+    default = TRUE
   ),
   list(
-    design = "crosstab", task = "test", outcome = "proportion",
-    legacy = "crosstab", default = TRUE
+    design = "crosstab",
+    task = "test",
+    outcome = "proportion",
+    legacy = "crosstab",
+    default = TRUE
   ),
   list(
-    design = "paired", task = "test", outcome = "proportion",
+    design = "paired",
+    task = "test",
+    outcome = "proportion",
     legacy = "pairedProportions"
   ),
   list(
-    design = "rctSingleArm", task = "test", outcome = "mean",
-    legacy = "singleArmMean", default = TRUE
+    design = "rctSingleArm",
+    task = "test",
+    outcome = "mean",
+    legacy = "singleArmMean",
+    default = TRUE
   ),
   list(
-    design = "rctSingleArm", task = "test", outcome = "proportion",
+    design = "rctSingleArm",
+    task = "test",
+    outcome = "proportion",
     legacy = "singleArmProportion"
   ),
   # --- Phase 4: diagnostic margins + crossover/BE ---
   list(
-    design = "diagAccuracyCompare", task = "noninferiority", outcome = "proportion",
+    design = "diagAccuracyCompare",
+    task = "noninferiority",
+    outcome = "proportion",
     legacy = "diagCompareNI"
   ),
   list(
-    design = "diagAccuracyCompare", task = "equivalence", outcome = "proportion",
+    design = "diagAccuracyCompare",
+    task = "equivalence",
+    outcome = "proportion",
     legacy = "diagCompareEquiv"
   ),
   list(
-    design = "diagAUCCompare", task = "noninferiority", outcome = "auc",
+    design = "diagAUCCompare",
+    task = "noninferiority",
+    outcome = "auc",
     legacy = "diagAUCCompareNI"
   ),
   list(
-    design = "diagAUCCompare", task = "equivalence", outcome = "auc",
+    design = "diagAUCCompare",
+    task = "equivalence",
+    outcome = "auc",
     legacy = "diagAUCCompareEquiv"
   ),
   list(
-    design = "crossover", task = "test", outcome = "mean",
-    legacy = "crossoverMean", default = TRUE
+    design = "crossover",
+    task = "test",
+    outcome = "mean",
+    legacy = "crossoverMean",
+    default = TRUE
   ),
   list(
-    design = "bioequivalence", task = "equivalence", outcome = "mean",
-    legacy = "bioequivalence", default = TRUE
+    design = "bioequivalence",
+    task = "equivalence",
+    outcome = "mean",
+    legacy = "bioequivalence",
+    default = TRUE
   ),
   # --- Phase 5: complex designs ---
   list(
-    design = "clusterRCT", task = "test", outcome = "mean",
-    legacy = "clusterMean", default = TRUE
+    design = "clusterRCT",
+    task = "test",
+    outcome = "mean",
+    legacy = "clusterMean",
+    default = TRUE
   ),
   list(
-    design = "clusterRCT", task = "test", outcome = "proportion",
+    design = "clusterRCT",
+    task = "test",
+    outcome = "proportion",
     legacy = "clusterProportion"
   ),
   list(
-    design = "singleArmPhaseII", task = "test", outcome = "proportion",
-    legacy = "simonTwoStage", default = TRUE
+    design = "singleArmPhaseII",
+    task = "test",
+    outcome = "proportion",
+    legacy = "simonTwoStage",
+    default = TRUE
   ),
   list(
-    design = "rct", task = "noninferiority", outcome = "proportion",
+    design = "rct",
+    task = "noninferiority",
+    outcome = "proportion",
     legacy = "nonInferiorityProportions"
   ),
   list(
-    design = "twoOrdinal", task = "test", outcome = "ordinal",
-    legacy = "twoOrdinalWhitehead", default = TRUE
+    design = "twoOrdinal",
+    task = "test",
+    outcome = "ordinal",
+    legacy = "twoOrdinalWhitehead",
+    default = TRUE
   ),
   list(
-    design = "predictiveModel", task = "plan", outcome = "events",
-    legacy = "predictiveEPV", default = TRUE
+    design = "predictiveModel",
+    task = "plan",
+    outcome = "events",
+    legacy = "predictiveEPV",
+    default = TRUE
   ),
   list(
-    design = "its", task = "test", outcome = "rate",
-    legacy = "itsLevel", default = TRUE
+    design = "its",
+    task = "test",
+    outcome = "rate",
+    legacy = "itsLevel",
+    default = TRUE
   ),
   # --- 3.1: observer agreement (Cantor 1996) ---
   list(
-    design = "kappa", task = "estimate", outcome = "proportion",
-    legacy = "kappaEstimate", default = TRUE
+    design = "kappa",
+    task = "estimate",
+    outcome = "proportion",
+    legacy = "kappaEstimate",
+    default = TRUE
   ),
   list(
-    design = "kappa", task = "test", outcome = "proportion",
+    design = "kappa",
+    task = "test",
+    outcome = "proportion",
     legacy = "kappaTest"
   ),
   # --- 3.1: stepped wedge (Hussey & Hughes 2007, Eq 8) ---
   list(
-    design = "steppedWedge", task = "test", outcome = "mean",
-    legacy = "steppedWedgeMean", default = TRUE
+    design = "steppedWedge",
+    task = "test",
+    outcome = "mean",
+    legacy = "steppedWedgeMean",
+    default = TRUE
   ),
   list(
-    design = "steppedWedge", task = "test", outcome = "proportion",
+    design = "steppedWedge",
+    task = "test",
+    outcome = "proportion",
     legacy = "steppedWedgeProportion"
   ),
   # --- 3.1: prediction model (Riley 2020) ---
   list(
-    design = "predictiveModel", task = "plan", outcome = "binary",
+    design = "predictiveModel",
+    task = "plan",
+    outcome = "binary",
     legacy = "predictiveRileyBinary"
   ),
   list(
-    design = "predictiveModel", task = "plan", outcome = "rate",
+    design = "predictiveModel",
+    task = "plan",
+    outcome = "rate",
     legacy = "predictiveRileyTimetoevent"
   )
 )
 
-ssr_design_names <- unique(vapply(ssr_combinations, `[[`, character(1), "design"))
+ssr_design_names <- unique(vapply(
+  ssr_combinations,
+  `[[`,
+  character(1),
+  "design"
+))
 
 # Index: legacy keyword -> combination row (for the compatibility shim)
 ssr_legacy_index <- list()
@@ -273,7 +394,8 @@ ssr_resolve <- function(design, task = NULL, outcome = NULL) {
 ssr_format_combos <- function(rows) {
   paste(
     vapply(
-      rows, function(r) sprintf("(%s, %s, %s)", r$design, r$task, r$outcome),
+      rows,
+      function(r) sprintf("(%s, %s, %s)", r$design, r$task, r$outcome),
       character(1)
     ),
     collapse = ", "
@@ -286,110 +408,126 @@ ssr_format_combos <- function(rows) {
 # `path` distinguishes the entry point: "legacy" (sample_size_calculator)
 # keeps pre-3.0 behavior byte-for-byte; "three-axis" (calculate) may upgrade
 # specific designs (e.g. diagnosticComparisonTwo paired -> Connor kernel).
-dispatch_calculation <- function(legacy_keyword, args, alpha, power,
-                                 path = c("legacy", "three-axis")) {
+dispatch_calculation <- function(
+  legacy_keyword,
+  args,
+  alpha,
+  power,
+  path = c("legacy", "three-axis")
+) {
   path <- rlang::arg_match(path, c("legacy", "three-axis"))
-  switch(legacy_keyword,
+  switch(
+    legacy_keyword,
     "twoMeans" = calculate_two_means(
-      mean1 = args$mean1, mean2 = args$mean2, sd = args$sd,
-      alpha = alpha, power = power
+      mean1 = args$mean1,
+      mean2 = args$mean2,
+      sd = args$sd,
+      alpha = alpha,
+      power = power
     ),
     "twoProportions" = calculate_two_proportions(
-      p1 = args$p1, p2 = args$p2, alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      alpha = alpha,
+      power = power
     ),
     "pairedMeans" = calculate_paired_means(
-      meanDiff = args$meanDiff, sdDiff = args$sdDiff,
-      alpha = alpha, power = power
+      meanDiff = args$meanDiff,
+      sdDiff = args$sdDiff,
+      alpha = alpha,
+      power = power,
+      pairing = args$pairing %||% "within_subject"
     ),
     "survival" = calculate_survival(
-      hr = args$hr, pE = args$pE, alpha = alpha, power = power
+      hr = args$hr,
+      pE = args$pE,
+      alpha = alpha,
+      power = power
     ),
     "nonInferiorityMeans" = calculate_non_inferiority_means(
-      mean1 = args$mean1, mean2 = args$mean2, sd = args$sd, margin = args$margin,
-      alpha = alpha, power = power
+      mean1 = args$mean1,
+      mean2 = args$mean2,
+      sd = args$sd,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "superiorityMeans" = calculate_superiority_means(
-      mean1 = args$mean1, mean2 = args$mean2, sd = args$sd, margin = args$margin,
-      alpha = alpha, power = power
+      mean1 = args$mean1,
+      mean2 = args$mean2,
+      sd = args$sd,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "equivalenceMeans" = calculate_equivalence_means(
-      mean1 = args$mean1, mean2 = args$mean2, sd = args$sd, margin = args$margin,
-      alpha = alpha, power = power
+      mean1 = args$mean1,
+      mean2 = args$mean2,
+      sd = args$sd,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "superiorityProportions" = calculate_superiority_proportions(
-      p1 = args$p1, p2 = args$p2, margin = args$margin,
-      alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "equivalenceProportions" = calculate_equivalence_proportions(
-      p1 = args$p1, p2 = args$p2, margin = args$margin,
-      alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "caseControl" = calculate_case_control(
-      p0 = args$p0, OR = args$OR, m = args$m, alpha = alpha, power = power
+      p0 = args$p0,
+      OR = args$OR,
+      m = args$m,
+      alpha = alpha,
+      power = power
     ),
     "diagnosticAccuracySingle" = {
       # Legacy calls (sample_size_calculator) keep the exact legacy behavior;
       # three-axis calls with ci_method/power use the Zhou 6.1/6.2 upgrade.
       if (!is.null(args$ci_method) || !is.null(args$power)) {
         calculate_diagnostic_accuracy_v2(
-          prob = args$prob, d = args$d, prevalence = args$prevalence,
-          alpha = alpha, power = power,
+          prob = args$prob,
+          d = args$d,
+          prevalence = args$prevalence,
+          alpha = alpha,
+          power = power,
           ci_method = args$ci_method %||% "precision"
         )
       } else {
         calculate_diagnostic_accuracy_single(
-          prob = args$prob, d = args$d, prevalence = args$prevalence,
+          prob = args$prob,
+          d = args$d,
+          prevalence = args$prevalence,
           alpha = alpha
         )
       }
     },
     "diagnosticSuperioritySingle" = {
       if (isTRUE(args$dual)) {
-        # Dual-endpoint strategy (Akoglu 2022 p.184): power EACH endpoint
-        # (sensitivity and specificity) at dual_power so the joint power is
-        # ~80%; take the max of the two requirements.
-        dual_power <- args$dual_power %||% 0.90
-        compute_one <- function(prob, p0) {
-          z_a <- z_alpha(alpha, "one.sided")
-          z_b <- z_power(dual_power)
-          prev_val <- if (is.null(args$prevalence)) 1 else args$prevalence
-          n_cases <- ((z_a * sqrt(p0 * (1 - p0)) +
-            z_b * sqrt(prob * (1 - prob))) / (prob - p0))^2
-          list(n_cases = n_cases, n_screen = n_cases / prev_val)
-        }
-        sens_res <- compute_one(args$prob, args$p0)
-        spec_res <- compute_one(args$prob_spec, args$p0_spec)
-        n_final <- max(sens_res$n_cases, spec_res$n_cases)
-        prev_val <- if (is.null(args$prevalence)) 1 else args$prevalence
-        list(
-          design_type = "Diagnostic accuracy (dual endpoint: Se + Sp)",
-          n_sensitivity = as.integer(ceiling(sens_res$n_cases)),
-          n_specificity = as.integer(ceiling(spec_res$n_cases)),
-          target_state_cases_needed = as.integer(ceiling(n_final)),
-          total_subjects_to_screen = as.integer(ceiling(n_final / prev_val)),
-          parameters = list(
-            prob = args$prob, p0 = args$p0,
-            prob_spec = args$prob_spec, p0_spec = args$p0_spec,
-            prevalence = prev_val, alpha = alpha,
-            dual = TRUE, dual_power = dual_power
-          ),
-          formula = "n = [Za*sqrt(p0q0) + Zb*sqrt(pq)]^2/(p-p0)^2, each at dual_power; take max",
-          formula_latex = "$$n = \\max\\left(n_{Se},\\, n_{Sp}\\right), \\quad n = \\frac{\\left[Z_{\\alpha}\\sqrt{p_0(1-p_0)} + Z_{\\beta}\\sqrt{p(1-p)}\\right]^2}{(p-p_0)^2}$$",
-          reference = paste(
-            "Strategy: Akoglu, H. (2022). User's guide to sample size estimation",
-            "in diagnostic accuracy studies. Turkish Journal of Emergency Medicine,",
-            "22(4), 177-185 (p. 184: each endpoint at 90% power -> ~80% overall)."
-          ),
-          roles = c(
-            "prob/p0 = expected and null sensitivity",
-            "prob_spec/p0_spec = expected and null specificity",
-            "dual_power = per-endpoint power (default 0.90 -> ~80% joint)"
-          )
+        calculate_diagnostic_dual(
+          prob = args$prob,
+          p0 = args$p0,
+          prob_spec = args$prob_spec,
+          p0_spec = args$p0_spec,
+          prevalence = args$prevalence,
+          alpha = alpha,
+          dual_power = args$dual_power %||% 0.90
         )
       } else {
         calculate_diagnostic_superiority_single(
-          prob = args$prob, p0 = args$p0, prevalence = args$prevalence,
-          alpha = alpha, power = power,
+          prob = args$prob,
+          p0 = args$p0,
+          prevalence = args$prevalence,
+          alpha = alpha,
+          power = power,
           method = args$method %||% "asymptotic",
           alternative = args$alternative %||% "one.sided"
         )
@@ -401,18 +539,29 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
         # psi = discordant-pair PROPORTION (legacy keyword keeps the old
         # sqrt-scale psi parameterization, locked by golden master).
         n_pairs_calc <- paired_proportion_n(
-          p1 = args$p1, p2 = args$p2, psi = args$psi, alpha = alpha, power = power
+          p1 = args$p1,
+          p2 = args$p2,
+          psi = args$psi,
+          alpha = alpha,
+          power = power
         )
         prev_val <- if (is.null(args$prevalence)) 1 else args$prevalence
         list(
           design_type = "Two diagnostic measures (paired, Connor)",
           pairs_count = as.integer(ceiling(n_pairs_calc)),
           cases_needed = as.integer(ceiling(n_pairs_calc)),
-          total_subjects_to_screen = as.integer(ceiling(n_pairs_calc / prev_val)),
+          total_subjects_to_screen = as.integer(ceiling(
+            n_pairs_calc / prev_val
+          )),
           parameters = list(
-            p1 = args$p1, p2 = args$p2, prevalence = prev_val,
-            paired = TRUE, psi = args$psi,
-            psi_type = "discordant-pair proportion", alpha = alpha, power = power
+            p1 = args$p1,
+            p2 = args$p2,
+            prevalence = prev_val,
+            paired = TRUE,
+            psi = args$psi,
+            psi_type = "discordant-pair proportion",
+            alpha = alpha,
+            power = power
           ),
           formula = "n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2",
           formula_latex = "$$n = \\frac{\\left[Z_{\\alpha/2}\\sqrt{\\psi} + Z_{\\beta}\\sqrt{\\psi-\\delta^2}\\right]^2}{\\delta^2}$$",
@@ -429,8 +578,13 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
         )
       } else {
         calculate_diagnostic_comparison_two(
-          p1 = args$p1, p2 = args$p2, prevalence = args$prevalence,
-          paired = args$paired, psi = args$psi, alpha = alpha, power = power
+          p1 = args$p1,
+          p2 = args$p2,
+          prevalence = args$prevalence,
+          paired = args$paired,
+          psi = args$psi,
+          alpha = alpha,
+          power = power
         )
       }
     },
@@ -440,44 +594,58 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       # formula (golden master).
       if (!is.null(args$lr_type) || !is.null(args$target_lr)) {
         calculate_likelihood_ratio_v2(
-          sens = args$sens, spec = args$spec, prevalence = args$prevalence,
-          alpha = alpha, target_lr = args$target_lr,
+          sens = args$sens,
+          spec = args$spec,
+          prevalence = args$prevalence,
+          alpha = alpha,
+          target_lr = args$target_lr,
           lr_type = args$lr_type %||% "negative"
         )
       } else {
         calculate_likelihood_ratio_test(
-          sens = args$sens, spec = args$spec, prevalence = args$prevalence,
-          precision = args$precision, alpha = alpha
-        )
-      }
-    },
-    "auc_single" = {
-      # Upgrade path for three-axis calls; legacy keyword keeps old behavior.
-      if (!is.null(args$var_method)) {
-        calculate_auc_single_v2(
-          auc = args$auc, d = args$d, prevalence = args$prevalence,
-          alpha = alpha, ratio = args$ratio %||% 1,
-          var_method = args$var_method
-        )
-      } else {
-        calculate_auc_single(
-          auc = args$auc, d = args$d, prevalence = args$prevalence,
+          sens = args$sens,
+          spec = args$spec,
+          prevalence = args$prevalence,
+          precision = args$precision,
           alpha = alpha
         )
       }
     },
+    "auc_single" = calculate_auc_single(
+      auc = args$auc,
+      d = args$d,
+      prevalence = args$prevalence,
+      alpha = alpha,
+      ratio = args$ratio,
+      var_method = args$var_method %||% "binormal"
+    ),
     "aucSuperiority" = calculate_auc_superiority(
-      auc = args$auc, auc0 = args$auc0, prevalence = args$prevalence,
-      alpha = alpha, power = power
+      auc = args$auc,
+      auc0 = args$auc0,
+      prevalence = args$prevalence,
+      alpha = alpha,
+      power = power,
+      ratio = args$ratio,
+      var_method = args$var_method %||% "binormal"
     ),
     "aucComparison" = calculate_auc_comparison(
-      auc1 = args$auc1, auc2 = args$auc2, r = args$r,
-      prevalence = args$prevalence, alpha = alpha, power = power
+      auc1 = args$auc1,
+      auc2 = args$auc2,
+      r = args$r,
+      prevalence = args$prevalence,
+      alpha = alpha,
+      power = power,
+      ratio = args$ratio,
+      var_method = args$var_method %||% "binormal"
     ),
     "singleProportion" = ,
     "singleMean" = ,
-    "singleCorrelation" =
-      dispatch_estimation(legacy_keyword, args, alpha, power),
+    "singleCorrelation" = dispatch_estimation(
+      legacy_keyword,
+      args,
+      alpha,
+      power
+    ),
     "cohortProportion" = calculate_cohort_proportion(
       p0 = args$p0,
       p1 = args$p1,
@@ -494,114 +662,200 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
       power = power
     ),
     "caseControlMatched" = calculate_case_control_matched(
-      p0 = args$p0, OR = args$OR, alpha = alpha, power = power
+      p0 = args$p0,
+      OR = args$OR,
+      alpha = alpha,
+      power = power
     ),
     "crosstab" = calculate_crosstab_association(
-      p0 = args$p0, p1 = args$p1, alpha = alpha, power = power
+      p0 = args$p0,
+      p1 = args$p1,
+      alpha = alpha,
+      power = power
     ),
     "pairedProportions" = calculate_paired_proportions(
-      p1 = args$p1, p2 = args$p2, psi = args$psi,
-      alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      psi = args$psi,
+      alpha = alpha,
+      power = power,
+      pairing = args$pairing %||% "within_subject"
     ),
     "singleArmMean" = calculate_single_arm_mean(
-      mu0 = args$mu0, mu1 = args$mu1, sigma = args$sigma,
-      alpha = alpha, power = power
+      mu0 = args$mu0,
+      mu1 = args$mu1,
+      sigma = args$sigma,
+      alpha = alpha,
+      power = power
     ),
     "singleArmProportion" = calculate_single_arm_proportion(
-      p0 = args$p0, p1 = args$p1, alpha = alpha, power = power
+      p0 = args$p0,
+      p1 = args$p1,
+      alpha = alpha,
+      power = power
     ),
     "diagCompareNI" = calculate_diag_compare_margin_prop(
-      p1 = args$p1, p2 = args$p2, margin = args$margin,
-      alpha = alpha, power = power, task = "noninferiority",
+      p1 = args$p1,
+      p2 = args$p2,
+      margin = args$margin,
+      alpha = alpha,
+      power = power,
+      task = "noninferiority",
       prevalence = args$prevalence
     ),
     "diagCompareEquiv" = calculate_diag_compare_margin_prop(
-      p1 = args$p1, p2 = args$p2, margin = args$margin,
-      alpha = alpha, power = power, task = "equivalence",
+      p1 = args$p1,
+      p2 = args$p2,
+      margin = args$margin,
+      alpha = alpha,
+      power = power,
+      task = "equivalence",
       prevalence = args$prevalence
     ),
     "diagAUCCompareNI" = calculate_diag_auc_compare_margin(
-      auc1 = args$auc1, auc2 = args$auc2, r = args$r %||% 0.5,
-      margin = args$margin, alpha = alpha, power = power,
-      task = "noninferiority", var_method = args$var_method %||% "binormal"
+      auc1 = args$auc1,
+      auc2 = args$auc2,
+      r = args$r %||% 0.5,
+      margin = args$margin,
+      alpha = alpha,
+      power = power,
+      task = "noninferiority",
+      var_method = args$var_method %||% "binormal"
     ),
     "diagAUCCompareEquiv" = calculate_diag_auc_compare_margin(
-      auc1 = args$auc1, auc2 = args$auc2, r = args$r %||% 0.5,
-      margin = args$margin, alpha = alpha, power = power,
-      task = "equivalence", var_method = args$var_method %||% "binormal"
+      auc1 = args$auc1,
+      auc2 = args$auc2,
+      r = args$r %||% 0.5,
+      margin = args$margin,
+      alpha = alpha,
+      power = power,
+      task = "equivalence",
+      var_method = args$var_method %||% "binormal"
     ),
     "crossoverMean" = calculate_crossover_mean(
-      delta = args$delta, sigma_within = args$sigma_within,
-      alpha = alpha, power = power
+      delta = args$delta,
+      sigma_within = args$sigma_within,
+      alpha = alpha,
+      power = power
     ),
     "bioequivalence" = calculate_bioequivalence(
-      cv = args$cv, alpha = alpha, power = power,
+      cv = args$cv,
+      alpha = alpha,
+      power = power,
       theta0 = args$theta0 %||% 1.0,
       margin_low = args$margin_low %||% 0.8,
       margin_high = args$margin_high %||% 1.25
     ),
     "clusterMean" = calculate_cluster_mean(
-      mean1 = args$mean1, mean2 = args$mean2, sd = args$sd,
-      icc = args$icc, cluster_size = args$cluster_size,
-      alpha = alpha, power = power
+      mean1 = args$mean1,
+      mean2 = args$mean2,
+      sd = args$sd,
+      icc = args$icc,
+      cluster_size = args$cluster_size,
+      alpha = alpha,
+      power = power
     ),
     "clusterProportion" = calculate_cluster_proportion(
-      p1 = args$p1, p2 = args$p2, icc = args$icc,
-      cluster_size = args$cluster_size, alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      icc = args$icc,
+      cluster_size = args$cluster_size,
+      alpha = alpha,
+      power = power
     ),
     "simonTwoStage" = calculate_simon_two_stage(
-      p0 = args$p0, p1 = args$p1, alpha = alpha, power = power,
+      p0 = args$p0,
+      p1 = args$p1,
+      alpha = alpha,
+      power = power,
       optimizer = args$optimizer %||% "optimal"
     ),
     "nonInferiorityProportions" = calculate_non_inferiority_proportions(
-      p1 = args$p1, p2 = args$p2, margin = args$margin,
-      alpha = alpha, power = power
+      p1 = args$p1,
+      p2 = args$p2,
+      margin = args$margin,
+      alpha = alpha,
+      power = power
     ),
     "twoOrdinalWhitehead" = calculate_two_ordinal(
-      or = args$or, prop_bar = args$prop_bar, alpha = alpha, power = power,
+      or = args$or,
+      prop_bar = args$prop_bar,
+      alpha = alpha,
+      power = power,
       allocation = args$allocation %||% 1
     ),
     "predictiveEPV" = calculate_predictive_epv(
-      n_parameters = args$n_parameters, epv = args$epv %||% 10,
+      n_parameters = args$n_parameters,
+      epv = args$epv %||% 10,
       event_prevalence = args$event_prevalence
     ),
     "itsLevel" = calculate_its_level(
-      effect_sd = args$effect_sd, n_pre = args$n_pre, n_post = args$n_post,
-      rho = args$rho, alpha = alpha, power = power
+      effect_sd = args$effect_sd,
+      n_pre = args$n_pre,
+      n_post = args$n_post,
+      rho = args$rho,
+      alpha = alpha,
+      power = power
     ),
     "predictiveRileyBinary" = calculate_predictive_riley_binary(
-      prev = args$prev, n_parameters = args$n_parameters,
-      r2_cs = args$r2_cs, shrinkage = args$shrinkage,
-      mape = args$mape, precision_delta = args$precision_delta,
+      prev = args$prev,
+      n_parameters = args$n_parameters,
+      r2_cs = args$r2_cs,
+      shrinkage = args$shrinkage,
+      mape = args$mape,
+      precision_delta = args$precision_delta,
       alpha = alpha
     ),
     "predictiveRileyTimetoevent" = calculate_predictive_timetoevent(
-      rate = args$rate, timepoint = args$timepoint,
-      precision_delta = args$precision_delta, alpha = alpha,
-      n_parameters = args$n_parameters, epv = args$epv
+      rate = args$rate,
+      timepoint = args$timepoint,
+      precision_delta = args$precision_delta,
+      alpha = alpha,
+      n_parameters = args$n_parameters,
+      epv = args$epv
     ),
     "kappaEstimate" = calculate_kappa(
-      pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa,
-      d = args$d, alpha = alpha, power = power, task = "estimate"
+      pi1 = args$pi1,
+      pi2 = args$pi2,
+      kappa1 = args$kappa,
+      d = args$d,
+      alpha = alpha,
+      power = power,
+      task = "estimate"
     ),
     "kappaTest" = calculate_kappa(
-      pi1 = args$pi1, pi2 = args$pi2, kappa1 = args$kappa1,
-      kappa2 = args$kappa2, d = NULL, alpha = alpha, power = power,
+      pi1 = args$pi1,
+      pi2 = args$pi2,
+      kappa1 = args$kappa1,
+      kappa2 = args$kappa2,
+      d = NULL,
+      alpha = alpha,
+      power = power,
       task = "test"
     ),
     "steppedWedgeMean" = calculate_stepped_wedge(
-      theta = args$theta, tau2 = args$tau2, sigma2_ind = args$sigma2_ind,
-      m = args$m, n_clusters = args$n_clusters,
-      clusters_per_step = args$clusters_per_step, alpha = alpha,
+      theta = args$theta,
+      tau2 = args$tau2,
+      sigma2_ind = args$sigma2_ind,
+      m = args$m,
+      n_clusters = args$n_clusters,
+      clusters_per_step = args$clusters_per_step,
+      alpha = alpha,
       outcome = "mean"
     ),
     "steppedWedgeProportion" = calculate_stepped_wedge(
-      theta = args$theta, tau2 = args$tau2, sigma2_ind = args$sigma2_ind,
-      m = args$m, n_clusters = args$n_clusters,
-      clusters_per_step = args$clusters_per_step, alpha = alpha,
+      theta = args$theta,
+      tau2 = args$tau2,
+      sigma2_ind = args$sigma2_ind,
+      m = args$m,
+      n_clusters = args$n_clusters,
+      clusters_per_step = args$clusters_per_step,
+      alpha = alpha,
       outcome = "proportion"
     ),
-    cli::cli_abort("No calculation module for legacy keyword {.val {legacy_keyword}}.")
+    cli::cli_abort(
+      "No calculation module for legacy keyword {.val {legacy_keyword}}."
+    )
   )
 }
 
@@ -617,9 +871,9 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'   Control and design arguments, resolved by EXACT name (partial
 #'     matching is deliberately avoided so that design-specific arguments such
 #'     as `d` cannot be swallowed by the `design` slot).
-#'   
+#'
 #'     **Control arguments**
-#'   
+#'
 #'     * `design` (first positional argument): one of `"rct"`, `"paired"`,
 #'       `"rctSingleArm"`, `"crossover"`, `"bioequivalence"`,
 #'       `"singleArmPhaseII"`, `"cohort"`, `"caseControl"`,
@@ -642,13 +896,14 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       Akoglu 2022 Table 2 Eq 2 convention) or `"two.sided"` (Hajian-Tilaki
 #'       2014 Eq 6.8 convention), or `NULL` to keep the design default.
 #'       Currently consumed by `diagAccuracy` + `test` + `proportion` only;
-#'       other designs ignore it.
+#'       Supplying it for an unsupported design raises an error.
 #'     * `dropout`: anticipated dropout/non-response proportion in &lbrack;0, 1),
 #'       inflating by 1/(1-d). Currently applied by `cohort` + `test` +
-#'       `proportion` only; other designs ignore it.
-#'   
+#'       `proportion` only; supplying it elsewhere raises an error.
+#'       Unknown or unused design-specific arguments also raise an error.
+#'
 #'     **Design-specific parameters** (all validated; ranges shown):
-#'   
+#'
 #'     * *RCT, test, mean*: `mean1`, `mean2` real-valued group means (e.g.
 #'       mmHg); `sd` > 0 pooled standard deviation.
 #'     * *RCT, test, proportion*: `p1`, `p2` in (0, 1) response rates, must
@@ -662,6 +917,10 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'     * *RCT, equivalence, mean or proportion*: `margin` = corridor
 #'       half-width; must exceed |mean1 - mean2| (or |p1 - p2|); uses
 #'       Z_(beta/2).
+#'     * *paired*: optional `pairing = "within_subject"` (default) counts
+#'       one distinct person per complete pair of observations;
+#'       `"matched_subjects"` counts two distinct people per pair.
+#'       `n_measurements` always counts two observations per pair.
 #'     * *paired, mean*: `meanDiff` != 0 within-subject mean difference;
 #'       `sdDiff` > 0 SD of the differences (NOT the pooled SD).
 #'     * *paired, proportion*: `p1`, `p2` in (0, 1); `psi` in (0, 1) expected
@@ -694,13 +953,23 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       (0, 1) CI half-width; `prevalence` in (0, 1&rbrack;; optional `ci_method` =
 #'       "precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses `power`).
 #'     * *diagAccuracy, test*: `prob`, `p0` in (0, 1); `method` = "asymptotic"
-#'       or "exact" (A'Hern); dual-endpoint adds `prob_spec`, `p0_spec`,
-#'       `dual = TRUE`, `dual_power` (default 0.90).
+#'       or "exact" (one-sided A'Hern; a two-sided request errors).
+#'       Dual-endpoint planning adds `prob_spec`, `p0_spec`, `dual = TRUE`,
+#'       and `dual_power` (default 0.90 per endpoint). Cases and non-cases
+#'       have separate quotas; screening is the maximum of the prevalence-
+#'       adjusted quotas in expectation. Omit prevalence for separate strata.
 #'     * *diagAccuracyCompare*: `p1`, `p2` in (0, 1); `paired` = TRUE requires
 #'       `psi` in (0, 1); margin tasks add `margin` in (0, 1).
-#'     * *diagAUC, estimate*: `auc` in (0, 1); `d` > 0; `ratio` >= 1
-#'       case:control (default 1); `var_method` = "binormal" (recommended),
-#'       "exponential", or "conservative".
+#'     * *diagAUC, estimate/test and diagAUCCompare, test*: optional `ratio` > 0
+#'       means controls per case (non-cases:cases; default 1). Alternatively,
+#'       supply `prevalence` in (0, 1) for clinical recruitment, with
+#'       R = (1-prevalence)/prevalence. Supply only one of these arguments.
+#'       `var_method` defaults to `"binormal"`; alternatives are
+#'       `"exponential"` and `"conservative"`. Fixed quotas return
+#'       `controls_needed` and `total_subjects`; `total_subjects_to_screen`
+#'       is present only for clinical recruitment and is expectation-based.
+#'       Historical `prevalence = 1` selects the default 1:1 quota.
+#'     * *diagAUC, estimate*: `auc` in (0, 1); `d` > 0.
 #'     * *diagAUC, test*: `auc`, `auc0` in (0, 1), auc > auc0.
 #'     * *diagAUCCompare*: `auc1`, `auc2` in (0, 1); `r` in &lbrack;0, 1) (default
 #'       0.5); margin tasks add `margin` in (0, 1).
@@ -718,13 +987,21 @@ dispatch_calculation <- function(legacy_keyword, args, alpha, power,
 #'       `precision_delta` in (0, 1); optional `n_parameters`/`epv` cross-check.
 #'     * *predictiveModel, events*: `n_parameters` >= 1; `epv` >= 1 (classic
 #'       10); `event_prevalence` in (0, 1).
+#'     * *predictiveModel, plan, binary*: `prev` in (0, 1), positive integer
+#'       `n_parameters`, and anticipated adjusted Cox-Snell `r2_cs` below its
+#'       prevalence-specific maximum. `shrinkage` defaults to 0.9 and must
+#'       exceed `r2_cs` and be below 1; `precision_delta` defaults to 0.05.
+#'       The returned size meets B1 (outcome precision), B3 (shrinkage), and
+#'       B4 (Nagelkerke R-squared optimism at most 0.05). `mape` defaults to
+#'       0.05 and is informational for at most 30 predictor parameters;
+#'       it does not constrain the returned size.
 #'     * *kappa, estimate*: `pi1`, `pi2` in (0, 1); `kappa` in &lbrack;0, 1); `d` in
 #'       (0, 1).
 #'     * *kappa, test*: `kappa1` != `kappa2` in (0, 1); same pi's.
 #'     * *its*: `effect_sd` > 0; `n_pre`, `n_post` integers >= 3 (>= 8
 #'       recommended); `rho` in &lbrack;0, 1). Returns achieved power.
-#'   
-#'   
+#'
+#'
 #' @return Object of class `sample_size_result` with print, summary, and
 #'   plot methods. Default printing shows sample sizes, the plain-text
 #'   formula (`formula`), LaTeX source (`formula_latex`), calculation process
@@ -769,7 +1046,9 @@ calculate <- function(...) {
   # also carries (e.g. sample_size_calculator("auc_single", d = 0.05)).
   take_exact <- function(name, default = NULL) {
     val <- args[[name]] # [[ with a character index matches exactly
-    if (!is.null(val)) args[[name]] <<- NULL
+    if (!is.null(val)) {
+      args[[name]] <<- NULL
+    }
     if (is.null(val)) default else val
   }
 
@@ -783,22 +1062,34 @@ calculate <- function(...) {
   # Positional support: leading unnamed one-element character arguments fill
   # design, then task, then outcome (calculate("rct", "test", "mean", ...)).
   nms <- names(args)
-  if (is.null(nms)) nms <- rep("", length(args))
+  if (is.null(nms)) {
+    nms <- rep("", length(args))
+  }
   nms[is.na(nms)] <- ""
-  unnamed_idx <- which(nms == "" &
-    vapply(args, function(x) is.character(x) && length(x) == 1, logical(1)))
+  unnamed_idx <- which(
+    nms == "" &
+      vapply(args, function(x) is.character(x) && length(x) == 1, logical(1))
+  )
 
   for (slot in c("design", "task", "outcome")) {
-    if (!is.null(get(slot))) next
+    if (!is.null(get(slot))) {
+      next
+    }
     idx <- unnamed_idx[1]
-    if (is.na(idx)) break
+    if (is.na(idx)) {
+      break
+    }
     assign(slot, args[[idx]])
     args[[idx]] <- NULL
     nms <- names(args)
-    if (is.null(nms)) nms <- rep("", length(args))
+    if (is.null(nms)) {
+      nms <- rep("", length(args))
+    }
     nms[is.na(nms)] <- ""
-    unnamed_idx <- which(nms == "" &
-      vapply(args, function(x) is.character(x) && length(x) == 1, logical(1)))
+    unnamed_idx <- which(
+      nms == "" &
+        vapply(args, function(x) is.character(x) && length(x) == 1, logical(1))
+    )
   }
 
   row <- ssr_resolve(design, task, outcome)
@@ -806,14 +1097,18 @@ calculate <- function(...) {
   power <- validate_power(power)
   alternative <- validate_alternative(alternative)
 
-  args <- validate_design_args(row$legacy, args)
-  # `alternative` is a control argument, not a design argument: it is consumed
-  # by the kernels that accept it, so it must not reach validate_design_args().
   args$alternative <- alternative
-  calcResult <- dispatch_calculation(row$legacy, args, alpha, power, path = "three-axis")
+  args <- validate_design_args(row$legacy, args)
+  calcResult <- dispatch_calculation(
+    row$legacy,
+    args,
+    alpha,
+    power,
+    path = "three-axis"
+  )
 
   res <- as_sample_size_result(row$legacy, row$task, row$outcome, calcResult)
   res$design_canonical <- row$design
-  res$replay_args <- args
+  res$replay_args <- c(args, list(alpha = alpha))
   res
 }

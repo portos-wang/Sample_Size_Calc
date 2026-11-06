@@ -4,7 +4,15 @@
 \alias{calculate_auc_superiority}
 \title{AUC superiority test calculation}
 \usage{
-calculate_auc_superiority(auc, auc0, prevalence, alpha, power)
+calculate_auc_superiority(
+  auc,
+  auc0,
+  prevalence,
+  alpha,
+  power,
+  ratio = NULL,
+  var_method = "binormal"
+)
 }
 \arguments{
 \item{auc}{Expected AUC value}
@@ -17,6 +25,10 @@ non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)}
 \item{alpha}{Type I error}
 
 \item{power}{Statistical power}
+
+\item{ratio}{Controls per case; alternative to prevalence.}
+
+\item{var_method}{AUC variance model (binormal by default).}
 }
 \value{
 List with calculation results

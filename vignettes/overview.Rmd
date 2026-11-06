@@ -324,7 +324,7 @@ $$n_{cases} = \frac{Z_{1-\alpha/2}^2 \cdot p(1-p)}{d^2}$$
 
 **Use case**: Estimating AUC with a confidence interval of given width
 
-**Example**: A biomarker score is frozen before a clinical validation cohort is enrolled. Assume AUC 0.80, CI half-width 0.05, and source prevalence 30%, with one score and a reference disease assessment per person. This legacy branch uses its Hanley–McNeil variance calculation; the three-axis example above demonstrates explicitly selecting a different variance model.
+**Example**: A biomarker score is frozen before a clinical validation cohort is enrolled. Assume AUC 0.80, CI half-width 0.05, and source prevalence 30%, with one score and a reference disease assessment per person. This branch uses the binormal AUC variance model by default, with controls:cases allocation derived from prevalence. The three-axis example above shows fixed case-control quotas; `var_method` can select an alternative variance model.
 
 ```{r auc-single-example}
 result <- sample_size_calculator(
@@ -339,9 +339,9 @@ print(result)
 ```
 
 **Key Points**:
-- Calculates cases with disease
-- AUC variance depends on AUC value and prevalence
-- Hanley-McNeil method is standard approach
+- Calculates the required number of cases; the non-case quota follows the controls:cases ratio
+- AUC variance uses the binormal model (Obuchowski 1994) by default; `var_method` selects the exponential or distribution-free alternative
+- Screening volume requires `prevalence`; fixed case-control quotas report case, control, and total counts instead
 
 **Reference**: Hanley & McNeil (1982). The meaning and use of AUC. *Radiology*, 143(1), 29-36.
 

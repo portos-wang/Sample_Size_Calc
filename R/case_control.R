@@ -15,13 +15,16 @@ calculate_case_control <- function(p0, OR, m, alpha, power) {
   pBar <- (p1 + m_val * p0) / (1 + m_val)
   zAlphaHalf <- qnorm(1 - alpha / 2)
   zBeta <- qnorm(power)
-  nCases <- ((zAlphaHalf * sqrt((1 + 1 / m_val) * pBar * (1 - pBar)) + zBeta * sqrt(p1 * (1 - p1) + p0 * (1 - p0) / m_val)) / (p1 - p0))^2
+  nCases <- ((zAlphaHalf *
+    sqrt((1 + 1 / m_val) * pBar * (1 - pBar)) +
+    zBeta * sqrt(p1 * (1 - p1) + p0 * (1 - p0) / m_val)) /
+    (p1 - p0))^2
 
   list(
     design_type = "Case-control",
     cases_needed = ceiling(nCases),
     controls_needed = ceiling(nCases * m_val),
-    total_subjects = ceiling(nCases) * (1 + m_val),
+    total_subjects = ceiling(nCases) + ceiling(nCases * m_val),
     parameters = list(
       p0 = p0,
       odds_ratio = OR,

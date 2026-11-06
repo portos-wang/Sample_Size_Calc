@@ -16,6 +16,11 @@ paired_proportion_n <- function(p1, p2, psi, alpha, power) {
   if (!is.numeric(psi) || length(psi) != 1 || psi <= 0 || psi >= 1) {
     cli::cli_abort("{.arg psi} (discordant-pair proportion) must be in (0, 1).")
   }
+  if (psi > min(p1 + p2, 2 - p1 - p2) + 1e-12) {
+    cli::cli_abort(
+      "{.arg psi} is incompatible with {.arg p1} and {.arg p2}: the implied joint probabilities must be non-negative."
+    )
+  }
   if (psi < delta - 1e-12 || psi - delta^2 <= 0) {
     cli::cli_abort(c(
       "Inconsistent inputs: need psi >= delta (or psi > delta^2).",
@@ -31,14 +36,33 @@ paired_proportion_n <- function(p1, p2, psi, alpha, power) {
 
 #' Paired binary outcomes (McNemar test sample size)
 #' @keywords internal
-calculate_paired_proportions <- function(p1, p2, psi, alpha, power) {
+calculate_paired_proportions <- function(
+  p1,
+  p2,
+  psi,
+  alpha,
+  power,
+  pairing = "within_subject"
+) {
+  pairing <- rlang::arg_match(pairing, c("within_subject", "matched_subjects"))
   n <- paired_proportion_n(p1, p2, psi, alpha, power)
+  pairs <- as.integer(ceiling(n))
+  individuals <- if (pairing == "within_subject") pairs else 2L * pairs
 
   list(
     design_type = "Paired binary outcomes (McNemar / Connor)",
-    pairs_count = as.integer(ceiling(n)),
-    total_n = as.integer(ceiling(n)) * 2L,
-    parameters = list(p1 = p1, p2 = p2, psi = psi, alpha = alpha, power = power),
+    pairs_count = pairs,
+    total_n = individuals,
+    total_individuals = individuals,
+    n_measurements = 2L * pairs,
+    parameters = list(
+      p1 = p1,
+      p2 = p2,
+      psi = psi,
+      alpha = alpha,
+      power = power,
+      pairing = pairing
+    ),
     formula = "n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2",
     formula_latex = "$$n = \\frac{\\left[Z_{\\alpha/2}\\sqrt{\\psi} + Z_{\\beta}\\sqrt{\\psi-\\delta^2}\\right]^2}{\\delta^2}$$",
     reference = paste(
@@ -50,7 +74,8 @@ calculate_paired_proportions <- function(p1, p2, psi, alpha, power) {
     roles = c(
       "p1/p2 = expected proportions (or sensitivities) in pairs",
       "psi = expected discordant-pair proportion (pi10 + pi01)",
-      "output is in PAIRS (n individuals = 2 x pairs)"
+      "output is in PAIRS of observations; within_subject uses one person per pair, matched_subjects uses two",
+      "n_measurements = 2 x pairs; total_individuals counts distinct people"
     )
   )
 }
@@ -75,7 +100,11 @@ calculate_single_arm_mean <- function(mu0, mu1, sigma, alpha, power) {
     design_type = "Single-arm trial (continuous, vs fixed value)",
     n_required = as.integer(ceiling(n)),
     parameters = list(
-      mu0 = mu0, mu1 = mu1, sigma = sigma, alpha = alpha, power = power
+      mu0 = mu0,
+      mu1 = mu1,
+      sigma = sigma,
+      alpha = alpha,
+      power = power
     ),
     formula = "n = (Za/2 + Zb)^2 * sigma^2 / (mu1-mu0)^2",
     formula_latex = "$$n = \\frac{(Z_{\\alpha/2} + Z_{\\beta})^2 \\sigma^2}{(\\mu_1 - \\mu_0)^2}$$",

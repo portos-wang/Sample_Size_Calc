@@ -1,3 +1,23 @@
+test_that("power replay preserves a nondefault alpha", {
+  original <- calculate("rct", mean1 = 10, mean2 = 12, sd = 3, alpha = 0.01)
+  result <- ssr_replay_at_power(original, 0.9)
+  expect_equal(result$parameters$alpha, 0.01)
+  expect_equal(result$n_per_group, 69)
+})
+
+test_that("legacy power replay preserves a nondefault alpha", {
+  original <- sample_size_calculator(
+    "twoMeans",
+    mean1 = 10,
+    mean2 = 12,
+    sd = 3,
+    alpha = 0.01
+  )
+  result <- ssr_replay_at_power(original, 0.9)
+  expect_equal(result$parameters$alpha, 0.01)
+  expect_equal(result$n_per_group, 69)
+})
+
 # Replay tests: power-curve machinery must work for both entry points and
 # both old and new parameter storage. Regression: the legacy survival power
 # curve silently produced an empty plot because parameters stored
@@ -18,7 +38,12 @@ test_that("three-axis designs replay through calculate()", {
 })
 
 test_that("replay_args are stored on both API paths", {
-  legacy_res <- sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
+  legacy_res <- sample_size_calculator(
+    "twoMeans",
+    mean1 = 10,
+    mean2 = 12,
+    sd = 3
+  )
   new_res <- calculate("rct", "test", "mean", mean1 = 10, mean2 = 12, sd = 3)
   expect_false(is.null(legacy_res$replay_args))
   expect_false(is.null(new_res$replay_args))

@@ -4,7 +4,14 @@
 \alias{calculate_auc_single}
 \title{AUC single test calculation}
 \usage{
-calculate_auc_single(auc, d, prevalence, alpha)
+calculate_auc_single(
+  auc,
+  d,
+  prevalence,
+  alpha,
+  ratio = NULL,
+  var_method = "binormal"
+)
 }
 \arguments{
 \item{auc}{Expected AUC value}
@@ -16,6 +23,10 @@ non-diseased:diseased sampling ratio R = (1 - prevalence) / prevalence;
 omitted or 1 falls back to a 1:1 quota)}
 
 \item{alpha}{Type I error}
+
+\item{ratio}{Controls per case; alternative to prevalence.}
+
+\item{var_method}{AUC variance model (binormal by default).}
 }
 \value{
 List with calculation results

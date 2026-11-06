@@ -4,7 +4,13 @@
 \alias{calculate_paired_means}
 \title{Paired means comparison calculation}
 \usage{
-calculate_paired_means(meanDiff, sdDiff, alpha, power)
+calculate_paired_means(
+  meanDiff,
+  sdDiff,
+  alpha,
+  power,
+  pairing = "within_subject"
+)
 }
 \arguments{
 \item{meanDiff}{Mean difference}
@@ -14,6 +20,9 @@ calculate_paired_means(meanDiff, sdDiff, alpha, power)
 \item{alpha}{Type I error}
 
 \item{power}{Statistical power}
+
+\item{pairing}{\code{"within_subject"} for two observations per person, or
+\code{"matched_subjects"} for pairs of distinct people.}
 }
 \value{
 List with calculation results

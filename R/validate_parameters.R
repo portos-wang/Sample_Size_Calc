@@ -11,11 +11,14 @@
 #' try(SampleSizeCalc:::validate_alpha(1.5))  # structured error
 #' @keywords internal
 validate_alpha <- function(alpha) {
-  if (!is.numeric(alpha) || length(alpha) != 1) {
+  if (!is.numeric(alpha) || is.complex(alpha) || length(alpha) != 1) {
     cli::cli_abort(c(
       "{.arg alpha} must be a single numeric value.",
       "x" = "You provided {.cls {class(alpha)}} of length {length(alpha)}."
     ))
+  }
+  if (!is.finite(alpha)) {
+    cli::cli_abort("{.arg alpha} must be a single finite numeric value.")
   }
   if (alpha <= 0 || alpha >= 1) {
     cli::cli_abort(c(
@@ -50,11 +53,14 @@ validate_alternative <- function(alternative) {
 #' try(SampleSizeCalc:::validate_power(0))   # structured error
 #' @keywords internal
 validate_power <- function(power) {
-  if (!is.numeric(power) || length(power) != 1) {
+  if (!is.numeric(power) || is.complex(power) || length(power) != 1) {
     cli::cli_abort(c(
       "{.arg power} must be a single numeric value.",
       "x" = "You provided {.cls {class(power)}} of length {length(power)}."
     ))
+  }
+  if (!is.finite(power)) {
+    cli::cli_abort("{.arg power} must be a single finite numeric value.")
   }
   if (power <= 0 || power >= 1) {
     cli::cli_abort(c(
@@ -63,4 +69,40 @@ validate_power <- function(power) {
     ))
   }
   power
+}
+
+# Shared boundary check for numeric design inputs, before kernel arithmetic.
+validate_numeric_scalar <- function(value, arg) {
+  if (
+    !is.numeric(value) ||
+      is.complex(value) ||
+      length(value) != 1L ||
+      !is.finite(value)
+  ) {
+    cli::cli_abort("{.arg {arg}} must be a single finite numeric value.")
+  }
+  invisible(value)
+}
+
+validate_numeric_args <- function(args) {
+  for (arg in names(args)) {
+    if (!is.null(args[[arg]])) {
+      validate_numeric_scalar(args[[arg]], arg)
+    }
+  }
+  invisible(args)
+}
+
+validate_kappa_joint <- function(pi1, pi2, kappa, arg) {
+  pe <- pi1 * pi2 + (1 - pi1) * (1 - pi2)
+  po <- kappa * (1 - pe) + pe
+  p11 <- (po + pi1 + pi2 - 1) / 2
+  cells <- c(p11, pi1 - p11, pi2 - p11, 1 - pi1 - pi2 + p11)
+  if (any(cells < -1e-12) || any(cells > 1 + 1e-12)) {
+    cli::cli_abort(c(
+      "{.arg {arg}} is incompatible with the supplied rater marginal proportions.",
+      "i" = "The implied joint rating probabilities must all be between zero and one."
+    ))
+  }
+  invisible(TRUE)
 }

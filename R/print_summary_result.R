@@ -5,6 +5,8 @@
 ssr_metric_labels <- c(
   n_required = "Required sample size",
   n_per_group = "Sample size per group",
+  n_standard = "Standard group",
+  n_test = "Test group",
   n_exposed = "Exposed group",
   n_unexposed = "Unexposed group",
   total_n = "Total sample size",
@@ -15,6 +17,7 @@ ssr_metric_labels <- c(
   r_total = "Overall boundary (declare effective if responses > r)",
   events_required = "Events required",
   pairs_count = "Pairs needed",
+  n_measurements = "Measurements required",
   total_individuals = "Total individuals",
   target_events_needed = "Events needed",
   target_state_cases_needed = "Cases needed",
@@ -34,13 +37,23 @@ ssr_metric_labels <- c(
 
 ssr_collect_metrics <- function(x) {
   fields <- intersect(names(ssr_metric_labels), names(x))
-  fields[vapply(x[fields], function(v) !is.null(v) && all(is.finite(v)), logical(1))]
+  fields[vapply(
+    x[fields],
+    function(v) !is.null(v) && all(is.finite(v)),
+    logical(1)
+  )]
 }
 
 ssr_render_metrics <- function(x, verbose = FALSE) {
   metrics <- ssr_collect_metrics(x)
   for (m in metrics) {
-    cli::cli_li("{.field {ssr_metric_labels[[m]]}}: {.val {x[[m]]}}")
+    label <- ssr_metric_labels[[m]]
+    if (
+      m == "n_clusters" && grepl("Stepped wedge", x$design_type, fixed = TRUE)
+    ) {
+      label <- "Total clusters"
+    }
+    cli::cli_li("{.field {label}}: {.val {x[[m]]}}")
   }
   invisible(metrics)
 }
@@ -49,7 +62,9 @@ ssr_render_meta <- function(x, verbose = FALSE) {
   if (length(x$roles) > 0) {
     cli::cli_par()
     cli::cli_text("{.emph Parameter roles}")
-    for (r in x$roles) cli::cli_li("{r}")
+    for (r in x$roles) {
+      cli::cli_li("{r}")
+    }
   }
   if (verbose && length(x$adjustments) > 0) {
     cli::cli_par()
@@ -155,6 +170,11 @@ summary.sample_size_result <- function(object, ...) {
     params <- object$parameters
     for (name in names(params)) {
       val <- params[[name]]
+      if (is.null(val)) {
+        # An unsupplied optional parameter (e.g. predictiveModel/plan/rate's
+        # n_parameters) is not part of the plan; do not render a blank entry.
+        next
+      }
       if (length(val) > 3) {
         val <- paste0("[", paste(round(val, 4), collapse = ", "), "]")
       }

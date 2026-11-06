@@ -588,18 +588,18 @@ print(res_5_3)
 ## 5.4 Dual-Endpoint Diagnostic Trial (Se + Sp Co-Primary)
 
 - **Population and decision**: An independent breast-lesion diagnostic model validation requires both sensitivity and specificity to exceed their own benchmarks, consecutively enrolling patients scheduled for reference assessment with one defined analysis unit per patient.
-- **Procedures and endpoint**: Reference-positive patients contribute sensitivity and reference-negative patients contribute specificity. Both endpoints must succeed; biopsy establishes disease truth and is not itself a competing accuracy benchmark.
-- **Planning inputs**: Assume Se of 90% versus null 80%, Sp of 85% versus null 75%, and `dual_power = 0.90`. Powering each endpoint at 90% supports an approximately 80% lower planning bound for joint success; the actual joint behavior depends on the design.
-- **Why this design**: Track case and non-case requirements separately. The function also returns the larger requirement and a conservative screening conversion, but the two endpoint requirements do not refer to the same disease-status group.
+- **Procedures and endpoint**: Reference-positive patients contribute sensitivity and reference-negative patients contribute specificity. Both endpoints must succeed; omit prevalence when recruiting the two groups by quota; with clinical screening, prevalence converts both quotas separately.
+- **Planning inputs**: Assume Se of 90% versus null 80%, Sp of 85% versus null 75%, and `dual_power = 0.90`. Powering each endpoint at 90% supports an approximately 80% lower planning bound for joint success; the actual joint behavior depends on the design. Assume screening prevalence 40%.
+- **Why this design**: Track case and non-case requirements separately. When screening consecutively, the required enrollment is the maximum of the prevalence-adjusted integer quotas.
 - **Formula**:
-$$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$
+$$n_{Se} = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}, \quad N_{screen} = \max\left(\left\lceil\frac{n_{Se}}{P}\right\rceil, \left\lceil\frac{n_{Sp}}{1-P}\right\rceil\right)$$
 
 ```{r diag-dual-en}
 res_5_4 <- calculate("diagAccuracy", "test", "proportion", prob = 0.90, p0 = 0.80, prob_spec = 0.85, p0_spec = 0.75, prevalence = 0.40, dual = TRUE)
 print(res_5_4)
 ```
 
-- **Result and recruitment**: Sensitivity requires `r res_5_4$n_sensitivity` cases, specificity `r res_5_4$n_specificity` non-cases. The reported maximum is `r res_5_4$target_state_cases_needed`, with conservative conversion `r res_5_4$total_subjects_to_screen`. At prevalence 40%, separately converting rounded case and non-case quotas gives an average lower planning total of `r max(ceiling(res_5_4$n_sensitivity / 0.4), ceiling(res_5_4$n_specificity / 0.6))`; account additionally for random case yield.
+- **Result and recruitment**: Sensitivity requires `r res_5_4$n_sensitivity` cases, specificity `r res_5_4$n_specificity` non-cases, for `r res_5_4$total_subjects` participants across the two strata. At prevalence 40%, the expected screening requirement is `r res_5_4$total_subjects_to_screen` people; account additionally for random case yield.
 
 ## 5.5 Unpaired Comparison of Two Diagnostic Tests
 
@@ -679,16 +679,16 @@ res_5_9 <- calculate("diagAUC", "estimate", "auc", auc = 0.80, d = 0.10, ratio =
 print(res_5_9)
 ```
 
-- **Result and recruitment**: `r res_5_9$target_state_cases_needed` cases and the same number of non-cases, `r res_5_9$total_subjects_to_screen` total. Meet both disease-status quotas; a sufficient total with too few cases does not meet this precision plan.
+- **Result and recruitment**: `r res_5_9$target_state_cases_needed` cases and the same number of non-cases, `r res_5_9$total_subjects` total. Meet both disease-status quotas; a sufficient total with too few cases does not meet this precision plan.
 
 ## 5.10 ROC-AUC Superiority Test
 
 - **Population and decision**: A team validates an independent miRNA score against a prespecified minimum useful discrimination level, rather than merely testing whether it exceeds random ranking at AUC=0.5.
 - **Procedures and endpoint**: Freeze the algorithm before collecting continuous scores and reference disease status, handling cases and non-cases consistently. The primary endpoint is the overall ROC-AUC.
-- **Planning inputs**: Assume `auc = 0.80`, minimum acceptable `auc0 = 0.70`, source prevalence 30%, one-sided α=0.05, and 80% power. Justify the minimum for the intended application.
+- **Planning inputs**: Assume `auc = 0.80`, minimum acceptable `auc0 = 0.70`, source prevalence 30%, two-sided α=0.05, and 80% power. Justify the minimum for the intended application.
 - **Why this design**: An AUC test does not automatically guarantee sensitivity, specificity at an operating threshold, or calibration. Plan those separately if they are also primary objectives.
 - **Formula**:
-$$n_{cases} = \frac{\left(Z_{\alpha}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
+$$n_{cases} = \frac{\left(Z_{\alpha/2}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
 
 ```{r diag-auc-test-en}
 res_5_10 <- calculate("diagAUC", "test", "auc", auc = 0.80, auc0 = 0.70, prevalence = 0.30, alpha = 0.05, power = 0.8)
@@ -728,7 +728,7 @@ res_5_12 <- calculate("diagAUCCompare", "noninferiority", "auc", auc1 = 0.85, au
 print(res_5_12)
 ```
 
-- **Result and recruitment**: The case requirement is `r res_5_12$target_state_cases_needed`, and the total conversion field is `r res_5_12$total_subjects_to_screen`. Enforcing integer equal case and non-case quotas gives `r 2 * res_5_12$target_state_cases_needed` people, each receiving both device assessments.
+- **Result and recruitment**: The case requirement is `r res_5_12$target_state_cases_needed`, and the total conversion field is `r res_5_12$total_subjects`. Enforcing integer equal case and non-case quotas gives `r 2 * res_5_12$target_state_cases_needed` people, each receiving both device assessments.
 
 ## 5.13 Two ROC-AUC Equivalence
 
@@ -744,7 +744,7 @@ res_5_13 <- calculate("diagAUCCompare", "equivalence", "auc", auc1 = 0.85, auc2 
 print(res_5_13)
 ```
 
-- **Result and recruitment**: `r res_5_13$target_state_cases_needed` cases, with total conversion `r res_5_13$total_subjects_to_screen`. Equal integer case and non-case quotas require `r 2 * res_5_13$target_state_cases_needed` people, each providing scores from both systems.
+- **Result and recruitment**: `r res_5_13$target_state_cases_needed` cases, with total conversion `r res_5_13$total_subjects`. Equal integer case and non-case quotas require `r 2 * res_5_13$target_state_cases_needed` people, each providing scores from both systems.
 
 ## 5.14 Negative Likelihood Ratio Threshold Precision
 
@@ -857,24 +857,25 @@ print(res_6_3)
 - **Planning inputs**: Assume pooled category distribution `prop_bar = c(0.2, 0.5, 0.3)`, common `or = 1.5`, two-sided α=0.05, and 80% power. The distribution is the combined planning distribution, not an arbitrary single-arm set of rates.
 - **Why this design**: Whitehead's approximation assumes a common proportional odds effect across cutpoints. Effects concentrated in a particular category require assessment under an appropriate alternative distribution.
 - **Formula** (Whitehead 1993):
-$$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$
+$$N = \frac{3(1+\varphi)^2\,(Z_{\alpha/2}+Z_{\beta})^2}{\varphi\,(\log OR)^2\,(1-\sum \bar{p}_j^3)}, \quad \varphi = n_{test}/n_{standard} = 1$$
 
 ```{r ordinal-en}
 res_6_4 <- calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2, 0.5, 0.3), alpha = 0.05, power = 0.8)
 print(res_6_4)
 ```
 
-- **Result and recruitment**: The formula returns total lower bound `r res_6_4$total_n` and rounded group size `r res_6_4$n_per_group`. Strict 1:1 allocation therefore needs `r 2 * res_6_4$n_per_group` participants before any allowance for missing endpoints.
+- **Result and recruitment**: Each group is rounded up to `r res_6_4$n_per_group`; the reported total `r res_6_4$total_n` is the sum of the integer group sizes. Add any allowance for missing endpoints separately.
 
 ## 6.5 Clinical Prediction Model Development (Riley 2020 BMJ Binary)
 
 - **Population and decision**: An ICU team develops a model predicting in-hospital death at admission, consecutively enrolling eligible first admissions and using predictors available at the intended prediction time.
 - **Procedures and endpoint**: Each patient has one admission outcome. Count parameters needed for categorical expansions, splines, and interactions; 10 parameters need not mean 10 raw variables.
 - **Planning inputs**: Assume outcome proportion `prev = 0.30`, `n_parameters = 10`, anticipated Cox–Snell R²=0.10, target shrinkage 0.90, and overall-risk precision 0.05. External performance estimates should be relevant and adjusted for optimism.
-- **Why this design**: This branch takes the larger of overall-risk precision B1 and shrinkage B3, with auxiliary information. It does not implement every Riley criterion or automatically plan machine-learning tuning and external validation.
-- **Formula** (Riley 2020, criteria B1 & B3):
-$$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n = \max(n_{B1}, n_{B3})$$
-  Riley et al. (2020), *BMJ* 368, m441 (criteria B1 and B3 in this example).
+- **Why this design**: This branch takes the maximum of overall-risk precision B1, shrinkage B3, and Nagelkerke R² optimism B4. B2 MAPE is informational for at most 30 parameters; machine-learning tuning and external validation need separate planning.
+- **Formula** (Riley 2020, criteria B1, B3, B4):
+$$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n(S) = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}$$
+$$S_4 = \frac{R^2_{CS}}{R^2_{CS}+0.05\max(R^2_{CS})}, \quad n = \max\{n_{B1}, n(S), n(S_4)\}$$
+  Riley et al. (2020), *BMJ* 368, m441 (B1, B3, and B4).
 
 ```{r riley-bin-en}
 res_6_5 <- calculate("predictiveModel", "plan", "binary", prev = 0.30, n_parameters = 10, r2_cs = 0.10, shrinkage = 0.90, precision_delta = 0.05, alpha = 0.05)

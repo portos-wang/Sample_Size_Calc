@@ -10,8 +10,14 @@
 #' Upgraded diagnostic accuracy: Zhou Eq 6.1 (CI width + power),
 #' Eq 6.2 (precision), Eq 6.3 (prevalence guarantee) — Zhou 2011 pp.194-196
 #' @keywords internal
-calculate_diagnostic_accuracy_v2 <- function(prob, d, prevalence, alpha, power,
-                                             ci_method) {
+calculate_diagnostic_accuracy_v2 <- function(
+  prob,
+  d,
+  prevalence,
+  alpha,
+  power,
+  ci_method
+) {
   p_val <- prob
   d_val <- d
   prev_val <- if (is.null(prevalence)) 1 else prevalence
@@ -72,6 +78,105 @@ calculate_diagnostic_accuracy_v2 <- function(prob, d, prevalence, alpha, power,
   )
 }
 
+# Separate diseased and non-diseased recruitment requirements.
+calculate_diagnostic_dual <- function(
+  prob,
+  p0,
+  prob_spec,
+  p0_spec,
+  prevalence,
+  alpha,
+  dual_power
+) {
+  if (prob <= p0 || prob_spec <= p0_spec) {
+    cli::cli_abort(
+      "Expected sensitivity and specificity must each exceed their null thresholds."
+    )
+  }
+  if (!is.null(prevalence) && (prevalence <= 0 || prevalence >= 1)) {
+    cli::cli_abort(
+      "{.arg prevalence} must be in (0, 1) when both disease states are required."
+    )
+  }
+  z_a <- z_alpha(alpha, "one.sided")
+  z_b <- z_power(dual_power)
+  requirement <- function(p, null) {
+    ceiling(
+      (z_a * sqrt(null * (1 - null)) + z_b * sqrt(p * (1 - p)))^2 / (p - null)^2
+    )
+  }
+  cases <- as.integer(requirement(prob, p0))
+  controls <- as.integer(requirement(prob_spec, p0_spec))
+  screen <- if (!is.null(prevalence)) {
+    max(
+      expected_recruitment(cases, prevalence),
+      expected_recruitment(controls, 1 - prevalence)
+    )
+  }
+  list(
+    design_type = "Diagnostic accuracy (dual endpoint: Se + Sp)",
+    n_sensitivity = cases,
+    n_specificity = controls,
+    target_state_cases_needed = cases,
+    cases_needed = cases,
+    controls_needed = controls,
+    total_subjects = cases + controls,
+    total_subjects_to_screen = screen,
+    parameters = list(
+      prob = prob,
+      p0 = p0,
+      prob_spec = prob_spec,
+      p0_spec = p0_spec,
+      prevalence = prevalence,
+      alpha = alpha,
+      dual = TRUE,
+      dual_power = dual_power
+    ),
+    formula = "n(p,p0)=[Za*sqrt(p0*(1-p0))+Zb*sqrt(p*(1-p))]^2/(p-p0)^2; N_screen=max(ceil(n_Se/prev),ceil(n_Sp/(1-prev)))",
+    formula_latex = "$$N_{screen}=\\max\\left(\\left\\lceil\\frac{n_{Se}}{P}\\right\\rceil,\\left\\lceil\\frac{n_{Sp}}{1-P}\\right\\rceil\\right)$$",
+    calculation = c(
+      sprintf(
+        "Step 1: Plan sensitivity %.4f vs %.4f and specificity %.4f vs %.4f, each with alpha %.4f and power %.4f.",
+        prob,
+        p0,
+        prob_spec,
+        p0_spec,
+        alpha,
+        dual_power
+      ),
+      sprintf(
+        "Step 2: Round each endpoint requirement separately: %d diseased cases and %d non-diseased controls.",
+        cases,
+        controls
+      ),
+      sprintf(
+        "Step 3: Fixed strata quotas total %d + %d = %d participants.",
+        cases,
+        controls,
+        cases + controls
+      ),
+      if (!is.null(screen)) {
+        sprintf(
+          "Step 4: At prevalence %.4f, screen max(ceil(%d/%.4f),ceil(%d/%.4f)) = %d participants in expectation; this is not a recruitment assurance probability.",
+          prevalence,
+          cases,
+          prevalence,
+          controls,
+          1 - prevalence,
+          screen
+        )
+      }
+    ),
+    reference = "Akoglu, H. (2022). User's guide to sample size estimation in diagnostic accuracy studies. Turkish Journal of Emergency Medicine, 22(4), 177-185 (p. 184; separate sensitivity and specificity requirements).",
+    roles = c(
+      "prob/p0 = expected and null sensitivity",
+      "prob_spec/p0_spec = expected and null specificity",
+      "dual_power = power for each endpoint; 0.90 gives a joint power lower bound of 0.80 under the endpoint approximations",
+      "prevalence = disease proportion for expected screening volume; omit for separate case-control recruitment"
+    )
+  )
+}
+
 # ---------------------------------------------------------------- A4 upgrade
 
 #' Variance functions for the ROC area (Zhou 2011 Eq 6.4/6.5/6.6)
@@ -79,7 +184,10 @@ calculate_diagnostic_accuracy_v2 <- function(prob, d, prevalence, alpha, power,
 auc_variance <- function(auc, ratio, var_method) {
   A <- auc
   R <- ratio
-  var_method <- rlang::arg_match(var_method, c("binormal", "exponential", "conservative"))
+  var_method <- rlang::arg_match(
+    var_method,
+    c("binormal", "exponential", "conservative")
+  )
 
   if (var_method == "exponential") {
     # Eq 6.4: V = Q1/R + Q2 - A^2 * (1/R + 1); Q1 = A/(2-A), Q2 = 2A^2/(1+A)
@@ -89,7 +197,8 @@ auc_variance <- function(auc, ratio, var_method) {
   } else if (var_method == "binormal") {
     # Eq 6.5 (Obuchowski 1994): V = 0.0099 * e^(-a^2/2) * ([5a^2+8] + [a^2+8]/R)
     a_param <- stats::qnorm(A) * 1.414
-    V <- (0.0099 * exp(-a_param^2 / 2)) * ((5 * a_param^2 + 8) + (a_param^2 + 8) / R)
+    V <- (0.0099 * exp(-a_param^2 / 2)) *
+      ((5 * a_param^2 + 8) + (a_param^2 + 8) / R)
   } else {
     # Eq 6.6 (distribution-free bound): V = A * (1 - A)
     V <- A * (1 - A)
@@ -97,61 +206,134 @@ auc_variance <- function(auc, ratio, var_method) {
   V
 }
 
-#' Upgraded AUC estimation: three variance functions, user-set case:control
-#' ratio R — Zhou 2011 pp.196-199
+# R is the number of non-diseased controls per diseased case.
+auc_sampling <- function(prevalence = NULL, ratio = NULL) {
+  if (!is.null(prevalence)) {
+    validate_numeric_scalar(prevalence, "prevalence")
+    if (prevalence <= 0 || prevalence > 1) {
+      cli::cli_abort("{.arg prevalence} must be in (0, 1].")
+    }
+  }
+  if (!is.null(ratio)) {
+    validate_numeric_scalar(ratio, "ratio")
+    if (ratio <= 0) {
+      cli::cli_abort("{.arg ratio} must be positive (controls per case).")
+    }
+    if (!is.null(prevalence)) {
+      cli::cli_abort(c(
+        "Supply only one of {.arg ratio} and {.arg prevalence} for AUC planning.",
+        "i" = "Use ratio for fixed case-control quotas or prevalence for consecutive clinical recruitment."
+      ))
+    }
+  }
+  clinical <- !is.null(prevalence) && prevalence < 1
+  list(
+    R = if (clinical) (1 - prevalence) / prevalence else ratio %||% 1,
+    prevalence = if (clinical) prevalence else NULL,
+    sampling = if (clinical) "clinical" else "case_control",
+    hints = if (!clinical && is.null(ratio)) {
+      "The controls:cases ratio fell back to 1 (a 1:1 quota); screening volume requires prevalence in (0, 1)."
+    } else {
+      character()
+    }
+  )
+}
+
+auc_sample_sizes <- function(n_cases, sampling) {
+  cases <- ceiling(n_cases)
+  controls <- ceiling(cases * sampling$R)
+  if (!is.finite(cases + controls) || cases + controls > .Machine$integer.max) {
+    cli::cli_abort(
+      "The AUC sample size exceeds the supported integer range; check inputs."
+    )
+  }
+  list(
+    target_state_cases_needed = as.integer(cases),
+    controls_needed = as.integer(controls),
+    total_subjects = as.integer(cases + controls),
+    total_subjects_to_screen = if (sampling$sampling == "clinical") {
+      max(
+        expected_recruitment(cases, sampling$prevalence),
+        expected_recruitment(controls, 1 - sampling$prevalence)
+      )
+    }
+  )
+}
+
+#' AUC estimation with fixed controls:cases allocation or clinical prevalence
+#' — Zhou 2011 pp.196-199
 #' @keywords internal
-calculate_auc_single_v2 <- function(auc, d, prevalence, alpha, ratio, var_method) {
-  A <- auc
-  pDis <- if (is.null(prevalence)) 1 else prevalence
+calculate_auc_single_v2 <- function(
+  auc,
+  d,
+  prevalence,
+  alpha,
+  ratio,
+  var_method
+) {
+  validate_numeric_args(list(auc = auc, d = d))
+  if (auc <= 0 || auc >= 1) {
+    cli::cli_abort("{.arg auc} must be in (0, 1).")
+  }
+  if (d <= 0) {
+    cli::cli_abort("{.arg d} must be positive.")
+  }
+  alpha <- validate_alpha(alpha)
+  var_method <- rlang::arg_match(
+    var_method,
+    c("binormal", "exponential", "conservative")
+  )
+  sampling <- auc_sampling(prevalence, ratio)
+  V <- auc_variance(auc, sampling$R, var_method)
+  n_cases <- (stats::qnorm(1 - alpha / 2) / d)^2 * V
 
-  # sampling = "caseControl": R is given directly; "clinical": R derived
-  # from prevalence of non-diseased / diseased.
-  R_val <- ratio
-  sampling_note <- "case:control ratio R supplied directly"
-
-  z <- stats::qnorm(1 - alpha / 2)
-  V <- auc_variance(A, R_val, var_method)
-  n_cases <- (z^2 * V) / (d^2)
-
-  hints <- character()
+  hints <- sampling$hints
   if (var_method == "exponential") {
-    hints <- c(hints, paste(
-      "The exponential-model variance (Zhou Eq 6.4) can underestimate variance",
-      "for ordinal test results; consider var_method = 'binormal' (conservative,",
-      "Obuchowski 1994) or 'conservative' (distribution-free)."
-    ))
+    hints <- c(
+      hints,
+      paste(
+        "The exponential-model variance (Zhou Eq 6.4) can underestimate variance",
+        "for ordinal test results; consider var_method = 'binormal' (Obuchowski 1994)."
+      )
+    )
   }
 
-  list(
-    design_type = "Single-group AUC CI precision",
-    target_state_cases_needed = as.integer(ceiling(n_cases)),
-    total_subjects_to_screen = as.integer(ceiling(n_cases * (1 + R_val))),
-    parameters = list(
-      auc = A,
-      precision = d,
-      ratio_R = R_val,
-      alpha = alpha,
-      var_method = var_method
+  c(
+    list(
+      design_type = "Single-group AUC CI precision"
     ),
-    formula = "N_cases = (Z_1-a/2 / d)^2 * V(AUC)",
-    formula_latex = "$$n_{cases} = \\left(\\frac{Z_{1-\\alpha/2}}{d}\\right)^2 \\cdot V(AUC)$$",
-    reference = paste(
-      "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
-      "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
-      "Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).\n\n",
-      "Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.\n",
-      "Binormal variance: Obuchowski, N. A. (1994). Computing sample size for",
-      "receiver operating characteristic studies. Investigative Radiology,",
-      "29(2), 238-243."
-    ),
-    roles = c(
-      "auc = anticipated area under the ROC curve",
-      "precision = desired CI half-width L",
-      "ratio = case:control ratio R (cases:non-cases; default 1)",
-      sprintf("var_method = %s variance function", var_method)
-    ),
-    hints = hints,
-    method_note = sampling_note
+    auc_sample_sizes(n_cases, sampling),
+    list(
+      parameters = list(
+        auc = auc,
+        precision = d,
+        ratio_R = sampling$R,
+        prevalence = sampling$prevalence,
+        sampling = sampling$sampling,
+        alpha = alpha,
+        var_method = var_method
+      ),
+      formula = "N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R = controls/cases",
+      formula_latex = "$$n_{cases} = \\left(\\frac{Z_{1-\\alpha/2}}{d}\\right)^2 \\cdot V(AUC), \\quad R = n_{controls}/n_{cases}$$",
+      reference = paste(
+        "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
+        "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
+        "Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).\n\n",
+        "Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.\n",
+        "Binormal variance: Obuchowski, N. A. (1994). Computing sample size for",
+        "receiver operating characteristic studies. Investigative Radiology,",
+        "29(2), 238-243."
+      ),
+      roles = c(
+        "auc = anticipated area under the ROC curve",
+        "precision = desired CI half-width L",
+        "ratio = controls per case (non-cases:cases; default 1)",
+        "prevalence = clinical disease proportion; alternative to fixed ratio",
+        "screening totals, when present, meet expected case and control quotas, not an assurance probability",
+        sprintf("var_method = %s variance function", var_method)
+      ),
+      hints = hints
+    )
   )
 }
 
@@ -163,8 +345,14 @@ calculate_auc_single_v2 <- function(auc, d, prevalence, alpha, ratio, var_method
 #' the LR+ (or LR-) is determined; n per group is found such that the
 #' log-scale CI half-width does not exceed ln(target / LR_expected).
 #' @keywords internal
-calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
-                                          target_lr, lr_type) {
+calculate_likelihood_ratio_v2 <- function(
+  sens,
+  spec,
+  prevalence,
+  alpha,
+  target_lr,
+  lr_type
+) {
   lr_type <- rlang::arg_match(lr_type, c("positive", "negative"))
   prev_val <- if (is.null(prevalence)) 1 else prevalence
 
@@ -180,7 +368,9 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
     formula_latex <- "$$\\log(LR^-) \\pm Z_{1-\\alpha/2}\\sqrt{\\frac{Se}{n(1-Se)} + \\frac{1-Sp}{n \\cdot Sp}}$$"
   }
   if (lr_obs <= 0) {
-    cli::cli_abort("Computed {.val {lr_type}} LR is non-positive; check sens/spec.")
+    cli::cli_abort(
+      "Computed {.val {lr_type}} LR is non-positive; check sens/spec."
+    )
   }
 
   # Delta-method variance uses the two probabilities in the LR ratio:
@@ -196,20 +386,69 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
     target_lr
   }
 
-  log_half_width <- abs(log(target) - log(lr_obs))
-  if (log_half_width == 0) {
-    cli::cli_abort(
-      "target_lr equals the observed LR; no sample size can separate them."
-    )
+  if (
+    !is.numeric(target) ||
+      length(target) != 1L ||
+      !is.finite(target) ||
+      target <= 0
+  ) {
+    cli::cli_abort("{.arg target_lr} must be a positive finite number.")
   }
+  if (
+    (lr_type == "negative" && target <= lr_obs) ||
+      (lr_type == "positive" && target >= lr_obs)
+  ) {
+    cli::cli_abort(c(
+      "{.arg target_lr} is on the wrong side of the anticipated likelihood ratio.",
+      "i" = "LR- requires an upper limit above the anticipated LR; LR+ requires a lower limit below it."
+    ))
+  }
+  log_half_width <- abs(log(target) - log(lr_obs))
 
   n_per_group <- (z / log_half_width)^2 * var_term
+  n_integer <- as.integer(ceiling(n_per_group))
+  ci_limit <- lr_obs *
+    exp(
+      if (lr_type == "negative") {
+        z * sqrt(var_term / n_integer)
+      } else {
+        -z * sqrt(var_term / n_integer)
+      }
+    )
 
   list(
     design_type = sprintf("Likelihood ratio (%s, log-CI method)", lr_type),
-    cases_needed = as.integer(ceiling(n_per_group)),
-    controls_needed = as.integer(ceiling(n_per_group)),
-    total_subjects = as.integer(ceiling(n_per_group)) * 2,
+    cases_needed = n_integer,
+    controls_needed = n_integer,
+    total_subjects = n_integer * 2L,
+    ci_limit = ci_limit,
+    calculation = c(
+      sprintf(
+        "Step 1: Expected %s LR = %.6f from sensitivity %.4f and specificity %.4f.",
+        lr_type,
+        lr_obs,
+        sens,
+        spec
+      ),
+      sprintf(
+        "Step 2: Target %s CI limit = %.6f; required log-scale distance = %.6f.",
+        if (lr_type == "negative") "upper" else "lower",
+        target,
+        log_half_width
+      ),
+      sprintf(
+        "Step 3: Log-LR variance coefficient = %.6f, critical Z = %.6f, unrounded n per disease stratum = %.4f.",
+        var_term,
+        z,
+        n_per_group
+      ),
+      sprintf(
+        "Step 4: Round to %d cases and %d controls; the anticipated CI limit is %.6f.",
+        n_integer,
+        n_integer,
+        ci_limit
+      )
+    ),
     parameters = list(
       sensitivity = sens,
       specificity = spec,
@@ -266,11 +505,16 @@ calculate_likelihood_ratio_v2 <- function(sens, spec, prevalence, alpha,
 #' screen_required(n = 196, prevalence = 0.20, beta = 0.05)
 #' @export
 screen_required <- function(n, prevalence, beta = 0.10) {
+  validate_numeric_args(list(n = n, prevalence = prevalence, beta = beta))
   if (!is.numeric(n) || length(n) != 1 || n < 1) {
     cli::cli_abort("{.arg n} must be a positive integer number of cases.")
   }
-  if (!is.numeric(prevalence) || length(prevalence) != 1 ||
-    prevalence <= 0 || prevalence >= 1) {
+  if (
+    !is.numeric(prevalence) ||
+      length(prevalence) != 1 ||
+      prevalence <= 0 ||
+      prevalence >= 1
+  ) {
     cli::cli_abort("{.arg prevalence} must be in (0, 1).")
   }
   if (!is.numeric(beta) || length(beta) != 1 || beta <= 0 || beta >= 1) {
@@ -282,8 +526,9 @@ screen_required <- function(n, prevalence, beta = 0.10) {
   # search. The guarantee is P(X >= n_int) >= 1 - beta, i.e.
   # P(X <= n_int - 1) <= beta. As N grows the guarantee tightens.
   z_beta <- stats::qnorm(1 - beta)
-  N <- as.integer(ceiling((n_int + z_beta^2 / 2 +
-    z_beta * sqrt(n_int + z_beta^2 / 4)) / prevalence))
+  N <- as.integer(ceiling(
+    (n_int + z_beta^2 / 2 + z_beta * sqrt(n_int + z_beta^2 / 4)) / prevalence
+  ))
 
   # Upward safety loop: if the approximation underestimates (possible for
   # extreme prevalences), grow N until the guarantee holds.
@@ -291,8 +536,10 @@ screen_required <- function(n, prevalence, beta = 0.10) {
     N <- N + 1L
   }
   # Downward minimisation: shrink N while the guarantee still holds at N-1.
-  while (N > n_int &&
-    stats::pbinom(n_int - 1, N - 1L, prevalence) <= beta) {
+  while (
+    N > n_int &&
+      stats::pbinom(n_int - 1, N - 1L, prevalence) <= beta
+  ) {
     N <- N - 1L
   }
   N

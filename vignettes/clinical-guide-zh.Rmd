@@ -602,10 +602,10 @@ print(res_5_3)
 
 - **研究背景与人群**：乳腺病灶 诊断模型 的独立验证拟同时要求敏感度和特异度达到各自目标，连续纳入拟接受参考检查的患者，每位患者只保留预定义的分析单位。
 - **实施与主要结局**：疾病阳性者贡献敏感度终点，疾病阴性者贡献特异度终点；两项都超过各自预设阈值才判定研究成功。活检等参考标准用于判定真值，并不是被比较的敏感度阈值。
-- **参数设定与依据**：设 Se 从零假设 80% 到预期 90%，Sp 从 75% 到 85%，`dual_power = 0.90`。每项 90% 的效能给联合效能至少约 80% 的规划下界，具体联合分布仍取决于设计。
-- **设计选择**：应分别记录阳性病例和非病例的需求，再结合患病率安排招募。函数还提供两项需求较大值及其保守筛查换算，不能把两项人数都称为同一种“病例”。
+- **参数设定与依据**：设预期敏感度 90% 对零假设 80%，预期特异度 85% 对零假设 75%，单侧 α=0.05，单指标效能各取 `dual_power = 0.90`（使两者均达标的整体联合效能接近 80%）。临床筛查患病率设为 40%。
+- **设计选择**：采用双终点策略，分别按两项指标计算样本量并分别取整，在连续筛查时取满足两类配额的较大期望筛查规模。
 - **数学公式与出处**：
-  $$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$
+  $$n_{Se} = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}, \quad N_{screen} = \max\left(\left\lceil\frac{n_{Se}}{P}\right\rceil, \left\lceil\frac{n_{Sp}}{1-P}\right\rceil\right)$$
   *出处*：Akoglu, H. (2022). *Turk J Emerg Med*, 22(4), 177-185 (p. 184)。
 
 ```{r diag-dual}
@@ -613,7 +613,7 @@ res_5_4 <- calculate("diagAccuracy", "test", "proportion", prob = 0.90, p0 = 0.8
 print(res_5_4)
 ```
 
-- **输出解读与招募安排**：敏感度需 `r res_5_4$n_sensitivity` 例疾病阳性者，特异度需 `r res_5_4$n_specificity` 例疾病阴性者；结果另返回较大需求 `r res_5_4$target_state_cases_needed` 及 `r res_5_4$total_subjects_to_screen` 人的保守换算。若按 40% 患病率分别检查整数配额，平均总人数至少取 `r max(ceiling(res_5_4$n_sensitivity / 0.4), ceiling(res_5_4$n_specificity / 0.6))`，并另考虑两类病例数的随机波动。
+- **输出解读与招募安排**：敏感度需 `r res_5_4$n_sensitivity` 例疾病阳性者，特异度需 `r res_5_4$n_specificity` 例疾病阴性者，两类配额合计 `r res_5_4$total_subjects` 人。在 40% 患病率下，满足两项配额的期望筛查规模为 `r res_5_4$total_subjects_to_screen` 人；这仍是期望入组数，尚未考虑两类病例数的随机波动。
 
 ## 5.5 非配对两诊断方法敏感度比较
 
@@ -694,13 +694,13 @@ res_5_9 <- calculate("diagAUC", "estimate", "auc", auc = 0.80, d = 0.10, ratio =
 print(res_5_9)
 ```
 
-- **输出解读与招募安排**：需要 `r res_5_9$target_state_cases_needed` 例病例及同数非病例，共 `r res_5_9$total_subjects_to_screen` 人。应按两个疾病状态分别完成配额；总人数足够但病例不足时，仍不能满足本精度要求。
+- **输出解读与招募安排**：需要 `r res_5_9$target_state_cases_needed` 例病例及同数非病例，共 `r res_5_9$total_subjects` 人。应按两个疾病状态分别完成配额；总人数足够但病例不足时，仍不能满足本精度要求。
 
 ## 5.10 ROC 曲线下面积（AUC）单法优效检验
 
 - **研究背景与人群**：团队拟在独立的临床验证队列中评估一个 miRNA 风险评分，要求区分能力超过项目预设的最低实用水平，而不只是超过随机排序的 AUC=0.5。
 - **实施与主要结局**：冻结评分算法后收集每位受试者的连续分数及参考疾病状态，按同样流程处理病例与非病例，主要终点为整体 ROC-AUC。
-- **参数设定与依据**：教学设预期 `auc = 0.80`、最低可接受 `auc0 = 0.70`、来源队列患病率 30%，采用单侧 α=0.05、效能 80%。最低水平应由具体用途预先论证。
+- **参数设定与依据**：教学设预期 `auc = 0.80`、最低可接受 `auc0 = 0.70`、来源队列患病率 30%，采用双侧 α=0.05、效能 80%。最低水平应由具体用途预先论证。
 - **设计选择**：本检验针对整个 AUC，不自动保证某个操作阈值下的敏感度、特异度或校准表现；若这些也是主要目标，需要额外规划。
 
 ```{r diag-auc-test}
@@ -737,7 +737,7 @@ res_5_12 <- calculate("diagAUCCompare", "noninferiority", "auc", auc1 = 0.85, au
 print(res_5_12)
 ```
 
-- **输出解读与招募安排**：返回所需病例数 `r res_5_12$target_state_cases_needed`，总量换算字段为 `r res_5_12$total_subjects_to_screen`。实际按整数配额应安排同数非病例，共 `r 2 * res_5_12$target_state_cases_needed` 名患者，每人都完成两种设备检查。
+- **输出解读与招募安排**：返回所需病例数 `r res_5_12$target_state_cases_needed`，总量换算字段为 `r res_5_12$total_subjects`。实际按整数配额应安排同数非病例，共 `r 2 * res_5_12$target_state_cases_needed` 名患者，每人都完成两种设备检查。
 
 ## 5.13 两法 ROC-AUC 等效性检验
 
@@ -751,7 +751,7 @@ res_5_13 <- calculate("diagAUCCompare", "equivalence", "auc", auc1 = 0.85, auc2 
 print(res_5_13)
 ```
 
-- **输出解读与招募安排**：需要 `r res_5_13$target_state_cases_needed` 例病例；函数的总量换算为 `r res_5_13$total_subjects_to_screen`。按整数病例与非病例各一组招募时，共应安排 `r 2 * res_5_13$target_state_cases_needed` 名患者，每人提供两套系统的评分。
+- **输出解读与招募安排**：需要 `r res_5_13$target_state_cases_needed` 例病例；函数的总量换算为 `r res_5_13$total_subjects`。按整数病例与非病例各一组招募时，共应安排 `r 2 * res_5_13$target_state_cases_needed` 名患者，每人提供两套系统的评分。
 
 ## 5.14 似然比（Likelihood Ratio）对数置信区间阈值法
 
@@ -863,7 +863,7 @@ print(res_6_3)
 - **参数设定与依据**：设总体平均类别分布 `prop_bar = c(0.2, 0.5, 0.3)`，共同优势比 `or = 1.5`，双侧 α=0.05、效能 80%。这里输入的是两组合并的规划分布，不是随意指定的一个治疗组比例。
 - **设计选择**：采用 Whitehead 比例优势模型近似，要求一个共同 OR 能合理描述各切点的效应。若效应主要集中于某个等级，应按更合适的备择分布核查。
 - **数学公式与出处**：
-  $$N = \frac{3\,(Z_{\alpha/2}+Z_{\beta})^2}{(\log OR)^2\,(1-\sum \bar{p}_j^3)}$$
+  $$N = \frac{3(1+\varphi)^2\,(Z_{\alpha/2}+Z_{\beta})^2}{\varphi\,(\log OR)^2\,(1-\sum \bar{p}_j^3)}, \quad \varphi = n_{test}/n_{standard} = 1$$
   *出处*：Whitehead, J. (1993). *Stat Med*, 12(24), 2257-2271.
 
 ```{r ordinal}
@@ -871,17 +871,18 @@ res_6_4 <- calculate("twoOrdinal", "test", "ordinal", or = 1.5, prop_bar = c(0.2
 print(res_6_4)
 ```
 
-- **输出解读与招募安排**：公式总人数下界为 `r res_6_4$total_n`，每组向上取整为 `r res_6_4$n_per_group` 人。若严格按 1:1 分配，实际应安排 `r 2 * res_6_4$n_per_group` 人，之后再按组考虑终点缺失预留。
+- **输出解读与招募安排**：每组向上取整为 `r res_6_4$n_per_group` 人，报告总人数 `r res_6_4$total_n` 为两组整数人数之和；之后再按组考虑终点缺失预留。
 
 ## 6.5 临床预测模型开发：Riley 2020 BMJ 准则（二分类结局）
 
 - **研究背景与人群**：ICU 团队拟开发入院时预测住院死亡的二分类模型，连续纳入符合条件的首次入院患者，候选预测信息必须在实际使用模型的时间点已经可获得。
 - **实施与主要结局**：每位患者一个住院结局，候选参数数目应计入分类变量展开、样条与交互项所占的自由度；10 个参数不一定等于 10 个原始变量。
 - **参数设定与依据**：演示 `prev = 0.30`、`n_parameters = 10`、预期 Cox–Snell R²=`0.10`、目标收缩因子 `0.90`、总体风险估计精度 `0.05`。R² 应来自相关外部资料并考虑乐观偏倚。
-- **设计选择**：当前分支以总体风险精度 B1 和收缩 B3 两项要求的较大值确定人数，并提供其他辅助量；它不自动完成 Riley 全部准则、机器学习调参或外部验证研究的规划。
+- **设计选择**：当前分支取总体风险精度 B1、收缩 B3 与 Nagelkerke R² 乐观偏差 B4 三项要求的最大值。B2 MAPE 在参数数目不超过 30 时仅供参考；机器学习调参与外部验证仍需单独规划。
 - **数学公式与出处**：
-  $$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n_{B3} = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}, \quad n = \max(n_{B1}, n_{B3})$$
-  *出处*：Riley et al. (2020). *BMJ*, 368, m441（本例对应 B1 与 B3 准则）。
+  $$n_{B1} = \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n(S) = \frac{P}{(S-1)\ln(1-R^2_{CS}/S)}$$
+  $$S_4 = \frac{R^2_{CS}}{R^2_{CS}+0.05\max(R^2_{CS})}, \quad n = \max\{n_{B1}, n(S), n(S_4)\}$$
+  *出处*：Riley et al. (2020). *BMJ*, 368, m441（B1、B3 与 B4 准则）。
 
 ```{r riley-bin}
 res_6_5 <- calculate("predictiveModel", "plan", "binary", prev = 0.30, n_parameters = 10, r2_cs = 0.10, shrinkage = 0.90, precision_delta = 0.05, alpha = 0.05)

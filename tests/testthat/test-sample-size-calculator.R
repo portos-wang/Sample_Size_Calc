@@ -51,6 +51,39 @@ test_that("missing required arguments throws with clear message", {
   )
 })
 
+test_that("zero-effect inputs are rejected with argument-specific errors", {
+  expect_snapshot(error = TRUE,
+    sample_size_calculator("twoMeans", mean1 = 10, mean2 = 10, sd = 3)
+  )
+  expect_snapshot(error = TRUE,
+    sample_size_calculator("twoProportions", p1 = 0.5, p2 = 0.5)
+  )
+  expect_snapshot(error = TRUE,
+    sample_size_calculator("pairedMeans", meanDiff = 0, sdDiff = 3)
+  )
+})
+
+test_that("partially matched control arguments are rejected", {
+  # `p` used to be silently bound to power (a silent plan change); `d` with a
+  # positional design used to clobber the design formal with a confusing
+  # type error.
+  expect_snapshot(
+    error = TRUE,
+    sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3, p = 0.5)
+  )
+  expect_snapshot(
+    error = TRUE,
+    sample_size_calculator("auc_single", auc = 0.8, d = 0.05)
+  )
+})
+
+test_that("exact control names keep design-specific arguments in dots", {
+  res <- sample_size_calculator(design = "auc_single", auc = 0.8, d = 0.05)
+  expect_identical(res$target_state_cases_needed, 184L)
+  expect_identical(res$controls_needed, 184L)
+  expect_identical(res$total_subjects, 368L)
+})
+
 test_that("print and summary run without error", {
   res <- sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
   expect_error(print(res), NA)

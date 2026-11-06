@@ -12,113 +12,135 @@ Control and design arguments, resolved by EXACT name (partial
 matching is deliberately avoided so that design-specific arguments such
 as \code{d} cannot be swallowed by the \code{design} slot).
 
-\strong{Control arguments}
-\itemize{
-\item \code{design} (first positional argument): one of \code{"rct"}, \code{"paired"},
-\code{"rctSingleArm"}, \code{"crossover"}, \code{"bioequivalence"},
-\code{"singleArmPhaseII"}, \code{"cohort"}, \code{"caseControl"},
-\code{"caseControlMatched"}, \code{"crosstab"}, \code{"singleProportion"},
-\code{"singleMean"}, \code{"singleCorrelation"}, \code{"diagAccuracy"},
-\code{"diagAccuracyCompare"}, \code{"diagAUC"}, \code{"diagAUCCompare"}, \code{"diagLR"},
-\code{"clusterRCT"}, \code{"steppedWedge"}, \code{"twoOrdinal"}, \code{"predictiveModel"},
-\code{"kappa"}, \code{"its"} - the study-design axis.
-\item \code{task} (second positional argument): \code{"test"}, \code{"estimate"},
-\code{"noninferiority"}, \code{"superiority"}, \code{"equivalence"}, or \code{"plan"};
-optional for unambiguous designs.
-\item \code{outcome} (third positional argument): \code{"mean"}, \code{"proportion"},
-\code{"rate"}, \code{"survival"}, \code{"auc"}, \code{"lr"}, \code{"correlation"}, \code{"ordinal"},
-or \code{"events"}; optional for unambiguous designs.
-\item \code{alpha}: scalar in (0, 1), default 0.05. Use 0.025 for one-sided
-non-inferiority trials spending a full two-sided 0.05.
-\item \code{power}: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
-confirmatory trials.
-\item \code{alternative}: \code{"one.sided"} (the package's historical default and the
-Akoglu 2022 Table 2 Eq 2 convention) or \code{"two.sided"} (Hajian-Tilaki
-2014 Eq 6.8 convention), or \code{NULL} to keep the design default.
-Currently consumed by \code{diagAccuracy} + \code{test} + \code{proportion} only;
-other designs ignore it.
-\item \code{dropout}: anticipated dropout/non-response proportion in [0, 1),
-inflating by 1/(1-d). Currently applied by \code{cohort} + \code{test} +
-\code{proportion} only; other designs ignore it.
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{**Control arguments**
 
-\strong{Design-specific parameters} (all validated; ranges shown):
-\itemize{
-\item \emph{RCT, test, mean}: \code{mean1}, \code{mean2} real-valued group means (e.g.
-mmHg); \code{sd} > 0 pooled standard deviation.
-\item \emph{RCT, test, proportion}: \code{p1}, \code{p2} in (0, 1) response rates, must
-differ.
-\item \emph{RCT, test, survival}: \code{hr} in (0, 1) anticipated hazard ratio
-(<1 = benefit); \code{pE} in (0, 1) experimental-arm share (default 0.5).
-Returns \strong{events} required.
-\item \emph{RCT, noninferiority/superiority, mean or proportion}: same inputs as
-above plus \code{margin} > 0 (NI margin Delta, one-sided alpha; or the
-minimal clinically important difference for superiority).
-\item \emph{RCT, equivalence, mean or proportion}: \code{margin} = corridor
-half-width; must exceed |mean1 - mean2| (or |p1 - p2|); uses
-Z_(beta/2).
-\item \emph{paired, mean}: \code{meanDiff} != 0 within-subject mean difference;
-\code{sdDiff} > 0 SD of the differences (NOT the pooled SD).
-\item \emph{paired, proportion}: \code{p1}, \code{p2} in (0, 1); \code{psi} in (0, 1) expected
-discordant-pair proportion, psi >= |p1-p2|; output in pairs.
-\item \emph{rctSingleArm, mean}: \code{mu0} historical mean, \code{mu1} anticipated mean,
-\code{sigma} > 0.
-\item \emph{rctSingleArm, proportion}: \code{p0} historical rate, \code{p1} anticipated
-rate, both in (0, 1).
-\item \emph{crossover, mean}: \code{delta} > 0 treatment difference; \code{sigma_within} > 0
-within-subject SD.
-\item \emph{bioequivalence}: \code{cv} in (0, 1) intra-subject CV; \code{theta0} GMR inside
-the acceptance range (default 1.0); \code{margin_low}/\code{margin_high} default
-0.8/1.25 (80-125 rule).
-\item \emph{singleArmPhaseII}: \code{p0} unacceptable rate; \code{p1} > p0 target rate;
-\code{optimizer} = "optimal" or "minimax".
-\item \emph{cohort, proportion}: \code{p0}, \code{p1} in (0, 1); \code{ratio} >= 1
-unexposed:exposed; optional \code{dropout} in [0, 1) inflates by 1/(1-d).
-\item \emph{cohort, rate}: \code{rate0}, \code{rate1} > 0 events per person-time; \code{ratio}
-at least  1 person-time ratio.
-\item \emph{caseControl}: \code{p0} in (0, 1) control exposure rate; \code{OR} > 0, != 1;
-\code{m} >= 1 controls per case (default 1).
-\item \emph{caseControlMatched}: \code{p0}, \code{OR} as above; 1:1 matching built in.
-\item \emph{crosstab}: \code{p0}, \code{p1} in (0, 1) prevalence in unexposed/exposed.
-\item \emph{singleProportion}: \code{p} in (0, 1); \code{precision} > 0; \code{precision_type} =
-"absolute" (default) or "relative".
-\item \emph{singleMean}: \code{sigma} > 0; \code{precision} > 0 margin of error.
-\item \emph{singleCorrelation}: \code{r} in (0, 1); exactly one of \code{precision}
-(absolute CI half-width in (0, 1)) or \code{epsilon} (relative).
-\item \emph{diagAccuracy, estimate}: \code{prob} in (0, 1) expected Se/Sp; \code{d} in
-(0, 1) CI half-width; \code{prevalence} in (0, 1]; optional \code{ci_method} =
-"precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses \code{power}).
-\item \emph{diagAccuracy, test}: \code{prob}, \code{p0} in (0, 1); \code{method} = "asymptotic"
-or "exact" (A'Hern); dual-endpoint adds \code{prob_spec}, \code{p0_spec},
-\code{dual = TRUE}, \code{dual_power} (default 0.90).
-\item \emph{diagAccuracyCompare}: \code{p1}, \code{p2} in (0, 1); \code{paired} = TRUE requires
-\code{psi} in (0, 1); margin tasks add \code{margin} in (0, 1).
-\item \emph{diagAUC, estimate}: \code{auc} in (0, 1); \code{d} > 0; \code{ratio} >= 1
-case:control (default 1); \code{var_method} = "binormal" (recommended),
-"exponential", or "conservative".
-\item \emph{diagAUC, test}: \code{auc}, \code{auc0} in (0, 1), auc > auc0.
-\item \emph{diagAUCCompare}: \code{auc1}, \code{auc2} in (0, 1); \code{r} in [0, 1) (default
-0.5); margin tasks add \code{margin} in (0, 1).
-\item \emph{diagLR, estimate}: \code{sens}, \code{spec} in (0, 1); \code{lr_type} = "positive"
-or "negative"; \code{target_lr} > 0 the boundary the CI must not cross.
-\item \emph{clusterRCT}: base two-group args plus \code{icc} in [0, 1) and
-\code{cluster_size} integer >= 1 (DE = 1 + (m-1)*ICC).
-\item \emph{steppedWedge}: \code{theta} != 0; \code{tau2} > 0; \code{sigma2_ind} > 0; \code{m} >= 1;
-\code{n_clusters} integer >= 2, a multiple of \code{clusters_per_step} >= 1.
-\item \emph{twoOrdinal}: \code{or} > 0, != 1; \code{prop_bar} positive vector summing to 1.
-\item \emph{predictiveModel, binary}: \code{prev} in (0, 1); \code{n_parameters} integer
-at least  1; \code{r2_cs} within its feasible maximum; \code{shrinkage} default 0.9;
-\code{mape} default 0.05; \code{precision_delta} default 0.05.
-\item \emph{predictiveModel, rate}: \code{rate} > 0 per person-year; \code{timepoint} > 0;
-\code{precision_delta} in (0, 1); optional \code{n_parameters}/\code{epv} cross-check.
-\item \emph{predictiveModel, events}: \code{n_parameters} >= 1; \code{epv} >= 1 (classic
-10); \code{event_prevalence} in (0, 1).
-\item \emph{kappa, estimate}: \code{pi1}, \code{pi2} in (0, 1); \code{kappa} in [0, 1); \code{d} in
-(0, 1).
-\item \emph{kappa, test}: \code{kappa1} != \code{kappa2} in (0, 1); same pi's.
-\item \emph{its}: \code{effect_sd} > 0; \code{n_pre}, \code{n_post} integers >= 3 (>= 8
-recommended); \code{rho} in [0, 1). Returns achieved power.
-}}
+* `design` (first positional argument): one of `"rct"`, `"paired"`,
+  `"rctSingleArm"`, `"crossover"`, `"bioequivalence"`,
+  `"singleArmPhaseII"`, `"cohort"`, `"caseControl"`,
+  `"caseControlMatched"`, `"crosstab"`, `"singleProportion"`,
+  `"singleMean"`, `"singleCorrelation"`, `"diagAccuracy"`,
+  `"diagAccuracyCompare"`, `"diagAUC"`, `"diagAUCCompare"`, `"diagLR"`,
+  `"clusterRCT"`, `"steppedWedge"`, `"twoOrdinal"`, `"predictiveModel"`,
+  `"kappa"`, `"its"` - the study-design axis.
+* `task` (second positional argument): `"test"`, `"estimate"`,
+  `"noninferiority"`, `"superiority"`, `"equivalence"`, or `"plan"`;
+  optional for unambiguous designs.
+* `outcome` (third positional argument): `"mean"`, `"proportion"`,
+  `"rate"`, `"survival"`, `"auc"`, `"lr"`, `"correlation"`, `"ordinal"`,
+  or `"events"`; optional for unambiguous designs.
+* `alpha`: scalar in (0, 1), default 0.05. Use 0.025 for one-sided
+  non-inferiority trials spending a full two-sided 0.05.
+* `power`: scalar in (0, 1), default 0.8 (80 percent); 0.9 for
+  confirmatory trials.
+* `alternative`: `"one.sided"` (the package's historical default and the
+  Akoglu 2022 Table 2 Eq 2 convention) or `"two.sided"` (Hajian-Tilaki
+  2014 Eq 6.8 convention), or `NULL` to keep the design default.
+  Currently consumed by `diagAccuracy` + `test` + `proportion` only;
+  Supplying it for an unsupported design raises an error.
+* `dropout`: anticipated dropout/non-response proportion in &lbrack;0, 1),
+  inflating by 1/(1-d). Currently applied by `cohort` + `test` +
+  `proportion` only; supplying it elsewhere raises an error.
+  Unknown or unused design-specific arguments also raise an error.
+
+**Design-specific parameters** (all validated; ranges shown):
+
+* *RCT, test, mean*: `mean1`, `mean2` real-valued group means (e.g.
+  mmHg); `sd` > 0 pooled standard deviation.
+* *RCT, test, proportion*: `p1`, `p2` in (0, 1) response rates, must
+  differ.
+* *RCT, test, survival*: `hr` in (0, 1) anticipated hazard ratio
+  (<1 = benefit); `pE` in (0, 1) experimental-arm share (default 0.5).
+  Returns **events** required.
+* *RCT, noninferiority/superiority, mean or proportion*: same inputs as
+  above plus `margin` > 0 (NI margin Delta, one-sided alpha; or the
+  minimal clinically important difference for superiority).
+* *RCT, equivalence, mean or proportion*: `margin` = corridor
+  half-width; must exceed |mean1 - mean2| (or |p1 - p2|); uses
+  Z_(beta/2).
+* *paired*: optional `pairing = "within_subject"` (default) counts
+  one distinct person per complete pair of observations;
+  `"matched_subjects"` counts two distinct people per pair.
+  `n_measurements` always counts two observations per pair.
+* *paired, mean*: `meanDiff` != 0 within-subject mean difference;
+  `sdDiff` > 0 SD of the differences (NOT the pooled SD).
+* *paired, proportion*: `p1`, `p2` in (0, 1); `psi` in (0, 1) expected
+  discordant-pair proportion, psi >= |p1-p2|; output in pairs.
+* *rctSingleArm, mean*: `mu0` historical mean, `mu1` anticipated mean,
+  `sigma` > 0.
+* *rctSingleArm, proportion*: `p0` historical rate, `p1` anticipated
+  rate, both in (0, 1).
+* *crossover, mean*: `delta` > 0 treatment difference; `sigma_within` > 0
+  within-subject SD.
+* *bioequivalence*: `cv` in (0, 1) intra-subject CV; `theta0` GMR inside
+  the acceptance range (default 1.0); `margin_low`/`margin_high` default
+  0.8/1.25 (80-125 rule).
+* *singleArmPhaseII*: `p0` unacceptable rate; `p1` > p0 target rate;
+  `optimizer` = "optimal" or "minimax".
+* *cohort, proportion*: `p0`, `p1` in (0, 1); `ratio` >= 1
+  unexposed:exposed; optional `dropout` in &lbrack;0, 1) inflates by 1/(1-d).
+* *cohort, rate*: `rate0`, `rate1` > 0 events per person-time; `ratio`
+  at least  1 person-time ratio.
+* *caseControl*: `p0` in (0, 1) control exposure rate; `OR` > 0, != 1;
+  `m` >= 1 controls per case (default 1).
+* *caseControlMatched*: `p0`, `OR` as above; 1:1 matching built in.
+* *crosstab*: `p0`, `p1` in (0, 1) prevalence in unexposed/exposed.
+* *singleProportion*: `p` in (0, 1); `precision` > 0; `precision_type` =
+  "absolute" (default) or "relative".
+* *singleMean*: `sigma` > 0; `precision` > 0 margin of error.
+* *singleCorrelation*: `r` in (0, 1); exactly one of `precision`
+  (absolute CI half-width in (0, 1)) or `epsilon` (relative).
+* *diagAccuracy, estimate*: `prob` in (0, 1) expected Se/Sp; `d` in
+  (0, 1) CI half-width; `prevalence` in (0, 1&rbrack;; optional `ci_method` =
+  "precision" (Zhou Eq 6.2) or "ci_width_power" (Eq 6.1, uses `power`).
+* *diagAccuracy, test*: `prob`, `p0` in (0, 1); `method` = "asymptotic"
+  or "exact" (one-sided A'Hern; a two-sided request errors).
+  Dual-endpoint planning adds `prob_spec`, `p0_spec`, `dual = TRUE`,
+  and `dual_power` (default 0.90 per endpoint). Cases and non-cases
+  have separate quotas; screening is the maximum of the prevalence-
+  adjusted quotas in expectation. Omit prevalence for separate strata.
+* *diagAccuracyCompare*: `p1`, `p2` in (0, 1); `paired` = TRUE requires
+  `psi` in (0, 1); margin tasks add `margin` in (0, 1).
+* *diagAUC, estimate/test and diagAUCCompare, test*: optional `ratio` > 0
+  means controls per case (non-cases:cases; default 1). Alternatively,
+  supply `prevalence` in (0, 1) for clinical recruitment, with
+  R = (1-prevalence)/prevalence. Supply only one of these arguments.
+  `var_method` defaults to `"binormal"`; alternatives are
+  `"exponential"` and `"conservative"`. Fixed quotas return
+  `controls_needed` and `total_subjects`; `total_subjects_to_screen`
+  is present only for clinical recruitment and is expectation-based.
+  Historical `prevalence = 1` selects the default 1:1 quota.
+* *diagAUC, estimate*: `auc` in (0, 1); `d` > 0.
+* *diagAUC, test*: `auc`, `auc0` in (0, 1), auc > auc0.
+* *diagAUCCompare*: `auc1`, `auc2` in (0, 1); `r` in &lbrack;0, 1) (default
+  0.5); margin tasks add `margin` in (0, 1).
+* *diagLR, estimate*: `sens`, `spec` in (0, 1); `lr_type` = "positive"
+  or "negative"; `target_lr` > 0 the boundary the CI must not cross.
+* *clusterRCT*: base two-group args plus `icc` in &lbrack;0, 1) and
+  `cluster_size` integer >= 1 (DE = 1 + (m-1)*ICC).
+* *steppedWedge*: `theta` != 0; `tau2` > 0; `sigma2_ind` > 0; `m` >= 1;
+  `n_clusters` integer >= 2, a multiple of `clusters_per_step` >= 1.
+* *twoOrdinal*: `or` > 0, != 1; `prop_bar` positive vector summing to 1.
+* *predictiveModel, binary*: `prev` in (0, 1); `n_parameters` integer
+  at least  1; `r2_cs` within its feasible maximum; `shrinkage` default 0.9;
+  `mape` default 0.05; `precision_delta` default 0.05.
+* *predictiveModel, rate*: `rate` > 0 per person-year; `timepoint` > 0;
+  `precision_delta` in (0, 1); optional `n_parameters`/`epv` cross-check.
+* *predictiveModel, events*: `n_parameters` >= 1; `epv` >= 1 (classic
+  10); `event_prevalence` in (0, 1).
+* *predictiveModel, plan, binary*: `prev` in (0, 1), positive integer
+  `n_parameters`, and anticipated adjusted Cox-Snell `r2_cs` below its
+  prevalence-specific maximum. `shrinkage` defaults to 0.9 and must
+  exceed `r2_cs` and be below 1; `precision_delta` defaults to 0.05.
+  The returned size meets B1 (outcome precision), B3 (shrinkage), and
+  B4 (Nagelkerke R-squared optimism at most 0.05). `mape` defaults to
+  0.05 and is informational for at most 30 predictor parameters;
+  it does not constrain the returned size.
+* *kappa, estimate*: `pi1`, `pi2` in (0, 1); `kappa` in &lbrack;0, 1); `d` in
+  (0, 1).
+* *kappa, test*: `kappa1` != `kappa2` in (0, 1); same pi's.
+* *its*: `effect_sd` > 0; `n_pre`, `n_post` integers >= 3 (>= 8
+  recommended); `rho` in &lbrack;0, 1). Returns achieved power.
+}\if{html}{\out{</div>}}}
 }
 \value{
 Object of class \code{sample_size_result} with print, summary, and

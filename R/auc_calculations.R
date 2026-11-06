@@ -39,44 +39,19 @@ legacy_auc_ratio_hint <- function(prevalence, ratio) {
 #'   non-diseased:diseased sampling ratio R = (1 - prevalence) / prevalence;
 #'   omitted or 1 falls back to a 1:1 quota)
 #' @param alpha Type I error
+#' @param ratio Controls per case; alternative to prevalence.
+#' @param var_method AUC variance model (binormal by default).
 #' @return List with calculation results
 #' @keywords internal
-calculate_auc_single <- function(auc, d, prevalence, alpha) {
-  A <- auc
-  ratio <- legacy_auc_ratio(prevalence)
-  pDis <- ratio$prevalence
-  zAlphaHalf <- qnorm(1 - alpha / 2)
-  # Zhou et al. (2011) Eq 6.5 variance function (binormal model), the
-  # conservative default recommended for ordinal/continuous results.
-  V_factor <- auc_variance(A, ratio$R, "binormal")
-  nCases <- (zAlphaHalf / d)^2 * V_factor
-  nSubjects <- nCases / pDis
-
-  list(
-    design_type = "Single-group AUC CI precision",
-    target_state_cases_needed = ceiling(nCases),
-    total_subjects_to_screen = ceiling(nSubjects),
-    parameters = list(
-      auc = A,
-      precision = d,
-      prevalence = pDis,
-      ratio_R = ratio$R,
-      alpha = alpha
-    ),
-    formula = "N_cases = (Z_1-a/2 / d)^2 * V(AUC), V = 0.0099*exp(-a^2/2)*([5a^2+8] + [a^2+8]/R), a = qnorm(A)*1.414",
-    formula_latex = "$$n_{cases} = \\left(\\frac{Z_{1-\\alpha/2}}{d}\\right)^2 \\cdot \\left\\{0.0099\\,e^{-a^2/2}\\left([5a^2+8]+\\frac{a^2+8}{R}\\right)\\right\\}, \\quad a = \\Phi^{-1}(A)\\cdot 1.414$$",
-    reference = paste(
-      "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
-      "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
-      "Section 6.1.2, Eq 6.5, pp. 196-198 (binormal variance function).\n\n",
-      "Variance function: Obuchowski, N. A. (1994). Computing sample size for",
-      "receiver operating characteristic studies. Investigative Radiology,",
-      "29(2), 238-243.\n\n",
-      "Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics,",
-      "48, 193-204 (Eq 7.4)."
-    ),
-    hints = legacy_auc_ratio_hint(prevalence, ratio)
-  )
+calculate_auc_single <- function(
+  auc,
+  d,
+  prevalence,
+  alpha,
+  ratio = NULL,
+  var_method = "binormal"
+) {
+  calculate_auc_single_v2(auc, d, prevalence, alpha, ratio, var_method)
 }
 
 #' AUC superiority test calculation
@@ -87,45 +62,72 @@ calculate_auc_single <- function(auc, d, prevalence, alpha) {
 #'   non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)
 #' @param alpha Type I error
 #' @param power Statistical power
+#' @param ratio Controls per case; alternative to prevalence.
+#' @param var_method AUC variance model (binormal by default).
 #' @return List with calculation results
 #' @keywords internal
-calculate_auc_superiority <- function(auc, auc0, prevalence, alpha, power) {
+calculate_auc_superiority <- function(
+  auc,
+  auc0,
+  prevalence,
+  alpha,
+  power,
+  ratio = NULL,
+  var_method = "binormal"
+) {
+  validate_numeric_args(list(auc = auc, auc0 = auc0))
+  if (auc0 <= 0 || auc0 >= 1 || auc <= auc0 || auc >= 1) {
+    cli::cli_abort(
+      "AUC testing requires {.arg auc0} and {.arg auc} in (0, 1), with auc > auc0."
+    )
+  }
   A <- auc
   A0 <- auc0
-  ratio <- legacy_auc_ratio(prevalence)
-  pDis <- ratio$prevalence
-  V_A <- auc_variance(A, ratio$R, "binormal")
-  V_A0 <- auc_variance(A0, ratio$R, "binormal")
+  sampling <- auc_sampling(prevalence, ratio)
+  var_method <- rlang::arg_match(
+    var_method,
+    c("binormal", "exponential", "conservative")
+  )
+  V_A <- auc_variance(A, sampling$R, var_method)
+  V_A0 <- auc_variance(A0, sampling$R, var_method)
 
   zAlpha <- qnorm(1 - alpha / 2)
   zBeta <- qnorm(power)
   nCases <- ((zAlpha * sqrt(V_A0) + zBeta * sqrt(V_A)) / (A - A0))^2
 
-  list(
-    design_type = "AUC superiority (single)",
-    target_state_cases_needed = ceiling(nCases),
-    total_subjects_to_screen = ceiling(nCases / pDis),
-    parameters = list(
-      auc = A,
-      auc_null = A0,
-      prevalence = pDis,
-      ratio_R = ratio$R,
-      alpha = alpha,
-      power = power
+  c(
+    list(
+      design_type = "AUC superiority (single)"
     ),
-    formula = "n_cases = (Z_alpha/2 * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC - AUC0)^2, binormal V",
-    formula_latex = "$$n_{cases} = \\frac{\\left(Z_{\\alpha/2}\\sqrt{V(AUC_0)} + Z_{\\beta}\\sqrt{V(AUC)}\\right)^2}{(AUC - AUC_0)^2}$$",
-    reference = paste(
-      "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
-      "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
-      "Section 6.1.4, Eq 6.8, pp. 199-200 (V(AUC) from Eq 6.5; the CTC",
-      "worked example on p. 200 reports n = 13 with a two-tailed 5% test).\n\n",
-      "Variance function: Obuchowski, N. A. (1994). Investigative Radiology,",
-      "29(2), 238-243.\n\n",
-      "Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics,",
-      "48, 193-204 (Eq 7.5)."
-    ),
-    hints = legacy_auc_ratio_hint(prevalence, ratio)
+    auc_sample_sizes(nCases, sampling),
+    list(
+      parameters = list(
+        auc = A,
+        auc_null = A0,
+        prevalence = sampling$prevalence,
+        ratio_R = sampling$R,
+        sampling = sampling$sampling,
+        var_method = var_method,
+        alpha = alpha,
+        power = power
+      ),
+      formula = "n_cases = (Z_alpha/2 * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC - AUC0)^2",
+      formula_latex = "$$n_{cases} = \\frac{\\left(Z_{\\alpha/2}\\sqrt{V(AUC_0)} + Z_{\\beta}\\sqrt{V(AUC)}\\right)^2}{(AUC - AUC_0)^2}$$",
+      reference = paste(
+        "Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011).",
+        "Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley.",
+        "Section 6.1.4, Eq 6.8, pp. 199-200 (V(AUC) from Eq 6.5; the CTC",
+        "worked example on p. 200 reports n = 13 with a two-tailed 5% test).\n\n",
+        "Variance function: Obuchowski, N. A. (1994). Investigative Radiology,",
+        "29(2), 238-243.\n\n",
+        "Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics,",
+        "48, 193-204 (Eq 7.5)."
+      ),
+      roles = c(
+        "ratio = controls per case; prevalence is an alternative clinical recruitment assumption"
+      ),
+      hints = sampling$hints
+    )
   )
 }
 
@@ -138,45 +140,76 @@ calculate_auc_superiority <- function(auc, auc0, prevalence, alpha, power) {
 #'   non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)
 #' @param alpha Type I error
 #' @param power Statistical power
+#' @param ratio Controls per case; alternative to prevalence.
+#' @param var_method AUC variance model (binormal by default).
 #' @return List with calculation results
 #' @keywords internal
-calculate_auc_comparison <- function(auc1, auc2, r, prevalence, alpha, power) {
+calculate_auc_comparison <- function(
+  auc1,
+  auc2,
+  r,
+  prevalence,
+  alpha,
+  power,
+  ratio = NULL,
+  var_method = "binormal"
+) {
+  validate_numeric_args(list(auc1 = auc1, auc2 = auc2, r = r))
+  if (auc1 <= 0 || auc1 >= 1 || auc2 <= 0 || auc2 >= 1 || auc1 == auc2) {
+    cli::cli_abort(
+      "{.arg auc1} and {.arg auc2} must be different values in (0, 1)."
+    )
+  }
+  if (r < 0 || r >= 1) {
+    cli::cli_abort("{.arg r} must be in [0, 1).")
+  }
   A1 <- auc1
   A2 <- auc2
   r_val <- r
-  ratio <- legacy_auc_ratio(prevalence)
-  pDis <- ratio$prevalence
+  sampling <- auc_sampling(prevalence, ratio)
+  var_method <- rlang::arg_match(
+    var_method,
+    c("binormal", "exponential", "conservative")
+  )
   A_avg <- (A1 + A2) / 2
-  V_A <- auc_variance(A_avg, ratio$R, "binormal")
+  V_A <- auc_variance(A_avg, sampling$R, var_method)
 
   zAlphaHalf <- qnorm(1 - alpha / 2)
   zBeta <- qnorm(power)
   nCases <- (2 * (zAlphaHalf + zBeta)^2 * V_A * (1 - r_val)) / (A1 - A2)^2
 
-  list(
-    design_type = "AUC comparison (two tests)",
-    target_state_cases_needed = ceiling(nCases),
-    total_subjects_to_screen = ceiling(nCases / pDis),
-    parameters = list(
-      auc1 = A1,
-      auc2 = A2,
-      correlation = r_val,
-      prevalence = pDis,
-      ratio_R = ratio$R,
-      alpha = alpha,
-      power = power
+  c(
+    list(
+      design_type = "AUC comparison (two tests)"
     ),
-    formula = "n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2, binormal V",
-    formula_latex = "$$n_{cases} = \\frac{2(Z_{\\alpha/2} + Z_{\\beta})^2 \\cdot V(AUC) \\cdot (1-r)}{(AUC_1 - AUC_2)^2}$$",
-    reference = paste(
-      "Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic",
-      "test studies of biomedical informatics. Journal of Biomedical Informatics,",
-      "48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the",
-      "worked example on p. 199 gives n = 211 with the binormal variance).",
-      "https://doi.org/10.1016/j.jbi.2014.02.013\n\n",
-      "Variance function: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K.",
-      "(2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Eq 6.5."
-    ),
-    hints = legacy_auc_ratio_hint(prevalence, ratio)
+    auc_sample_sizes(nCases, sampling),
+    list(
+      parameters = list(
+        auc1 = A1,
+        auc2 = A2,
+        correlation = r_val,
+        prevalence = sampling$prevalence,
+        ratio_R = sampling$R,
+        sampling = sampling$sampling,
+        var_method = var_method,
+        alpha = alpha,
+        power = power
+      ),
+      formula = "n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2",
+      formula_latex = "$$n_{cases} = \\frac{2(Z_{\\alpha/2} + Z_{\\beta})^2 \\cdot V(AUC) \\cdot (1-r)}{(AUC_1 - AUC_2)^2}$$",
+      reference = paste(
+        "Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic",
+        "test studies of biomedical informatics. Journal of Biomedical Informatics,",
+        "48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the",
+        "worked example on p. 199 gives n = 211 with the binormal variance).",
+        "https://doi.org/10.1016/j.jbi.2014.02.013\n\n",
+        "Variance function: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K.",
+        "(2011). Statistical Methods in Diagnostic Medicine (2nd ed.), Eq 6.5."
+      ),
+      roles = c(
+        "ratio = controls per case; prevalence is an alternative clinical recruitment assumption"
+      ),
+      hints = sampling$hints
+    )
   )
 }

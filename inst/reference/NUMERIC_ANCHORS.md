@@ -32,8 +32,8 @@
 | A4-6 | diagAUC superiority (CTC anchor) | A0=0.50, A1=0.80, R=1, 95%/80% two-sided | n=13 | Zhou 2011 Eq 6.8, p. 200 (book reports 13) | +/-1 |
 | A4-7 | diagAUCCompare independent | A1=0.80, A2=0.70, r=0, binormal | n=212 | Hajian 2014 Eq 7.8, p. 199 (book reports 211) | +/-1 |
 | A5-1 | diagLR (log-LR method) | LR-=0.4, Se=0.90, Sp=0.50, 95% CI | 80 per group | Hajian-Tilaki 2014 §6.4 Eq 6.14 | +/-1 |
-| A4-3 | diagAUC legacy path (prevalence = 1) | A=0.80, d=0.10, prevalence omitted | 38 cases (R falls back to 1) | Zhou 2011 Eq 6.4; fallback documented | 0 | Verified |
-| A4-4 | diagAUC legacy path (prevalence = 0.2) | A=0.80, d=0.05, prevalence=0.2 (R=4) | 120 cases (V=0.07778) | Zhou 2011 Eq 6.4 | 0 | Verified |
+| A4-3 | diagAUC default quota | A=0.80, d=0.10, prevalence omitted | 46 cases, 46 controls, 92 total | Zhou 2011 Eq 6.5 | 0 | Verified |
+| A4-4 | diagAUC clinical recruitment | A=0.80, d=0.05, prevalence=0.2 (R=4) | 131 cases, 524 controls, 655 expected screened | Zhou 2011 Eq 6.5; integer quotas rounded before recruitment conversion | 0 | Verified |
 | A6-1 | singleCorrelation | r=0.5, eps=0.1 (d=0.05, 95% CI) -> n=867; r=0.5, precision=0.10 (w=0.20) -> n=219 | Machin 2018 Ch. 19 Eqs 19.5-19.8; exact match to presize::prec_cor | 0 | Verified |
 
 ### Phase 3 (Two-Sample / Paired / Observational) — Implemented
@@ -83,10 +83,11 @@
      The paper's Example 1 (preeclampsia, prev=0.05, P=30, R2cs=0.05) reports 5249 women / 263 events; the package reproduces both, and with P=20 the paper's 3500 women / 175 events are reproduced exactly.
    - **B2** (MAPE, van Smeden formula, P <= 30):
      `n = exp((-0.508 + 0.259*ln(phi) + 0.504*ln(P) - ln(MAPE)) / 0.544)`; anchor MAPE=0.05, phi=0.3, P=10 -> **460.9 -> 461** (exact match to Figure 2); at prev=0.05, P=30 -> 543.4 -> 544, matching the paper's own Example 1 value.
-     **Scope note (verified)**: Box 1 states "The software calculates the sample size needed to meet all the criteria listed in box 1 (except B2, which is available at https://mvansmeden.shinyapps.io/BeyondEPV/)". B2 is therefore reported as informational only and the returned n is `max(B1, B3)`, exactly as pmsampsize behaves.
+     **Scope note**: B2 is informational, as in the BMJ paper's description of pmsampsize. The returned size is `max(B1, B3, B4)`, not `max(B1, B3)`; pmsampsize also evaluates a separate optimism criterion.
+   - **B4** (Nagelkerke R2 optimism <= 0.05): use `S4 = R2cs/(R2cs + 0.05*max_R2cs)` in the B3 formula. At prev=0.05, P=10, R2cs=0.2, S=0.9: B1=73, B3=398, B4=542; final **542**, matching pmsampsize 1.1.3.
    - Max(R2cs) entropy helper: `1 - exp(-2 * H(phi))`; anchor phi=0.05 -> 0.3277 ~ 0.33.
 3. **T1** (Time-to-event): Exponential model F(t) = 1 - exp(-lambda * t), exact search for bilateral margin <= delta; anchor lambda=0.1/year, t=10 years, delta=0.05 -> **2366 person-years** (exact match to Figure 1).
-4. **Scope boundary**: B4 (Nagelkerke R2 optimism <= 0.05) independent formula relies on Riley Part II (Stat Med 2019;38:1276-96) supplementary material; B3 shrinkage target conceptually covers overfitting control (matching pmsampsize output structure).
+4. **Scope boundary**: B1, B3, and B4 constrain binary planning; B2 is reported separately for P <= 30. Machine-learning tuning and external validation require their own planning.
 5. **API Invocation**: `calculate("predictiveModel", "plan", "binary" | "rate", ...)`, coexisting with legacy EPV mode (`outcome="events"`).
 
 #### steppedWedge: Implemented (Hussey & Hughes 2007)

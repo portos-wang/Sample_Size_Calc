@@ -4,7 +4,16 @@
 \alias{calculate_auc_comparison}
 \title{AUC comparison (two tests) calculation}
 \usage{
-calculate_auc_comparison(auc1, auc2, r, prevalence, alpha, power)
+calculate_auc_comparison(
+  auc1,
+  auc2,
+  r,
+  prevalence,
+  alpha,
+  power,
+  ratio = NULL,
+  var_method = "binormal"
+)
 }
 \arguments{
 \item{auc1}{Test 1 AUC value}
@@ -19,6 +28,10 @@ non-diseased:diseased sampling ratio R; omitted or 1 falls back to 1:1)}
 \item{alpha}{Type I error}
 
 \item{power}{Statistical power}
+
+\item{ratio}{Controls per case; alternative to prevalence.}
+
+\item{var_method}{AUC variance model (binormal by default).}
 }
 \value{
 List with calculation results

@@ -52,7 +52,9 @@ to spend a full two-sided 0.05).}
 \item{...}{Design-specific arguments (see the table in \code{design} and
 \code{?calculate} for domains; e.g. \code{mean1}, \code{mean2}, \code{sd} for twoMeans).
 Parameters outside their validated domain abort with a structured
-\code{cli} error naming the offending argument.}
+\code{cli} error naming the offending argument. Names that only partially
+match the control formals (\code{design}, \code{alpha}, \code{power}) also abort:
+pass the design as \code{design = ...} and spell control arguments in full.}
 }
 \value{
 Object of class \code{sample_size_result} with print, summary, and

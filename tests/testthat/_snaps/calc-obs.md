@@ -27,8 +27,8 @@
     Code
       calculate("caseControlMatched", "test", "proportion", p0 = 1.2, OR = 2)
     Condition
-      Error in `calculate_case_control_matched()`:
-      ! `p0` (control-group exposure rate) must be in (0, 1).
+      Error in `validate_design_args()`:
+      ! `p0` must be a proportion in (0, 1).
 
 # pairedProportions rejects psi smaller than the difference
 

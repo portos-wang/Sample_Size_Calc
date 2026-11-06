@@ -13,6 +13,6 @@
       calculate("kappa", "estimate", "proportion", pi1 = 0.5, pi2 = 0.5, kappa = 0.7,
         d = 0)
     Condition
-      Error in `calculate_kappa()`:
-      ! `d` (CI half-width) must be in (0, 1).
+      Error in `validate_design_args()`:
+      ! `d` must be positive.
 

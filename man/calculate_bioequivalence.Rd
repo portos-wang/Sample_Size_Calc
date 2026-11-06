@@ -30,9 +30,11 @@ calculate_bioequivalence(
 List with sample size results consumed by as_sample_size_result()
 }
 \description{
-Evaluates the exact power of the two one-sided tests (TOST) procedure using
-the noncentral t distribution (Phillips 1990; Julious 2004 Section 6.3,
-Eq 6.2 and 6.8).
+Evaluates exact joint power of the two one-sided tests (TOST) by
+integrating the conditional normal acceptance probability over the
+independent chi-square variance estimate (Phillips 1990).
+Uses balanced even totals and reports an error if the target power
+cannot be reached within 10000 participants.
 Matches sampleN.TOST in the PowerTOST package exactly.
 }
 \keyword{internal}

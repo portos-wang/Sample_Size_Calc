@@ -59,6 +59,8 @@ ssr_replay_at_power <- function(x, p) {
     va$power <- NULL
     va
   }
+  replay_args$alpha <- x$parameters$alpha %||% replay_args$alpha %||% 0.05
+  replay_args$power <- NULL
   if (!is.null(x$design_canonical)) {
     do.call(
       calculate,
@@ -82,7 +84,7 @@ ssr_replay_at_power <- function(x, p) {
 
 # Designs for which a power curve is unavailable or would re-run an expensive
 # exact search at every grid point.
-ssr_no_power_curve <- c("singleArmPhaseII", "predictiveModel", "its")
+ssr_no_power_curve <- c("singleArmPhaseII", "predictiveModel", "its", "mrmcPower", "steppedWedge")
 
 #' Plot power curve
 #'
@@ -95,8 +97,8 @@ ssr_no_power_curve <- c("singleArmPhaseII", "predictiveModel", "its")
 #' SampleSizeCalc:::plot_power_curve(res)
 #' }
 plot_power_curve <- function(result) {
-  if (!is.null(result$design_canonical) &&
-    result$design_canonical %in% ssr_no_power_curve) {
+  if (result$design %in% ssr_no_power_curve ||
+    (!is.null(result$design_canonical) && result$design_canonical %in% ssr_no_power_curve)) {
     cli::cli_warn(c(
       "Power curve not available for design {.val {result$design_canonical}}.",
       "i" = "This design does not take power as a continuous input (or the",

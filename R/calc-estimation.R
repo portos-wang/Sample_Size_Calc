@@ -32,15 +32,23 @@ calculate_single_proportion <- function(p, precision, precision_type, alpha) {
 
   hints <- character()
   if (p < 0.10) {
-    hints <- c(hints, sprintf(
-      "Prevalence %.0f%% < 10%%: convention suggests precision of half the prevalence (%.3f).",
-      100 * p, p / 2
-    ))
+    hints <- c(
+      hints,
+      sprintf(
+        "Prevalence %.0f%% < 10%%: convention suggests precision of half the prevalence (%.3f).",
+        100 * p,
+        p / 2
+      )
+    )
   } else if (p > 0.90) {
-    hints <- c(hints, sprintf(
-      "Prevalence %.0f%% > 90%%: convention suggests precision of 0.5*(1-p) = %.3f.",
-      100 * p, 0.5 * (1 - p)
-    ))
+    hints <- c(
+      hints,
+      sprintf(
+        "Prevalence %.0f%% > 90%%: convention suggests precision of 0.5*(1-p) = %.3f.",
+        100 * p,
+        0.5 * (1 - p)
+      )
+    )
   }
 
   z <- z_alpha(alpha, "two.sided")
@@ -83,8 +91,9 @@ calculate_single_proportion <- function(p, precision, precision_type, alpha) {
 #' quantile depends on N and the equation must be iterated (Machin p. 152:
 #' "if this is large (>= 40) then this is taken as the sample size. If N0 < 40,
 #' then the Student t quantile with N0 - 1 df is obtained ... and a revised
-#' sample size N1 obtained"). This implementation iterates until N stabilises,
-#' which reproduces Machin's worked Example 9.8 behaviour.
+#' sample size N1 obtained"). This implementation searches for the smallest
+#' integer N >= 2 whose Student t interval half-width does not exceed d,
+#' avoiding oscillation between adjacent rounded fixed-point iterates.
 #'
 #' @keywords internal
 calculate_single_mean <- function(sigma, precision, alpha) {
@@ -103,27 +112,63 @@ calculate_single_mean <- function(sigma, precision, alpha) {
 
   z <- z_alpha(alpha, "two.sided")
 
-  # Machin Eq 9.18: iterate N = (t_{N-1} * sigma / d)^2. The normal-theory
-  # start is used as the seed; the loop is monotone and terminates quickly.
-  n <- (z * sigma / precision)^2
-  n_initial <- n
-  for (iter in seq_len(50)) {
-    df <- max(ceiling(n) - 1, 1)
-    t_q <- stats::qt(1 - alpha / 2, df)
-    n_next <- (t_q * sigma / precision)^2
-    if (ceiling(n_next) == ceiling(n)) {
-      n <- n_next
-      break
-    }
-    n <- n_next
+  # Search integer n: fixed-point iteration can oscillate after rounding.
+  n_initial <- (z * sigma / precision)^2
+  upper <- max(2, ceiling(n_initial))
+  if (!is.finite(upper) || upper > .Machine$integer.max) {
+    cli::cli_abort(
+      "The required sample size exceeds the supported integer range."
+    )
   }
+  half_width <- function(n) stats::qt(1 - alpha / 2, n - 1) * sigma / sqrt(n)
+  while (half_width(upper) > precision) {
+    if (upper == .Machine$integer.max) {
+      cli::cli_abort(
+        "The required sample size exceeds the supported integer range."
+      )
+    }
+    upper <- min(2 * upper, .Machine$integer.max)
+  }
+  lower <- 2
+  while (lower < upper) {
+    middle <- lower + floor((upper - lower) / 2)
+    if (half_width(middle) <= precision) {
+      upper <- middle
+    } else {
+      lower <- middle + 1
+    }
+  }
+  n <- as.integer(lower)
+  achieved <- half_width(n)
 
   list(
     design_type = "Single mean estimation (precision)",
-    n_required = inflate_n(n),
+    n_required = n,
+    achieved_precision = achieved,
     parameters = list(sigma = sigma, precision = precision, alpha = alpha),
-    formula = "n = (t_(n-1, 1-a/2) * sigma / d)^2 (iterated from the z starting value)",
-    formula_latex = "$$n = \\left(\\frac{t_{n-1,\\,1-\\alpha/2}\\cdot\\sigma}{d}\\right)^2$$",
+    formula = "smallest integer n >= 2 with t_(n-1, 1-a/2) * sigma / sqrt(n) <= d",
+    formula_latex = "$$n = \\min\\left\\{k\\in\\mathbb{N}: k\\ge 2,\\ \\frac{t_{k-1,1-\\alpha/2}\\sigma}{\\sqrt{k}}\\le d\\right\\}$$",
+    calculation = c(
+      sprintf(
+        "Step 1: Plan mean precision with sigma = %s, CI half-width d = %s, alpha = %s.",
+        ssr_fmt_val(sigma),
+        ssr_fmt_val(precision),
+        ssr_fmt_val(alpha)
+      ),
+      sprintf(
+        "Step 2: Normal approximation starting size is %.2f; require at least two observations for a t interval.",
+        n_initial
+      ),
+      "Step 3: Search integers for the smallest n satisfying t_(n-1,1-alpha/2)*sigma/sqrt(n) <= d.",
+      sprintf(
+        "Step 4: n = %d, df = %d, t critical value = %.6f, achieved half-width = %.6f <= %.6f.",
+        n,
+        n - 1L,
+        stats::qt(1 - alpha / 2, n - 1),
+        achieved,
+        precision
+      )
+    ),
     reference = paste(
       "Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018).",
       "Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.).",
@@ -139,10 +184,11 @@ calculate_single_mean <- function(sigma, precision, alpha) {
     hints = if (ceiling(n_initial) < 40) {
       sprintf(
         paste(
-          "n0 = %d is below 40, so the Student t quantile was iterated",
-          "(Machin Eq 9.18); the z-only approximation would give %d."
+          "The normal approximation gives %d; an integer search using",
+          "the Student t quantile (Machin Eq 9.18) requires %d observations."
         ),
-        ceiling(n_initial), ceiling(n)
+        ceiling(n_initial),
+        ceiling(n)
       )
     } else {
       character()
@@ -163,8 +209,13 @@ calculate_single_mean <- function(sigma, precision, alpha) {
 #' @param power Ignored (estimation design)
 #' @return List consumed by as_sample_size_result()
 #' @keywords internal
-calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
-                                         alpha = 0.05, power = NULL) {
+calculate_single_correlation <- function(
+  r,
+  epsilon = NULL,
+  precision = NULL,
+  alpha = 0.05,
+  power = NULL
+) {
   if (!is.numeric(r) || length(r) != 1 || r <= 0 || r >= 1) {
     cli::cli_abort(c(
       "{.arg r} must be a single correlation in (0, 1).",
@@ -172,7 +223,9 @@ calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
     ))
   }
   if (is.null(epsilon) && is.null(precision)) {
-    cli::cli_abort("Either {.arg epsilon} (relative precision) or {.arg precision} (CI half-width) must be provided.")
+    cli::cli_abort(
+      "Either {.arg epsilon} (relative precision) or {.arg precision} (CI half-width) must be provided."
+    )
   }
 
   if (!is.null(epsilon)) {
@@ -185,7 +238,12 @@ calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
     d_val <- epsilon * r
     prec_type <- "relative"
   } else {
-    if (!is.numeric(precision) || length(precision) != 1 || precision <= 0 || precision >= 1) {
+    if (
+      !is.numeric(precision) ||
+        length(precision) != 1 ||
+        precision <= 0 ||
+        precision >= 1
+    ) {
       cli::cli_abort(c(
         "{.arg precision} must be a single positive CI half-width in (0, 1).",
         "x" = "You provided {.val {precision}}."
@@ -228,7 +286,11 @@ calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
     ),
     roles = c(
       "r = anticipated correlation coefficient",
-      if (prec_type == "relative") "epsilon = relative precision (margin d = epsilon * r)" else "precision = margin of error d (CI half-width, w = 2*d)",
+      if (prec_type == "relative") {
+        "epsilon = relative precision (margin d = epsilon * r)"
+      } else {
+        "precision = margin of error d (CI half-width, w = 2*d)"
+      },
       sprintf("confidence level = %d%%", round(100 * (1 - alpha)))
     )
   )
@@ -237,23 +299,33 @@ calculate_single_correlation <- function(r, epsilon = NULL, precision = NULL,
 # Register estimation combos in the master table (appended by calculate.R).
 ssr_estimation_combinations <- list(
   list(
-    design = "singleProportion", task = "estimate", outcome = "proportion",
-    internal = "singleProportion", default = TRUE
+    design = "singleProportion",
+    task = "estimate",
+    outcome = "proportion",
+    internal = "singleProportion",
+    default = TRUE
   ),
   list(
-    design = "singleMean", task = "estimate", outcome = "mean",
-    internal = "singleMean", default = TRUE
+    design = "singleMean",
+    task = "estimate",
+    outcome = "mean",
+    internal = "singleMean",
+    default = TRUE
   ),
   list(
-    design = "singleCorrelation", task = "estimate", outcome = "correlation",
-    internal = "singleCorrelation", default = TRUE
+    design = "singleCorrelation",
+    task = "estimate",
+    outcome = "correlation",
+    internal = "singleCorrelation",
+    default = TRUE
   )
 )
 
 # Dispatch for estimation designs (called from dispatch_calculation's
 # estimation branch).
 dispatch_estimation <- function(internal_keyword, args, alpha, power) {
-  switch(internal_keyword,
+  switch(
+    internal_keyword,
     "singleProportion" = calculate_single_proportion(
       p = args$p,
       precision = args$precision,

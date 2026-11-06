@@ -16,9 +16,8 @@ validate_design_args(design, args)
 Validated arguments list (invisible)
 }
 \description{
-Checks that every required argument for the chosen design keyword is
-present and aborts with a structured error naming the missing parameters
-(e.g. twoMeans requires mean1, mean2, sd).
+Checks required, supported, and finite design-specific inputs before
+dispatch. Arguments not used by the selected calculation path abort.
 }
 \examples{
 SampleSizeCalc:::validate_design_args(

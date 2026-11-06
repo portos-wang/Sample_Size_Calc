@@ -28,6 +28,27 @@ test_that("print and summary still return the object invisibly", {
   expect_identical(summary(res), res)
 })
 
+test_that("unsupplied optional parameters are not rendered as blank entries", {
+  res <- calculate(
+    "predictiveModel",
+    "plan",
+    "rate",
+    rate = 0.1,
+    timepoint = 10,
+    precision_delta = 0.05
+  )
+  summary_txt <- capture_cli_summary(res)
+  expect_no_match(summary_txt, "n_parameters:")
+  expect_no_match(summary_txt, "epv:")
+  expect_match(summary_txt, "precision_delta")
+
+  print_txt <- capture_cli(res)
+  input_step <- grep("Input parameters", print_txt, value = TRUE)
+  expect_length(input_step, 1)
+  expect_no_match(input_step, "= ,")
+  expect_match(input_step, "rate = 0.10", fixed = TRUE)
+})
+
 test_that("legacy designs still print their metrics", {
   res <- sample_size_calculator("twoMeans", mean1 = 10, mean2 = 12, sd = 3)
   txt <- capture_cli(res)

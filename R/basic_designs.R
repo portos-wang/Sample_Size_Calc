@@ -10,6 +10,9 @@
 #' @return List with calculation results
 #' @keywords internal
 calculate_two_means <- function(mean1, mean2, sd, alpha, power) {
+  if (mean1 == mean2) {
+    cli::cli_abort("{.arg mean1} and {.arg mean2} must differ.")
+  }
   result <- power.t.test(
     n = NULL,
     delta = abs(mean1 - mean2),
@@ -53,6 +56,9 @@ calculate_two_means <- function(mean1, mean2, sd, alpha, power) {
 #' @return List with calculation results
 #' @keywords internal
 calculate_two_proportions <- function(p1, p2, alpha, power) {
+  if (p1 == p2) {
+    cli::cli_abort("{.arg p1} and {.arg p2} must differ.")
+  }
   result <- power.prop.test(
     n = NULL,
     p1 = p1,
@@ -84,9 +90,21 @@ calculate_two_proportions <- function(p1, p2, alpha, power) {
 #' @param sdDiff Standard deviation of differences
 #' @param alpha Type I error
 #' @param power Statistical power
+#' @param pairing `"within_subject"` for two observations per person, or
+#'   `"matched_subjects"` for pairs of distinct people.
 #' @return List with calculation results
 #' @keywords internal
-calculate_paired_means <- function(meanDiff, sdDiff, alpha, power) {
+calculate_paired_means <- function(
+  meanDiff,
+  sdDiff,
+  alpha,
+  power,
+  pairing = "within_subject"
+) {
+  pairing <- rlang::arg_match(pairing, c("within_subject", "matched_subjects"))
+  if (meanDiff == 0) {
+    cli::cli_abort("{.arg meanDiff} must be non-zero.")
+  }
   result <- power.t.test(
     n = NULL,
     delta = abs(meanDiff),
@@ -100,10 +118,14 @@ calculate_paired_means <- function(meanDiff, sdDiff, alpha, power) {
   list(
     design_type = "Paired means",
     pairs_count = ceiling(result$n),
-    total_individuals = ceiling(result$n) * 2,
+    total_n = ceiling(result$n) * if (pairing == "within_subject") 1 else 2,
+    total_individuals = ceiling(result$n) *
+      if (pairing == "within_subject") 1 else 2,
+    n_measurements = ceiling(result$n) * 2,
     parameters = list(
       mean_diff = meanDiff,
       sd_diff = sdDiff,
+      pairing = pairing,
       alpha = alpha,
       power = power
     ),
@@ -125,7 +147,8 @@ calculate_survival <- function(hr, pE, alpha, power) {
   pE_val <- if (is.null(pE)) 0.5 else pE
   zAlpha <- qnorm(1 - alpha / 2)
   zBeta <- qnorm(power)
-  totalEventsNeeded <- ((zAlpha + zBeta)^2) / ((pE_val * (1 - pE_val)) * (log(hr)^2))
+  totalEventsNeeded <- ((zAlpha + zBeta)^2) /
+    ((pE_val * (1 - pE_val)) * (log(hr)^2))
 
   list(
     design_type = "Survival (log-rank)",

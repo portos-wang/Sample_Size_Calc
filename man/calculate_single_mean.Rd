@@ -18,7 +18,8 @@ The right-hand z form is the starting value N0; when N0 < 40 the Student t
 quantile depends on N and the equation must be iterated (Machin p. 152:
 "if this is large (>= 40) then this is taken as the sample size. If N0 < 40,
 then the Student t quantile with N0 - 1 df is obtained ... and a revised
-sample size N1 obtained"). This implementation iterates until N stabilises,
-which reproduces Machin's worked Example 9.8 behaviour.
+sample size N1 obtained"). This implementation searches for the smallest
+integer N >= 2 whose Student t interval half-width does not exceed d,
+avoiding oscillation between adjacent rounded fixed-point iterates.
 }
 \keyword{internal}

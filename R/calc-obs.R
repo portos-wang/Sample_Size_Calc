@@ -30,8 +30,10 @@ calculate_cohort_proportion <- function(p0, p1, ratio, alpha, power, dropout) {
   z_a <- z_alpha(alpha, "two.sided")
   z_b <- z_power(power)
 
-  n_exposed <- (z_a * sqrt((1 + 1 / m) * pbar * (1 - pbar)) +
-    z_b * sqrt(p1 * (1 - p1) + p0 * (1 - p0) / m))^2 / (p1 - p0)^2
+  n_exposed <- (z_a *
+    sqrt((1 + 1 / m) * pbar * (1 - pbar)) +
+    z_b * sqrt(p1 * (1 - p1) + p0 * (1 - p0) / m))^2 /
+    (p1 - p0)^2
 
   n1 <- as.integer(ceiling(n_exposed))
   n0 <- as.integer(ceiling(n_exposed * m))
@@ -51,7 +53,11 @@ calculate_cohort_proportion <- function(p0, p1, ratio, alpha, power, dropout) {
     n_unexposed = n0,
     total_n = n1 + n0,
     parameters = list(
-      p0 = p0, p1 = p1, ratio = m, alpha = alpha, power = power
+      p0 = p0,
+      p1 = p1,
+      ratio = m,
+      alpha = alpha,
+      power = power
     ),
     formula = "n1 = [Za*sqrt((1+1/m)*pbar*(1-pbar)) + Zb*sqrt(p1q1+p0q0/m)]^2/(p1-p0)^2",
     formula_latex = "$$n_{1} = \\frac{\\left[Z_{\\alpha/2}\\sqrt{(1+\\frac{1}{m})\\bar{p}(1-\\bar{p})} + Z_{\\beta}\\sqrt{p_1(1-p_1)+\\frac{p_0(1-p_0)}{m}}\\right]^2}{(p_1-p_0)^2}$$",
@@ -93,20 +99,12 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
     cli::cli_abort("{.arg rate1} and {.arg rate0} must differ.")
   }
   if (!is.numeric(ratio) || length(ratio) != 1 || ratio < 1) {
-    cli::cli_abort("{.arg ratio} (exposed:unexposed person-time ratio) must be >= 1.")
+    cli::cli_abort(
+      "{.arg ratio} (exposed:unexposed person-time ratio) must be >= 1."
+    )
   }
 
-  # Machin Eq 6.2 uses (lambda_T - lambda_S)^2, so the arithmetic is
-  # symmetric, but the labels "exposed"/"unexposed" only match the intent
-  # when rate1 is the higher rate. Swap and say so, rather than silently
-  # mislabelling the two person-time columns.
-  swapped <- rate1 < rate0
-  if (swapped) {
-    tmp <- rate0
-    rate0 <- rate1
-    rate1 <- tmp
-  }
-
+  # Group identity and allocation are retained for protective exposures too.
   r <- ratio
   z_a <- z_alpha(alpha, "two.sided")
   z_b <- z_power(power)
@@ -118,9 +116,15 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
     design_type = "Cohort study (incidence rate ratio, person-time)",
     person_time_unexposed = as.integer(ceiling(t_unexposed)),
     person_time_exposed = as.integer(ceiling(t_exposed)),
-    expected_events = as.integer(ceiling(rate1 * t_exposed + rate0 * t_unexposed)),
+    expected_events = as.integer(ceiling(
+      rate1 * t_exposed + rate0 * t_unexposed
+    )),
     parameters = list(
-      rate0 = rate0, rate1 = rate1, ratio = r, alpha = alpha, power = power
+      rate0 = rate0,
+      rate1 = rate1,
+      ratio = r,
+      alpha = alpha,
+      power = power
     ),
     formula = "T0 = (Za/2+Zb)^2 * (l1/r + l0) / (l1-l0)^2 ; T1 = r*T0",
     formula_latex = "$$T_{0} = \\frac{(Z_{\\alpha/2}+Z_{\\beta})^2(\\lambda_1/r+\\lambda_0)}{(\\lambda_1-\\lambda_0)^2}, \\quad T_1 = r \\cdot T_0$$",
@@ -138,15 +142,7 @@ calculate_cohort_rate <- function(rate0, rate1, ratio, alpha, power) {
       "effect measure: incidence rate ratio IRR",
       "person-time = total follow-up time; for fixed duration FT, subjects needed = person-time / FT"
     ),
-    hints = if (swapped) {
-      paste(
-        "`rate1` was lower than `rate0`, so the two rates were swapped internally",
-        "to keep the exposed/unexposed person-time labels meaningful; the",
-        "reported IRR is therefore the larger over the smaller rate."
-      )
-    } else {
-      character()
-    }
+    hints = character()
   )
 }
 
@@ -191,11 +187,13 @@ calculate_case_control_matched <- function(p0, OR, alpha, power) {
     controls_needed = as.integer(ceiling(n_pairs)),
     total_n = as.integer(ceiling(n_pairs)) * 2,
     parameters = list(
-      p0 = p0, OR = OR,
+      p0 = p0,
+      OR = OR,
       expected_p1 = p1,
       expected_psi = psi,
       expected_OR_pair = pi10 / pi01,
-      alpha = alpha, power = power
+      alpha = alpha,
+      power = power
     ),
     formula = "n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2",
     formula_latex = "$$n_{pairs} = \\frac{\\left[Z_{\\alpha/2}\\sqrt{\\psi} + Z_{\\beta}\\sqrt{\\psi-\\delta^2}\\right]^2}{\\delta^2}$$",
@@ -224,8 +222,12 @@ calculate_case_control_matched <- function(p0, OR, alpha, power) {
 #' @keywords internal
 calculate_crosstab_association <- function(p0, p1, alpha, power) {
   res <- calculate_cohort_proportion(
-    p0 = p0, p1 = p1, ratio = 1,
-    alpha = alpha, power = power, dropout = NULL
+    p0 = p0,
+    p1 = p1,
+    ratio = 1,
+    alpha = alpha,
+    power = power,
+    dropout = NULL
   )
   res$design_type <- "Cross-sectional study (prevalence comparison, PR/OR)"
   res$roles <- c(
