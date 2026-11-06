@@ -67,7 +67,7 @@
 (Yishan Wang), Bingxin Cai (Gansu Provincial Maternity and Child-care
 Hospital (Gansu Provincial Central Hospital))</h4>
             
-            <h4 data-toc-skip class="date">2026-11-05</h4>
+            <h4 data-toc-skip class="date">2026-11-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/portos-wang/Sample_Size_Calc/blob/master/vignettes/overview.Rmd" class="external-link"><code>vignettes/overview.Rmd</code></a></small>
       <div class="d-none name"><code>overview.Rmd</code></div>
@@ -201,29 +201,32 @@ total.</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Single-group AUC CI precision"</span></span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">46</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects to screen</span>: <span style="color: #0000BB;">92</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">46</span></span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">92</span></span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • auc = anticipated area under the ROC curve</span></span>
 <span><span class="co">#&gt; • precision = desired CI half-width L</span></span>
-<span><span class="co">#&gt; • ratio = case:control ratio R (cases:non-cases; default 1)</span></span>
+<span><span class="co">#&gt; • ratio = controls per case (non-cases:cases; default 1)</span></span>
+<span><span class="co">#&gt; • prevalence = clinical disease proportion; alternative to fixed ratio</span></span>
+<span><span class="co">#&gt; • screening totals, when present, meet expected case and control quotas, not an</span></span>
+<span><span class="co">#&gt; assurance probability</span></span>
 <span><span class="co">#&gt; • var_method = binormal variance function</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
-<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`</span></span>
+<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R</span></span>
+<span><span class="co">#&gt; = controls/cases`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
-<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$</span></span>
+<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =</span></span>
-<span><span class="co">#&gt; 1, alpha = 0.05.</span></span>
-<span><span class="co">#&gt; • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)</span></span>
-<span><span class="co">#&gt; = 0.1195.</span></span>
+<span><span class="co">#&gt; • Step 1: Anticipated AUC = 0.80, precision d = 0.10, controls:cases R = 1,</span></span>
+<span><span class="co">#&gt; alpha = 0.05.</span></span>
+<span><span class="co">#&gt; • Step 2: Use the binormal variance model: V(AUC) = 0.1195.</span></span>
 <span><span class="co">#&gt; • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =</span></span>
 <span><span class="co">#&gt; (1.96/0.10)^2 * 0.1195 = 45.89.</span></span>
-<span><span class="co">#&gt; • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =</span></span>
-<span><span class="co">#&gt; 45.89*(1+1) = 91.78.</span></span>
-<span><span class="co">#&gt; • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.</span></span>
+<span><span class="co">#&gt; • Step 4: Round cases up first: Target cases needed = 46; controls =</span></span>
+<span><span class="co">#&gt; ceiling(cases*R) = 46.</span></span>
+<span><span class="co">#&gt; • Step 5: Sum integer quotas: Total subjects = 46 + 46 = 92.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
 <span><span class="co">#&gt; Primary: Zhou, X.-H., Obuchowski, N. A., &amp; McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -364,8 +367,10 @@ interpreting uncontrolled change.</p>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Paired means"</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total sample size</span>: <span style="color: #0000BB;">29</span></span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">Pairs needed</span>: <span style="color: #0000BB;">29</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total individuals</span>: <span style="color: #0000BB;">58</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Measurements required</span>: <span style="color: #0000BB;">58</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total individuals</span>: <span style="color: #0000BB;">29</span></span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
 <span><span class="co">#&gt; `n = ((Z_a/2 + Z_b) * sd_diff / mean_diff)^2`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
@@ -380,12 +385,12 @@ interpreting uncontrolled change.</p>
 <span><span class="co">#&gt; • Step 4: Normal approximation: n0 = ((Z_(alpha/2) + Z_beta) * sigma_d /</span></span>
 <span><span class="co">#&gt; mu_d)^2 = ((1.96 + 1.2816) * 4 / 2.50)^2 = 26.90.</span></span>
 <span><span class="co">#&gt; • Step 5: Exact paired Student's t-test degrees of freedom iteration.</span></span>
-<span><span class="co">#&gt; • Step 6: Round up to integer: n = 29 pairs (total individuals = 58).</span></span>
+<span><span class="co">#&gt; • Step 6: Round up to integer: n = 29 pairs (total individuals = 29).</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
 <span><span class="co">#&gt; Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
-<p><strong>Interpretation</strong>: - Need 29 pairs (i.e., 58
+<p><strong>Interpretation</strong>: - Need 29 pairs (i.e., 29
 measurements from 29 subjects) - Standardized effect size: 0.62</p>
 <p><strong>Reference</strong>: Rosner (2015). <em>Fundamentals of
 Biostatistics</em> (8th ed.). Cengage Learning.</p>
@@ -752,9 +757,10 @@ of given width</p>
 <p><strong>Example</strong>: A biomarker score is frozen before a
 clinical validation cohort is enrolled. Assume AUC 0.80, CI half-width
 0.05, and source prevalence 30%, with one score and a reference disease
-assessment per person. This legacy branch uses its Hanley–McNeil
-variance calculation; the three-axis example above demonstrates
-explicitly selecting a different variance model.</p>
+assessment per person. This branch uses the binormal AUC variance model
+by default, with controls:cases allocation derived from prevalence. The
+three-axis example above shows fixed case-control quotas;
+<code>var_method</code> can select an alternative variance model.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_size_calculator.html">sample_size_calculator</a></span><span class="op">(</span></span>
 <span>  design <span class="op">=</span> <span class="st">"auc_single"</span>,</span>
@@ -769,36 +775,48 @@ explicitly selecting a different variance model.</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"Single-group AUC CI precision"</span></span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">144</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects to screen</span>: <span style="color: #0000BB;">478</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects to screen</span>: <span style="color: #0000BB;">480</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">336</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">480</span></span></span>
+<span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • auc = anticipated area under the ROC curve</span></span>
+<span><span class="co">#&gt; • precision = desired CI half-width L</span></span>
+<span><span class="co">#&gt; • ratio = controls per case (non-cases:cases; default 1)</span></span>
+<span><span class="co">#&gt; • prevalence = clinical disease proportion; alternative to fixed ratio</span></span>
+<span><span class="co">#&gt; • screening totals, when present, meet expected case and control quotas, not an</span></span>
+<span><span class="co">#&gt; assurance probability</span></span>
+<span><span class="co">#&gt; • var_method = binormal variance function</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
-<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC), V = 0.0099*exp(-a^2/2)*([5a^2+8] +</span></span>
-<span><span class="co">#&gt; [a^2+8]/R), a = qnorm(A)*1.414`</span></span>
+<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R</span></span>
+<span><span class="co">#&gt; = controls/cases`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
-<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot \left\{0.0099\,e^{-a^2/2}\left([5a^2+8]+\frac{a^2+8}{R}\right)\right\}, \quad a = \Phi^{-1}(A)\cdot 1.414$$</span></span>
+<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,</span></span>
-<span><span class="co">#&gt; prevalence = 0.30 (alpha = 0.05).</span></span>
-<span><span class="co">#&gt; • Step 2: Hanley-McNeil variance components: Q1 = AUC/(2-AUC) = 0.6667, Q2 =</span></span>
-<span><span class="co">#&gt; 2*AUC^2/(1+AUC) = 0.7111.</span></span>
-<span><span class="co">#&gt; • Step 3: Compute variance factor: V(AUC) = 0.2425.</span></span>
-<span><span class="co">#&gt; • Step 4: Calculate cases needed: n_cases = (Z_(1-alpha/2) / d)^2 * V(AUC) =</span></span>
-<span><span class="co">#&gt; (1.96 / 0.05)^2 * 0.2425 = 372.68.</span></span>
-<span><span class="co">#&gt; • Step 5: Adjust for prevalence: screening total = n_cases / prevalence =</span></span>
-<span><span class="co">#&gt; 372.68 / 0.30 = 1242.27.</span></span>
-<span><span class="co">#&gt; • Step 6: Round up to integer: Target cases needed = 144, Total subjects to</span></span>
-<span><span class="co">#&gt; screen = 478.</span></span>
+<span><span class="co">#&gt; • Step 1: Anticipated AUC = 0.80, precision d = 0.05, controls:cases R =</span></span>
+<span><span class="co">#&gt; 2.3333, alpha = 0.05.</span></span>
+<span><span class="co">#&gt; • Step 2: Use the binormal variance model: V(AUC) = 0.0932.</span></span>
+<span><span class="co">#&gt; • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =</span></span>
+<span><span class="co">#&gt; (1.96/0.05)^2 * 0.0932 = 143.24.</span></span>
+<span><span class="co">#&gt; • Step 4: Round cases up first: Target cases needed = 144; controls =</span></span>
+<span><span class="co">#&gt; ceiling(cases*R) = 336.</span></span>
+<span><span class="co">#&gt; • Step 5: Sum integer quotas: Total subjects = 144 + 336 = 480.</span></span>
+<span><span class="co">#&gt; • Step 6: At prevalence = 0.30, meet both quotas in expectation: Total subjects</span></span>
+<span><span class="co">#&gt; to screen = 480. This is not an assurance probability.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
-<span><span class="co">#&gt; Primary: Zhou, X.-H., Obuchowski, N. A., &amp; McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, Eq 6.5, pp. 196-198 (binormal variance function).</span></span>
+<span><span class="co">#&gt; Primary: Zhou, X.-H., Obuchowski, N. A., &amp; McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Variance function: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics, 48, 193-204 (Eq 7.4).</span></span>
+<span><span class="co">#&gt;  Original variance: Hanley, J. A., &amp; McNeil, B. J. (1982). Radiology, 143(1), 29-36.</span></span>
+<span><span class="co">#&gt;  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span></code></pre></div>
-<p><strong>Key Points</strong>: - Calculates cases with disease - AUC
-variance depends on AUC value and prevalence - Hanley-McNeil method is
-standard approach</p>
+<p><strong>Key Points</strong>: - Calculates the required number of
+cases; the non-case quota follows the controls:cases ratio - AUC
+variance uses the binormal model (Obuchowski 1994) by default;
+<code>var_method</code> selects the exponential or distribution-free
+alternative - Screening volume requires <code>prevalence</code>; fixed
+case-control quotas report case, control, and total counts instead</p>
 <p><strong>Reference</strong>: Hanley &amp; McNeil (1982). The meaning
 and use of AUC. <em>Radiology</em>, 143(1), 29-36.</p>
 <hr>
@@ -830,22 +848,29 @@ the required AUC correlation.</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: <span style="color: #0000BB;">"AUC comparison (two tests)"</span></span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">Cases needed</span>: <span style="color: #0000BB;">208</span></span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects to screen</span>: <span style="color: #0000BB;">830</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects to screen</span>: <span style="color: #0000BB;">832</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Controls needed</span>: <span style="color: #0000BB;">624</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">Total subjects</span>: <span style="color: #0000BB;">832</span></span></span>
+<span><span class="co">#&gt; <span style="font-style: italic;">Parameter roles</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • ratio = controls per case; prevalence is an alternative clinical recruitment</span></span>
+<span><span class="co">#&gt; assumption</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (plain text)</span>:</span></span>
-<span><span class="co">#&gt; `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2,</span></span>
-<span><span class="co">#&gt; binormal V`</span></span>
+<span><span class="co">#&gt; `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Formula (LaTeX)</span>:</span></span>
 <span><span class="co">#&gt; $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Calculation process</span>:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Step 1: Specify AUC1 = 0.85, AUC2 = 0.80, correlation r = 0.60, prevalence =</span></span>
-<span><span class="co">#&gt; 0.25 (alpha = 0.05, power = 0.80).</span></span>
-<span><span class="co">#&gt; • Step 2: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.</span></span>
-<span><span class="co">#&gt; • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).</span></span>
-<span><span class="co">#&gt; • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *</span></span>
-<span><span class="co">#&gt; V(AUC) * (1 - r) / (AUC1 - AUC2)^2.</span></span>
-<span><span class="co">#&gt; • Step 5: Round up to integer: Target cases needed = 208, Total subjects to</span></span>
-<span><span class="co">#&gt; screen = 830.</span></span>
+<span><span class="co">#&gt; • Step 1: Compare AUC1 = 0.85 and AUC2 = 0.80, correlation r = 0.60,</span></span>
+<span><span class="co">#&gt; controls:cases R = 3.</span></span>
+<span><span class="co">#&gt; • Step 2: Use Z_(alpha/2) = 1.96 and Z_beta = 0.8416 with binormal variance.</span></span>
+<span><span class="co">#&gt; • Step 3: n_cases = 2*(Z_(alpha/2)+Z_beta)^2*V(AUC)*(1-r)/(AUC1-AUC2)^2 =</span></span>
+<span><span class="co">#&gt; 207.48.</span></span>
+<span><span class="co">#&gt; • Step 4: Round cases up first: Target cases needed = 208; controls =</span></span>
+<span><span class="co">#&gt; ceiling(cases*R) = 624.</span></span>
+<span><span class="co">#&gt; • Step 5: Sum integer quotas: Total subjects = 208 + 624 = 832.</span></span>
+<span><span class="co">#&gt; • Step 6: At prevalence = 0.25, meet both quotas in expectation: Total subjects</span></span>
+<span><span class="co">#&gt; to screen = 832. This is not an assurance probability.</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reference</span>:</span></span>
 <span><span class="co">#&gt; Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the worked example on p. 199 gives n = 211 with the binormal variance). https://doi.org/10.1016/j.jbi.2014.02.013</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1298,7 +1323,7 @@ Issues</a>
 methodology papers</strong> (see <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> output for
 complete citations).</p>
 <hr>
-<p><strong>Last Updated</strong>: 2026-11-05<br><strong>Version</strong>: 3.1.1</p>
+<p><strong>Last Updated</strong>: 2026-11-06<br><strong>Version</strong>: 3.1.1</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

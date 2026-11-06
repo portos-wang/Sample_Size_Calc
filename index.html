@@ -165,7 +165,7 @@
 <span><span class="va">be_trial</span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
-<span><span class="co">#&gt; • Design type: "Bioequivalence (2x2 crossover, exact TOST noncentral t)"</span></span>
+<span><span class="co">#&gt; • Design type: "Bioequivalence (2x2 crossover, exact TOST integration)"</span></span>
 <span><span class="co">#&gt; • Required sample size: 12</span></span>
 <span><span class="co">#&gt; • Total sample size: 24</span></span>
 <span><span class="co">#&gt; • Power achieved: 0.8372</span></span>
@@ -176,21 +176,23 @@
 <span><span class="co">#&gt; • margin = [0.80, 1.25] average BE criteria</span></span>
 <span><span class="co">#&gt; • n is per sequence; total subjects = 2n</span></span>
 <span><span class="co">#&gt; Formula (plain text):</span></span>
-<span><span class="co">#&gt; `exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)`</span></span>
+<span><span class="co">#&gt; `power = E[max(0, Phi((U-mu)/SE-t*sqrt(V/df))-Phi((L-mu)/SE+t*sqrt(V/df)))], V</span></span>
+<span><span class="co">#&gt; ~ chi-square(df), df=N-2`</span></span>
 <span><span class="co">#&gt; Formula (LaTeX):</span></span>
-<span><span class="co">#&gt; $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$</span></span>
+<span><span class="co">#&gt; $$\mathrm{Power}=E\!\left[\max\!\left\{0,\Phi\!\left(\frac{U-\mu}{SE}-t\sqrt{V/\nu}\right)-\Phi\!\left(\frac{L-\mu}{SE}+t\sqrt{V/\nu}\right)\right\}\right],\quad V\sim\chi^2_\nu,\ \nu=N-2$$</span></span>
 <span><span class="co">#&gt; Calculation process:</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Step 1: Intra-subject variance on log scale: sigma_w = sqrt(ln(1 + CV^2)) =</span></span>
-<span><span class="co">#&gt; sqrt(ln(1 + 0.25^2)) = 0.2462.</span></span>
-<span><span class="co">#&gt; • Step 2: Standard BE log-scale boundaries: [ln(0.80), ln(1.25)] = [-0.2231,</span></span>
-<span><span class="co">#&gt; 0.2231].</span></span>
-<span><span class="co">#&gt; • Step 3: Two One-Sided Tests (TOST) under assumed geometric mean ratio theta0</span></span>
-<span><span class="co">#&gt; = 1.</span></span>
-<span><span class="co">#&gt; • Step 4: Search sequence sample size n by evaluating the difference of</span></span>
-<span><span class="co">#&gt; noncentral t distribution probabilities (Phillips 1990; df = 2n - 2).</span></span>
-<span><span class="co">#&gt; • Step 5: Required sample size: n = 12 per sequence (achieved power = 0.8372,</span></span>
-<span><span class="co">#&gt; Total N = 24).</span></span>
+<span><span class="co">#&gt; • Step 1: Log-scale within-subject SD = sqrt(log(1+CV^2)) = 0.246221;</span></span>
+<span><span class="co">#&gt; anticipated log ratio = 0.000000.</span></span>
+<span><span class="co">#&gt; • Step 2: TOST log limits are [-0.223144, 0.223144], each with one-sided alpha</span></span>
+<span><span class="co">#&gt; 0.0500.</span></span>
+<span><span class="co">#&gt; • Step 3: Integrate the conditional normal acceptance probability over the</span></span>
+<span><span class="co">#&gt; chi-square variance estimate (df = N-2); negative-width acceptance intervals</span></span>
+<span><span class="co">#&gt; contribute zero.</span></span>
+<span><span class="co">#&gt; • Step 4: Search balanced even totals for the smallest N meeting the target</span></span>
+<span><span class="co">#&gt; power.</span></span>
+<span><span class="co">#&gt; • Step 5: n = 12 per sequence, total N = 24, achieved power = 0.837226 (target</span></span>
+<span><span class="co">#&gt; 0.8000).</span></span>
 <span><span class="co">#&gt; Reference:</span></span>
 <span><span class="co">#&gt; Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.</span></span>
 <span><span class="co">#&gt;</span></span>
@@ -211,7 +213,6 @@
 <span><span class="co">#&gt; • Design type: "Diagnostic accuracy (single)"</span></span>
 <span><span class="co">#&gt; • Cases needed: 196</span></span>
 <span><span class="co">#&gt; • Total subjects to screen: 980</span></span>
-<span><span class="co">#&gt; • Total subjects: 980</span></span>
 <span><span class="co">#&gt; Formula (plain text):</span></span>
 <span><span class="co">#&gt; `N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2`</span></span>
 <span><span class="co">#&gt; Formula (LaTeX):</span></span>
@@ -279,29 +280,32 @@
 <span><span class="co">#&gt; ✔ Sample Size Calculation Results</span></span>
 <span><span class="co">#&gt; • Design type: "Single-group AUC CI precision"</span></span>
 <span><span class="co">#&gt; • Cases needed: 46</span></span>
-<span><span class="co">#&gt; • Total subjects to screen: 92</span></span>
+<span><span class="co">#&gt; • Controls needed: 46</span></span>
 <span><span class="co">#&gt; • Total subjects: 92</span></span>
 <span><span class="co">#&gt; Parameter roles</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • auc = anticipated area under the ROC curve</span></span>
 <span><span class="co">#&gt; • precision = desired CI half-width L</span></span>
-<span><span class="co">#&gt; • ratio = case:control ratio R (cases:non-cases; default 1)</span></span>
+<span><span class="co">#&gt; • ratio = controls per case (non-cases:cases; default 1)</span></span>
+<span><span class="co">#&gt; • prevalence = clinical disease proportion; alternative to fixed ratio</span></span>
+<span><span class="co">#&gt; • screening totals, when present, meet expected case and control quotas, not an</span></span>
+<span><span class="co">#&gt; assurance probability</span></span>
 <span><span class="co">#&gt; • var_method = binormal variance function</span></span>
 <span><span class="co">#&gt; Formula (plain text):</span></span>
-<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`</span></span>
+<span><span class="co">#&gt; `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R</span></span>
+<span><span class="co">#&gt; = controls/cases`</span></span>
 <span><span class="co">#&gt; Formula (LaTeX):</span></span>
-<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$</span></span>
+<span><span class="co">#&gt; $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$</span></span>
 <span><span class="co">#&gt; Calculation process:</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =</span></span>
-<span><span class="co">#&gt; 1, alpha = 0.05.</span></span>
-<span><span class="co">#&gt; • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)</span></span>
-<span><span class="co">#&gt; = 0.1195.</span></span>
+<span><span class="co">#&gt; • Step 1: Anticipated AUC = 0.80, precision d = 0.10, controls:cases R = 1,</span></span>
+<span><span class="co">#&gt; alpha = 0.05.</span></span>
+<span><span class="co">#&gt; • Step 2: Use the binormal variance model: V(AUC) = 0.1195.</span></span>
 <span><span class="co">#&gt; • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =</span></span>
 <span><span class="co">#&gt; (1.96/0.10)^2 * 0.1195 = 45.89.</span></span>
-<span><span class="co">#&gt; • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =</span></span>
-<span><span class="co">#&gt; 45.89*(1+1) = 91.78.</span></span>
-<span><span class="co">#&gt; • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.</span></span>
+<span><span class="co">#&gt; • Step 4: Round cases up first: Target cases needed = 46; controls =</span></span>
+<span><span class="co">#&gt; ceiling(cases*R) = 46.</span></span>
+<span><span class="co">#&gt; • Step 5: Sum integer quotas: Total subjects = 46 + 46 = 92.</span></span>
 <span><span class="co">#&gt; Reference:</span></span>
 <span><span class="co">#&gt; Primary: Zhou, X.-H., Obuchowski, N. A., &amp; McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).</span></span>
 <span><span class="co">#&gt;</span></span>

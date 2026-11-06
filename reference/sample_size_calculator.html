@@ -96,7 +96,9 @@ to spend a full two-sided 0.05).</p></dd>
 <dd><p>Design-specific arguments (see the table in <code>design</code> and
 <code><a href="calculate.html">?calculate</a></code> for domains; e.g. <code>mean1</code>, <code>mean2</code>, <code>sd</code> for twoMeans).
 Parameters outside their validated domain abort with a structured
-<code>cli</code> error naming the offending argument.</p></dd>
+<code>cli</code> error naming the offending argument. Names that only partially
+match the control formals (<code>design</code>, <code>alpha</code>, <code>power</code>) also abort:
+pass the design as <code>design = ...</code> and spell control arguments in full.</p></dd>
 
 </dl></div>
     <div class="section level2">

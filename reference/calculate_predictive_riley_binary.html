@@ -6,13 +6,15 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Internal calculation: prediction model development (Riley 2020 BMJ method) — calculate_predictive_riley_binary"><meta name="description" content="Binary outcome: criteria B1 (overall proportion precision), B3 (shrinkage
-target S), with B2 (mean absolute prediction error, van Smeden formula)
-reported for P &amp;lt;= 30. Sample size = max(B1, B3).
+target S), and B4 (optimism in Nagelkerke R2 at most 0.05), with B2
+(mean absolute prediction error, van Smeden formula) reported for P &amp;lt;= 30.
+Sample size = max(B1, B3, B4).
 Anchors (exact): B1 phi=0.5, delta=0.05 -&amp;gt; 385;
 B3 P=30, R2cs=0.05, S=0.9 -&amp;gt; 5249;
 B2 MAPE=0.05, phi=0.3, P=10 -&amp;gt; 461."><meta property="og:description" content="Binary outcome: criteria B1 (overall proportion precision), B3 (shrinkage
-target S), with B2 (mean absolute prediction error, van Smeden formula)
-reported for P &amp;lt;= 30. Sample size = max(B1, B3).
+target S), and B4 (optimism in Nagelkerke R2 at most 0.05), with B2
+(mean absolute prediction error, van Smeden formula) reported for P &amp;lt;= 30.
+Sample size = max(B1, B3, B4).
 Anchors (exact): B1 phi=0.5, delta=0.05 -&amp;gt; 385;
 B3 P=30, R2cs=0.05, S=0.9 -&amp;gt; 5249;
 B2 MAPE=0.05, phi=0.3, P=10 -&amp;gt; 461."></head><body>
@@ -57,8 +59,9 @@ B2 MAPE=0.05, phi=0.3, P=10 -&amp;gt; 461."></head><body>
 
     <div class="ref-description section level2">
     <p>Binary outcome: criteria B1 (overall proportion precision), B3 (shrinkage
-target S), with B2 (mean absolute prediction error, van Smeden formula)
-reported for P &lt;= 30. Sample size = max(B1, B3).
+target S), and B4 (optimism in Nagelkerke R2 at most 0.05), with B2
+(mean absolute prediction error, van Smeden formula) reported for P &lt;= 30.
+Sample size = max(B1, B3, B4).
 Anchors (exact): B1 phi=0.5, delta=0.05 -&gt; 385;
 B3 P=30, R2cs=0.05, S=0.9 -&gt; 5249;
 B2 MAPE=0.05, phi=0.3, P=10 -&gt; 461.</p>

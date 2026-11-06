@@ -1,5 +1,73 @@
 # Changelog
 
+## SampleSizeCalc (development version)
+
+- [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
+  now enforces study design and parameter invariants:
+  - `singleMean` precision planning searches for the smallest integer
+    \\N \ge 2\\ satisfying the Student \\t\\ CI half-width constraint,
+    resolving oscillation between adjacent rounded fixed-point iterates
+    and preventing \\N = 1\\ returns.
+  - `diagAccuracy` dual-endpoint planning (`dual = TRUE`) evaluates
+    diseased-case and non-diseased-control quotas separately. Expected
+    screening totals convert the two rounded strata quotas by
+    `prevalence` and `1 - prevalence` respectively.
+  - `cohort` person-time planning preserves the original `rate0` and
+    `rate1` labels and allocation when `rate1 < rate0` (protective
+    exposure), maintaining the user’s intended design.
+  - `paired` designs default to `pairing = "within_subject"` (counting
+    one person per pair, two measurements); specify
+    `pairing = "matched_subjects"` for pairs of distinct people.
+  - `bioequivalence` integrates exact conditional TOST power over the
+    variance distribution and aborts if target power cannot be reached
+    within 10,000 subjects.
+  - `diagLR` validates target direction (upper limit \> expected for
+    LR-; lower limit \< expected for LR+).
+  - Kappa planning validates that inputs define a valid joint
+    probability table.
+  - Result objects now validate count positivity, integer values, and
+    that group counts sum to reported totals. Power-curve replay retains
+    user-specified `alpha`.
+- [`calculate()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
+  and
+  [`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
+  now reject unsupported, misspelled, duplicate, unnamed, and
+  inactive-branch design arguments. In particular, `dropout` outside
+  cohort proportion planning and `alternative` outside the supported
+  diagnostic test raise an error.
+- `diagAUC` and `diagAUCCompare` testing now consistently use `ratio` as
+  controls per case, independently of `var_method` (default
+  `"binormal"`). Supply either a fixed `ratio` or clinical `prevalence`,
+  not both. Cases and controls are rounded before summing
+  `total_subjects`; `total_subjects_to_screen` is returned only for
+  clinical recruitment and meets both quotas in expectation. AUC
+  calculation reports use the same variance model, test convention, and
+  rounding as the calculation.
+- `predictiveModel` binary planning now takes the maximum of Riley B1,
+  B3, and B4, including the Nagelkerke R-squared optimism criterion. For
+  prevalence 0.05, 10 parameters, Cox-Snell R-squared 0.2, and shrinkage
+  0.9, the corrected size is 542 rather than 398, matching `pmsampsize`.
+  B2 MAPE remains informational, and its inputs are validated.
+- `twoOrdinal` now sums the separately rounded group sizes, including
+  unequal allocation. The normalized Machin example needs 31 per arm, 62
+  total; Whitehead’s example needs 94 per arm, 188 total.
+- Numeric design inputs now require finite scalars (with category
+  proportions as the documented vector exception). Missing and infinite
+  values produce argument-specific errors, including in
+  [`screen_required()`](https://rpackages.portos.wang/sample_size_calc/reference/screen_required.md)
+  and
+  [`mrmc_power()`](https://rpackages.portos.wang/sample_size_calc/reference/mrmc_power.md).
+- Zero-effect planning inputs (`mean1 == mean2`, `p1 == p2`,
+  `meanDiff == 0`, and equal expected proportions in an unpaired
+  diagnostic comparison) now abort with argument-specific errors instead
+  of leaking base-R root-finding failures.
+- [`sample_size_calculator()`](https://rpackages.portos.wang/sample_size_calc/reference/sample_size_calculator.md)
+  now rejects `...` names that R’s partial matching would silently bind
+  to `design`, `alpha`, or `power`: a misspelled `p` used to set `power`
+  without warning, and `d` clobbered `design` when the design keyword
+  was passed positionally. Exact control names keep working, including
+  named `design` calls that pass a design-specific `d`.
+
 ## SampleSizeCalc 3.1.1
 
 - The package is named `SampleSizeCalc`; use

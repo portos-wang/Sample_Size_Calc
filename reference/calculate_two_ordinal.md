@@ -34,12 +34,12 @@ and Machin et al. (2018) Eq 4.3 (p. 57) with allocation ratio phi:
       N = Gamma (1 + phi)^2 / phi * (z_{1-a/2} + z_{1-b})^2 / (log OR)^2,
       Gamma = 3 / (1 - sum pbar_i^3)                          (Eq 4.4)
 
-The two are algebraically identical when A = phi: Whitehead's numerator
-`3 (A+1)^2` and Machin's `Gamma (1+phi)^2/phi` differ only by the
-allocation factor, which is 1 when the groups are equal.
+The two are algebraically identical when A = phi. The allocation
+multiplier (1+phi)^2/phi equals 4 for equal groups.
 
 Anchors: Machin Example 4.1 (p. 59): kappa = 4, phi = 1, OR = 3.65, pbar
-= (0.2564, 0.2792, 0.2056, 0.2619), 2-sided alpha = 0.05, power = 0.80
--\> N = 60.09 -\> 60 total. Whitehead Example 1 (p. 2261): OR = 0.887,
-pbar = (0.289, 0.486, 0.153, 0.072), alpha = 0.05, power = 0.90 -\> n =
-187 total (94 per group).
+is normalised from (0.2564, 0.2792, 0.2056, 0.2619), which sum to 1.0031
+in the printed example; 2-sided alpha = 0.05, power = 0.80 gives 31 per
+arm, 62 total. Whitehead Example 1 (p. 2261): log(OR) = 0.887, pbar =
+(0.289, 0.486, 0.153, 0.072), alpha = 0.05, power = 0.90 -\> continuous
+n = 186.98, rounded to 94 per group / 188 total.

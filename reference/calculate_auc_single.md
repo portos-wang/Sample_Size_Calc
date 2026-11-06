@@ -5,7 +5,14 @@ AUC single test calculation
 ## Usage
 
 ``` r
-calculate_auc_single(auc, d, prevalence, alpha)
+calculate_auc_single(
+  auc,
+  d,
+  prevalence,
+  alpha,
+  ratio = NULL,
+  var_method = "binormal"
+)
 ```
 
 ## Arguments
@@ -27,6 +34,14 @@ calculate_auc_single(auc, d, prevalence, alpha)
 - alpha:
 
   Type I error
+
+- ratio:
+
+  Controls per case; alternative to prevalence.
+
+- var_method:
+
+  AUC variance model (binormal by default).
 
 ## Value
 

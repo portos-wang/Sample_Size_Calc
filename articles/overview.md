@@ -134,29 +134,32 @@ calculate("diagAUC", "estimate", "auc",
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
 #> • Cases needed: 46
-#> • Total subjects to screen: 92
+#> • Controls needed: 46
 #> • Total subjects: 92
 #> Parameter roles
 #> 
 #> • auc = anticipated area under the ROC curve
 #> • precision = desired CI half-width L
-#> • ratio = case:control ratio R (cases:non-cases; default 1)
+#> • ratio = controls per case (non-cases:cases; default 1)
+#> • prevalence = clinical disease proportion; alternative to fixed ratio
+#> • screening totals, when present, meet expected case and control quotas, not an
+#> assurance probability
 #> • var_method = binormal variance function
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R
+#> = controls/cases`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$
 #> Calculation process:
 #> 
-#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
-#> 1, alpha = 0.05.
-#> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
-#> = 0.1195.
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, controls:cases R = 1,
+#> alpha = 0.05.
+#> • Step 2: Use the binormal variance model: V(AUC) = 0.1195.
 #> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
 #> (1.96/0.10)^2 * 0.1195 = 45.89.
-#> • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =
-#> 45.89*(1+1) = 91.78.
-#> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
+#> • Step 4: Round cases up first: Target cases needed = 46; controls =
+#> ceiling(cases*R) = 46.
+#> • Step 5: Sum integer quotas: Total subjects = 46 + 46 = 92.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
@@ -296,8 +299,10 @@ print(result)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Paired means"
+#> • Total sample size: 29
 #> • Pairs needed: 29
-#> • Total individuals: 58
+#> • Measurements required: 58
+#> • Total individuals: 29
 #> Formula (plain text):
 #> `n = ((Z_a/2 + Z_b) * sd_diff / mean_diff)^2`
 #> Formula (LaTeX):
@@ -312,14 +317,14 @@ print(result)
 #> • Step 4: Normal approximation: n0 = ((Z_(alpha/2) + Z_beta) * sigma_d /
 #> mu_d)^2 = ((1.96 + 1.2816) * 4 / 2.50)^2 = 26.90.
 #> • Step 5: Exact paired Student's t-test degrees of freedom iteration.
-#> • Step 6: Round up to integer: n = 29 pairs (total individuals = 58).
+#> • Step 6: Round up to integer: n = 29 pairs (total individuals = 29).
 #> Reference:
 #> Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-**Interpretation**: - Need 29 pairs (i.e., 58 measurements from 29
+**Interpretation**: - Need 29 pairs (i.e., 29 measurements from 29
 subjects) - Standardized effect size: 0.62
 
 **Reference**: Rosner (2015). *Fundamentals of Biostatistics* (8th ed.).
@@ -704,9 +709,10 @@ diagnostic test studies. *Journal of Biomedical Informatics*, 48,
 **Example**: A biomarker score is frozen before a clinical validation
 cohort is enrolled. Assume AUC 0.80, CI half-width 0.05, and source
 prevalence 30%, with one score and a reference disease assessment per
-person. This legacy branch uses its Hanley–McNeil variance calculation;
-the three-axis example above demonstrates explicitly selecting a
-different variance model.
+person. This branch uses the binormal AUC variance model by default,
+with controls:cases allocation derived from prevalence. The three-axis
+example above shows fixed case-control quotas; `var_method` can select
+an alternative variance model.
 
 ``` r
 
@@ -723,37 +729,50 @@ print(result)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
 #> • Cases needed: 144
-#> • Total subjects to screen: 478
+#> • Total subjects to screen: 480
+#> • Controls needed: 336
+#> • Total subjects: 480
+#> Parameter roles
+#> 
+#> • auc = anticipated area under the ROC curve
+#> • precision = desired CI half-width L
+#> • ratio = controls per case (non-cases:cases; default 1)
+#> • prevalence = clinical disease proportion; alternative to fixed ratio
+#> • screening totals, when present, meet expected case and control quotas, not an
+#> assurance probability
+#> • var_method = binormal variance function
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC), V = 0.0099*exp(-a^2/2)*([5a^2+8] +
-#> [a^2+8]/R), a = qnorm(A)*1.414`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R
+#> = controls/cases`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot \left\{0.0099\,e^{-a^2/2}\left([5a^2+8]+\frac{a^2+8}{R}\right)\right\}, \quad a = \Phi^{-1}(A)\cdot 1.414$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify anticipated AUC = 0.80, desired precision d = 0.05,
-#> prevalence = 0.30 (alpha = 0.05).
-#> • Step 2: Hanley-McNeil variance components: Q1 = AUC/(2-AUC) = 0.6667, Q2 =
-#> 2*AUC^2/(1+AUC) = 0.7111.
-#> • Step 3: Compute variance factor: V(AUC) = 0.2425.
-#> • Step 4: Calculate cases needed: n_cases = (Z_(1-alpha/2) / d)^2 * V(AUC) =
-#> (1.96 / 0.05)^2 * 0.2425 = 372.68.
-#> • Step 5: Adjust for prevalence: screening total = n_cases / prevalence =
-#> 372.68 / 0.30 = 1242.27.
-#> • Step 6: Round up to integer: Target cases needed = 144, Total subjects to
-#> screen = 478.
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.05, controls:cases R =
+#> 2.3333, alpha = 0.05.
+#> • Step 2: Use the binormal variance model: V(AUC) = 0.0932.
+#> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
+#> (1.96/0.05)^2 * 0.0932 = 143.24.
+#> • Step 4: Round cases up first: Target cases needed = 144; controls =
+#> ceiling(cases*R) = 336.
+#> • Step 5: Sum integer quotas: Total subjects = 144 + 336 = 480.
+#> • Step 6: At prevalence = 0.30, meet both quotas in expectation: Total subjects
+#> to screen = 480. This is not an assurance probability.
 #> Reference:
-#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, Eq 6.5, pp. 196-198 (binormal variance function).
+#> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
-#>  Variance function: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
-#> 
-#>  Review: Hajian-Tilaki, K. (2014). Journal of Biomedical Informatics, 48, 193-204 (Eq 7.4).
+#>  Original variance: Hanley, J. A., & McNeil, B. J. (1982). Radiology, 143(1), 29-36.
+#>  Binormal variance: Obuchowski, N. A. (1994). Computing sample size for receiver operating characteristic studies. Investigative Radiology, 29(2), 238-243.
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
-**Key Points**: - Calculates cases with disease - AUC variance depends
-on AUC value and prevalence - Hanley-McNeil method is standard approach
+**Key Points**: - Calculates the required number of cases; the non-case
+quota follows the controls:cases ratio - AUC variance uses the binormal
+model (Obuchowski 1994) by default; `var_method` selects the exponential
+or distribution-free alternative - Screening volume requires
+`prevalence`; fixed case-control quotas report case, control, and total
+counts instead
 
 **Reference**: Hanley & McNeil (1982). The meaning and use of AUC.
 *Radiology*, 143(1), 29-36.
@@ -789,22 +808,29 @@ print(result)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "AUC comparison (two tests)"
 #> • Cases needed: 208
-#> • Total subjects to screen: 830
+#> • Total subjects to screen: 832
+#> • Controls needed: 624
+#> • Total subjects: 832
+#> Parameter roles
+#> 
+#> • ratio = controls per case; prevalence is an alternative clinical recruitment
+#> assumption
 #> Formula (plain text):
-#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2,
-#> binormal V`
+#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`
 #> Formula (LaTeX):
 #> $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify AUC1 = 0.85, AUC2 = 0.80, correlation r = 0.60, prevalence =
-#> 0.25 (alpha = 0.05, power = 0.80).
-#> • Step 2: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
-#> • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).
-#> • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *
-#> V(AUC) * (1 - r) / (AUC1 - AUC2)^2.
-#> • Step 5: Round up to integer: Target cases needed = 208, Total subjects to
-#> screen = 830.
+#> • Step 1: Compare AUC1 = 0.85 and AUC2 = 0.80, correlation r = 0.60,
+#> controls:cases R = 3.
+#> • Step 2: Use Z_(alpha/2) = 1.96 and Z_beta = 0.8416 with binormal variance.
+#> • Step 3: n_cases = 2*(Z_(alpha/2)+Z_beta)^2*V(AUC)*(1-r)/(AUC1-AUC2)^2 =
+#> 207.48.
+#> • Step 4: Round cases up first: Target cases needed = 208; controls =
+#> ceiling(cases*R) = 624.
+#> • Step 5: Sum integer quotas: Total subjects = 208 + 624 = 832.
+#> • Step 6: At prevalence = 0.25, meet both quotas in expectation: Total subjects
+#> to screen = 832. This is not an assurance probability.
 #> Reference:
 #> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the worked example on p. 199 gives n = 211 with the binormal variance). https://doi.org/10.1016/j.jbi.2014.02.013
 #> 
@@ -1166,5 +1192,5 @@ for complete citations).
 
 ------------------------------------------------------------------------
 
-**Last Updated**: 2026-11-05  
+**Last Updated**: 2026-11-06  
 **Version**: 3.1.1

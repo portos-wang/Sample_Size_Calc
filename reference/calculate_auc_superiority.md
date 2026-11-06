@@ -5,7 +5,15 @@ AUC superiority test calculation
 ## Usage
 
 ``` r
-calculate_auc_superiority(auc, auc0, prevalence, alpha, power)
+calculate_auc_superiority(
+  auc,
+  auc0,
+  prevalence,
+  alpha,
+  power,
+  ratio = NULL,
+  var_method = "binormal"
+)
 ```
 
 ## Arguments
@@ -30,6 +38,14 @@ calculate_auc_superiority(auc, auc0, prevalence, alpha, power)
 - power:
 
   Statistical power
+
+- ratio:
+
+  Controls per case; alternative to prevalence.
+
+- var_method:
+
+  AUC variance model (binormal by default).
 
 ## Value
 

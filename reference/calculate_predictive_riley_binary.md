@@ -1,10 +1,11 @@
 # Internal calculation: prediction model development (Riley 2020 BMJ method)
 
 Binary outcome: criteria B1 (overall proportion precision), B3
-(shrinkage target S), with B2 (mean absolute prediction error, van
-Smeden formula) reported for P \<= 30. Sample size = max(B1, B3).
-Anchors (exact): B1 phi=0.5, delta=0.05 -\> 385; B3 P=30, R2cs=0.05,
-S=0.9 -\> 5249; B2 MAPE=0.05, phi=0.3, P=10 -\> 461.
+(shrinkage target S), and B4 (optimism in Nagelkerke R2 at most 0.05),
+with B2 (mean absolute prediction error, van Smeden formula) reported
+for P \<= 30. Sample size = max(B1, B3, B4). Anchors (exact): B1
+phi=0.5, delta=0.05 -\> 385; B3 P=30, R2cs=0.05, S=0.9 -\> 5249; B2
+MAPE=0.05, phi=0.3, P=10 -\> 461.
 
 ## Usage
 

@@ -1,8 +1,10 @@
 # Bioequivalence (2x2 crossover, exact TOST noncentral t, 80-125%)
 
-Evaluates the exact power of the two one-sided tests (TOST) procedure
-using the noncentral t distribution (Phillips 1990; Julious 2004 Section
-6.3, Eq 6.2 and 6.8). Matches sampleN.TOST in the PowerTOST package
+Evaluates exact joint power of the two one-sided tests (TOST) by
+integrating the conditional normal acceptance probability over the
+independent chi-square variance estimate (Phillips 1990). Uses balanced
+even totals and reports an error if the target power cannot be reached
+within 10000 participants. Matches sampleN.TOST in the PowerTOST package
 exactly.
 
 ## Usage

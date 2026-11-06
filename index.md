@@ -166,7 +166,7 @@ be_trial <- calculate("bioequivalence", "equivalence", "mean", cv = 0.25)
 be_trial
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
-#> • Design type: "Bioequivalence (2x2 crossover, exact TOST noncentral t)"
+#> • Design type: "Bioequivalence (2x2 crossover, exact TOST integration)"
 #> • Required sample size: 12
 #> • Total sample size: 24
 #> • Power achieved: 0.8372
@@ -177,21 +177,23 @@ be_trial
 #> • margin = [0.80, 1.25] average BE criteria
 #> • n is per sequence; total subjects = 2n
 #> Formula (plain text):
-#> `exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)`
+#> `power = E[max(0, Phi((U-mu)/SE-t*sqrt(V/df))-Phi((L-mu)/SE+t*sqrt(V/df)))], V
+#> ~ chi-square(df), df=N-2`
 #> Formula (LaTeX):
-#> $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$
+#> $$\mathrm{Power}=E\!\left[\max\!\left\{0,\Phi\!\left(\frac{U-\mu}{SE}-t\sqrt{V/\nu}\right)-\Phi\!\left(\frac{L-\mu}{SE}+t\sqrt{V/\nu}\right)\right\}\right],\quad V\sim\chi^2_\nu,\ \nu=N-2$$
 #> Calculation process:
 #>
-#> • Step 1: Intra-subject variance on log scale: sigma_w = sqrt(ln(1 + CV^2)) =
-#> sqrt(ln(1 + 0.25^2)) = 0.2462.
-#> • Step 2: Standard BE log-scale boundaries: [ln(0.80), ln(1.25)] = [-0.2231,
-#> 0.2231].
-#> • Step 3: Two One-Sided Tests (TOST) under assumed geometric mean ratio theta0
-#> = 1.
-#> • Step 4: Search sequence sample size n by evaluating the difference of
-#> noncentral t distribution probabilities (Phillips 1990; df = 2n - 2).
-#> • Step 5: Required sample size: n = 12 per sequence (achieved power = 0.8372,
-#> Total N = 24).
+#> • Step 1: Log-scale within-subject SD = sqrt(log(1+CV^2)) = 0.246221;
+#> anticipated log ratio = 0.000000.
+#> • Step 2: TOST log limits are [-0.223144, 0.223144], each with one-sided alpha
+#> 0.0500.
+#> • Step 3: Integrate the conditional normal acceptance probability over the
+#> chi-square variance estimate (df = N-2); negative-width acceptance intervals
+#> contribute zero.
+#> • Step 4: Search balanced even totals for the smallest N meeting the target
+#> power.
+#> • Step 5: n = 12 per sequence, total N = 24, achieved power = 0.837226 (target
+#> 0.8000).
 #> Reference:
 #> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
 #>
@@ -227,7 +229,6 @@ diag_precision
 #> • Design type: "Diagnostic accuracy (single)"
 #> • Cases needed: 196
 #> • Total subjects to screen: 980
-#> • Total subjects: 980
 #> Formula (plain text):
 #> `N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2`
 #> Formula (LaTeX):
@@ -323,29 +324,32 @@ auc_precision
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
 #> • Cases needed: 46
-#> • Total subjects to screen: 92
+#> • Controls needed: 46
 #> • Total subjects: 92
 #> Parameter roles
 #>
 #> • auc = anticipated area under the ROC curve
 #> • precision = desired CI half-width L
-#> • ratio = case:control ratio R (cases:non-cases; default 1)
+#> • ratio = controls per case (non-cases:cases; default 1)
+#> • prevalence = clinical disease proportion; alternative to fixed ratio
+#> • screening totals, when present, meet expected case and control quotas, not an
+#> assurance probability
 #> • var_method = binormal variance function
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R
+#> = controls/cases`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$
 #> Calculation process:
 #>
-#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
-#> 1, alpha = 0.05.
-#> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
-#> = 0.1195.
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, controls:cases R = 1,
+#> alpha = 0.05.
+#> • Step 2: Use the binormal variance model: V(AUC) = 0.1195.
 #> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
 #> (1.96/0.10)^2 * 0.1195 = 45.89.
-#> • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =
-#> 45.89*(1+1) = 91.78.
-#> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
+#> • Step 4: Round cases up first: Target cases needed = 46; controls =
+#> ceiling(cases*R) = 46.
+#> • Step 5: Sum integer quotas: Total subjects = 46 + 46 = 92.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #>

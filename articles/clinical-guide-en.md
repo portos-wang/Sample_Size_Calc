@@ -662,8 +662,10 @@ print(res_2_1)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Paired means"
+#> • Total sample size: 20
 #> • Pairs needed: 20
-#> • Total individuals: 40
+#> • Measurements required: 40
+#> • Total individuals: 20
 #> Formula (plain text):
 #> `n = ((Z_a/2 + Z_b) * sd_diff / mean_diff)^2`
 #> Formula (LaTeX):
@@ -677,7 +679,7 @@ print(res_2_1)
 #> • Step 4: Normal approximation: n0 = ((Z_(alpha/2) + Z_beta) * sigma_d /
 #> mu_d)^2 = ((1.96 + 0.8416) * 3 / 2)^2 = 17.66.
 #> • Step 5: Exact paired Student's t-test degrees of freedom iteration.
-#> • Step 6: Round up to integer: n = 20 pairs (total individuals = 40).
+#> • Step 6: Round up to integer: n = 20 pairs (total individuals = 20).
 #> Reference:
 #> Rosner, B. (2015). *Fundamentals of biostatistics* (8th ed.). Cengage Learning.
 #> ────────────────────────────────────────────────────────────────────────────────
@@ -716,13 +718,17 @@ print(res_2_2)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Paired binary outcomes (McNemar / Connor)"
-#> • Total sample size: 94
+#> • Total sample size: 47
 #> • Pairs needed: 47
+#> • Measurements required: 94
+#> • Total individuals: 47
 #> Parameter roles
 #> 
 #> • p1/p2 = expected proportions (or sensitivities) in pairs
 #> • psi = expected discordant-pair proportion (pi10 + pi01)
-#> • output is in PAIRS (n individuals = 2 x pairs)
+#> • output is in PAIRS of observations; within_subject uses one person per pair,
+#> matched_subjects uses two
+#> • n_measurements = 2 x pairs; total_individuals counts distinct people
 #> Formula (plain text):
 #> `n = [Za*sqrt(psi) + Zb*sqrt(psi-delta^2)]^2/delta^2`
 #> Formula (LaTeX):
@@ -1148,7 +1154,7 @@ res_2_9 <- calculate("bioequivalence", cv = 0.25, theta0 = 1.0, alpha = 0.05, po
 print(res_2_9)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
-#> • Design type: "Bioequivalence (2x2 crossover, exact TOST noncentral t)"
+#> • Design type: "Bioequivalence (2x2 crossover, exact TOST integration)"
 #> • Required sample size: 12
 #> • Total sample size: 24
 #> • Power achieved: 0.8372
@@ -1159,21 +1165,23 @@ print(res_2_9)
 #> • margin = [0.80, 1.25] average BE criteria
 #> • n is per sequence; total subjects = 2n
 #> Formula (plain text):
-#> `exact TOST (Phillips 1990): power = pt(-t, df, ncp=d2) - pt(t, df, ncp=d1)`
+#> `power = E[max(0, Phi((U-mu)/SE-t*sqrt(V/df))-Phi((L-mu)/SE+t*sqrt(V/df)))], V
+#> ~ chi-square(df), df=N-2`
 #> Formula (LaTeX):
-#> $$\text{Power} = F_t(-t_{1-\alpha,\, \nu};\, \nu,\, \delta_2) - F_t(t_{1-\alpha,\, \nu};\, \nu,\, \delta_1), \quad \nu = N-2$$
+#> $$\mathrm{Power}=E\!\left[\max\!\left\{0,\Phi\!\left(\frac{U-\mu}{SE}-t\sqrt{V/\nu}\right)-\Phi\!\left(\frac{L-\mu}{SE}+t\sqrt{V/\nu}\right)\right\}\right],\quad V\sim\chi^2_\nu,\ \nu=N-2$$
 #> Calculation process:
 #> 
-#> • Step 1: Intra-subject variance on log scale: sigma_w = sqrt(ln(1 + CV^2)) =
-#> sqrt(ln(1 + 0.25^2)) = 0.2462.
-#> • Step 2: Standard BE log-scale boundaries: [ln(0.80), ln(1.25)] = [-0.2231,
-#> 0.2231].
-#> • Step 3: Two One-Sided Tests (TOST) under assumed geometric mean ratio theta0
-#> = 1.
-#> • Step 4: Search sequence sample size n by evaluating the difference of
-#> noncentral t distribution probabilities (Phillips 1990; df = 2n - 2).
-#> • Step 5: Required sample size: n = 12 per sequence (achieved power = 0.8372,
-#> Total N = 24).
+#> • Step 1: Log-scale within-subject SD = sqrt(log(1+CV^2)) = 0.246221;
+#> anticipated log ratio = 0.000000.
+#> • Step 2: TOST log limits are [-0.223144, 0.223144], each with one-sided alpha
+#> 0.0500.
+#> • Step 3: Integrate the conditional normal acceptance probability over the
+#> chi-square variance estimate (df = N-2); negative-width acceptance intervals
+#> contribute zero.
+#> • Step 4: Search balanced even totals for the smallest N meeting the target
+#> power.
+#> • Step 5: n = 12 per sequence, total N = 24, achieved power = 0.837226 (target
+#> 0.8000).
 #> Reference:
 #> Primary: Phillips, K. F. (1990). Power of the two one-sided tests procedure in bioequivalence. Journal of Pharmacokinetics and Biopharmaceutics, 18(2), 137-144.
 #> 
@@ -1623,18 +1631,19 @@ print(res_4_2)
 #> • sigma = population standard deviation (from pilot/literature)
 #> • precision = margin of error d
 #> Formula (plain text):
-#> `n = (t_(n-1, 1-a/2) * sigma / d)^2 (iterated from the z starting value)`
+#> `smallest integer n >= 2 with t_(n-1, 1-a/2) * sigma / sqrt(n) <= d`
 #> Formula (LaTeX):
-#> $$n = \left(\frac{t_{n-1,\,1-\alpha/2}\cdot\sigma}{d}\right)^2$$
+#> $$n = \min\left\{k\in\mathbb{N}: k\ge 2,\ \frac{t_{k-1,1-\alpha/2}\sigma}{\sqrt{k}}\le d\right\}$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify population SD sigma = 10, margin of error d = 2, alpha =
+#> • Step 1: Plan mean precision with sigma = 10, CI half-width d = 2, alpha =
 #> 0.05.
-#> • Step 2: Determine critical value: Z_(1-alpha/2) = 1.96 (confidence level =
-#> 95%).
-#> • Step 3: Compute unrounded sample size: n = (Z_(1-alpha/2) * sigma / d)^2 =
-#> (1.96 * 10 / 2)^2 = 96.04.
-#> • Step 4: Round up to integer: Required sample size n = 99.
+#> • Step 2: Normal approximation starting size is 96.04; require at least two
+#> observations for a t interval.
+#> • Step 3: Search integers for the smallest n satisfying
+#> t_(n-1,1-alpha/2)*sigma/sqrt(n) <= d.
+#> • Step 4: n = 99, df = 98, t critical value = 1.984467, achieved half-width =
+#> 1.994465 <= 2.000000.
 #> Reference:
 #> Primary: Machin, D., Campbell, M. J., Tan, S. B., & Tan, S. H. (2018). Sample Sizes for Clinical, Laboratory and Epidemiology Studies (4th ed.). Wiley. Chapter 9 (Confidence Intervals), Eq 9.18, p. 152 (iterative Student t form; Eq 9.19 for relative precision).
 #> 
@@ -1741,7 +1750,6 @@ print(res_5_1)
 #> • Design type: "Diagnostic accuracy (single)"
 #> • Cases needed: 196
 #> • Total subjects to screen: 980
-#> • Total subjects: 980
 #> Formula (plain text):
 #> `N_cases = (Z_1-a/2)^2 * P*(1-P)/d^2`
 #> Formula (LaTeX):
@@ -1800,7 +1808,6 @@ print(res_5_2)
 #> • Design type: "Diagnostic superiority (single)"
 #> • Cases needed: 50
 #> • Total subjects to screen: 248
-#> • Total subjects: 248
 #> Formula (plain text):
 #> `N_cases = [Za*sqrt(P0*Q0) + Zb*sqrt(P*Q)]^2 / (P-P0)^2`
 #> Formula (LaTeX):
@@ -1855,7 +1862,6 @@ print(res_5_3)
 #> • Design type: "Diagnostic superiority (single test, exact binomial)"
 #> • Cases needed: 49
 #> • Total subjects to screen: 245
-#> • Total subjects: 245
 #> Parameter roles
 #> 
 #> • prob = expected diagnostic sensitivity/specificity
@@ -1870,7 +1876,7 @@ print(res_5_3)
 #> • Step 1: Identify study design: Diagnostic superiority (single test, exact
 #> binomial).
 #> • Step 2: Input parameters: prob = 0.85, p0 = 0.70, prevalence = 0.20, alpha =
-#> 0.05, power = 0.80, method = exact.
+#> 0.05, power = 0.80, method = exact, alternative = one.sided.
 #> • Step 3: Apply design formula: exact binomial: P(X >= r | p0) <= alpha and P(X
 #> >= r | prob) >= power.
 #> • Step 4: Calculated sample size metrics: Cases needed: 49; Total subjects to
@@ -1895,19 +1901,21 @@ print(res_5_3)
   reference assessment with one defined analysis unit per patient.
 - **Procedures and endpoint**: Reference-positive patients contribute
   sensitivity and reference-negative patients contribute specificity.
-  Both endpoints must succeed; biopsy establishes disease truth and is
-  not itself a competing accuracy benchmark.
+  Both endpoints must succeed; omit prevalence when recruiting the two
+  groups by quota; with clinical screening, prevalence converts both
+  quotas separately.
 - **Planning inputs**: Assume Se of 90% versus null 80%, Sp of 85%
   versus null 75%, and `dual_power = 0.90`. Powering each endpoint at
   90% supports an approximately 80% lower planning bound for joint
-  success; the actual joint behavior depends on the design.
+  success; the actual joint behavior depends on the design. Assume
+  screening prevalence 40%.
 - **Why this design**: Track case and non-case requirements separately.
-  The function also returns the larger requirement and a conservative
-  screening conversion, but the two endpoint requirements do not refer
-  to the same disease-status group.
-- **Formula**: \\n = \max\left(n\_{Se},\\ n\_{Sp}\right), \quad n =
-  \frac{\left\[Z\_{\alpha}\sqrt{p_0(1-p_0)} +
-  Z\_{\beta}\sqrt{p(1-p)}\right\]^2}{(p-p_0)^2}\\
+  When screening consecutively, the required enrollment is the maximum
+  of the prevalence-adjusted integer quotas.
+- **Formula**: \\n\_{Se} = \frac{\left\[Z\_{\alpha}\sqrt{p_0(1-p_0)} +
+  Z\_{\beta}\sqrt{p(1-p)}\right\]^2}{(p-p_0)^2}, \quad N\_{screen} =
+  \max\left(\left\lceil\frac{n\_{Se}}{P}\right\rceil,
+  \left\lceil\frac{n\_{Sp}}{1-P}\right\rceil\right)\\
 
 ``` r
 
@@ -1916,43 +1924,46 @@ print(res_5_4)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic accuracy (dual endpoint: Se + Sp)"
-#> • Cases needed: 137
+#> • Cases needed: 109
 #> • N for sensitivity: 109
 #> • N for specificity: 137
-#> • Total subjects to screen: 343
-#> • Total subjects: 343
+#> • Total subjects to screen: 273
+#> • Cases needed: 109
+#> • Controls needed: 137
+#> • Total subjects: 246
 #> Parameter roles
 #> 
 #> • prob/p0 = expected and null sensitivity
 #> • prob_spec/p0_spec = expected and null specificity
-#> • dual_power = per-endpoint power (default 0.90 -> ~80% joint)
+#> • dual_power = power for each endpoint; 0.90 gives a joint power lower bound of
+#> 0.80 under the endpoint approximations
+#> • prevalence = disease proportion for expected screening volume; omit for
+#> separate case-control recruitment
 #> Formula (plain text):
-#> `n = [Za*sqrt(p0q0) + Zb*sqrt(pq)]^2/(p-p0)^2, each at dual_power; take max`
+#> `n(p,p0)=[Za*sqrt(p0*(1-p0))+Zb*sqrt(p*(1-p))]^2/(p-p0)^2;
+#> N_screen=max(ceil(n_Se/prev),ceil(n_Sp/(1-prev)))`
 #> Formula (LaTeX):
-#> $$n = \max\left(n_{Se},\, n_{Sp}\right), \quad n = \frac{\left[Z_{\alpha}\sqrt{p_0(1-p_0)} + Z_{\beta}\sqrt{p(1-p)}\right]^2}{(p-p_0)^2}$$
+#> $$N_{screen}=\max\left(\left\lceil\frac{n_{Se}}{P}\right\rceil,\left\lceil\frac{n_{Sp}}{1-P}\right\rceil\right)$$
 #> Calculation process:
 #> 
-#> • Step 1: Dual-endpoint setup: Se (null = 0.80, exp = 0.90), Sp (null = 0.75,
-#> exp = 0.85), dual_power = 0.90 (joint power ~80%).
-#> • Step 2: Calculate cases for sensitivity: n_Se = [Z_alpha*sqrt(p0*q0) +
-#> Z_beta*sqrt(p*q)]^2 / (p - p0)^2 = 109.
-#> • Step 3: Calculate controls for specificity: n_Sp = [Z_alpha*sqrt(p0*q0) +
-#> Z_beta*sqrt(p*q)]^2 / (p - p0)^2 = 137.
-#> • Step 4: Select dominant endpoint requirement: n_final = max(n_Se, n_Sp) =
-#> 137.
-#> • Step 5: Convert to screening population: Total subjects to screen = 137 /
-#> 0.40 = 343.
+#> • Step 1: Plan sensitivity 0.9000 vs 0.8000 and specificity 0.8500 vs 0.7500,
+#> each with alpha 0.0500 and power 0.9000.
+#> • Step 2: Round each endpoint requirement separately: 109 diseased cases and
+#> 137 non-diseased controls.
+#> • Step 3: Fixed strata quotas total 109 + 137 = 246 participants.
+#> • Step 4: At prevalence 0.4000, screen max(ceil(109/0.4000),ceil(137/0.6000)) =
+#> 273 participants in expectation; this is not a recruitment assurance
+#> probability.
 #> Reference:
-#> Strategy: Akoglu, H. (2022). User's guide to sample size estimation in diagnostic accuracy studies. Turkish Journal of Emergency Medicine, 22(4), 177-185 (p. 184: each endpoint at 90% power -> ~80% overall).
+#> Akoglu, H. (2022). User's guide to sample size estimation in diagnostic accuracy studies. Turkish Journal of Emergency Medicine, 22(4), 177-185 (p. 184; separate sensitivity and specificity requirements).
 #> ────────────────────────────────────────────────────────────────────────────────
 #> 
 ```
 
 - **Result and recruitment**: Sensitivity requires 109 cases,
-  specificity 137 non-cases. The reported maximum is 137, with
-  conservative conversion 343. At prevalence 40%, separately converting
-  rounded case and non-case quotas gives an average lower planning total
-  of 273; account additionally for random case yield.
+  specificity 137 non-cases, for 246 participants across the two strata.
+  At prevalence 40%, the expected screening requirement is 273 people;
+  account additionally for random case yield.
 
 ### 5.5 Unpaired Comparison of Two Diagnostic Tests
 
@@ -1984,7 +1995,6 @@ print(res_5_5)
 #> • Design type: "Two diagnostic measures"
 #> • Cases needed: 250
 #> • Total subjects to screen: 2500
-#> • Total subjects: 2500
 #> Formula (plain text):
 #> `n = [Za/2 * sqrt(2*p_bar*(1-p_bar)) + Zb * sqrt(p1*(1-p1)+p2*(1-p2))]^2 /
 #> (p1-p2)^2`
@@ -1994,7 +2004,7 @@ print(res_5_5)
 #> 
 #> • Step 1: Identify study design: Two diagnostic measures.
 #> • Step 2: Input parameters: p1 = 0.85, p2 = 0.75, prevalence = 0.20, paired =
-#> FALSE, psi = , alpha = 0.05, power = 0.80.
+#> FALSE, alpha = 0.05, power = 0.80.
 #> • Step 3: Apply design formula: n = [Za/2 * sqrt(2*p_bar*(1-p_bar)) + Zb *
 #> sqrt(p1*(1-p1)+p2*(1-p2))]^2 / (p1-p2)^2.
 #> • Step 4: Calculated sample size metrics: Cases needed: 250; Total subjects to
@@ -2041,7 +2051,6 @@ print(res_5_6)
 #> • Pairs needed: 77
 #> • Total subjects to screen: 381
 #> • Cases needed: 77
-#> • Total subjects: 381
 #> Parameter roles
 #> 
 #> • p1/p2 = expected sensitivities of the two tests
@@ -2103,7 +2112,6 @@ print(res_5_7)
 #> • Total sample size: 494
 #> • Cases needed: 247
 #> • Total subjects to screen: 823
-#> • Total subjects: 823
 #> Parameter roles
 #> 
 #> • p1/p2 = expected sensitivities (or specificities) of the new/reference test
@@ -2168,7 +2176,6 @@ print(res_5_8)
 #> • Total sample size: 2012
 #> • Cases needed: 1006
 #> • Total subjects to screen: 3353
-#> • Total subjects: 3353
 #> Parameter roles
 #> 
 #> • p1/p2 = expected sensitivities (or specificities) of the new/reference test
@@ -2230,29 +2237,32 @@ print(res_5_9)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Single-group AUC CI precision"
 #> • Cases needed: 46
-#> • Total subjects to screen: 92
+#> • Controls needed: 46
 #> • Total subjects: 92
 #> Parameter roles
 #> 
 #> • auc = anticipated area under the ROC curve
 #> • precision = desired CI half-width L
-#> • ratio = case:control ratio R (cases:non-cases; default 1)
+#> • ratio = controls per case (non-cases:cases; default 1)
+#> • prevalence = clinical disease proportion; alternative to fixed ratio
+#> • screening totals, when present, meet expected case and control quotas, not an
+#> assurance probability
 #> • var_method = binormal variance function
 #> Formula (plain text):
-#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC)`
+#> `N_cases = (Z_1-a/2 / d)^2 * V(AUC); controls = ceiling(ceiling(N_cases)*R), R
+#> = controls/cases`
 #> Formula (LaTeX):
-#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC)$$
+#> $$n_{cases} = \left(\frac{Z_{1-\alpha/2}}{d}\right)^2 \cdot V(AUC), \quad R = n_{controls}/n_{cases}$$
 #> Calculation process:
 #> 
-#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, supplied allocation R =
-#> 1, alpha = 0.05.
-#> • Step 2: Use the binormal variance model with the supplied allocation: V(AUC)
-#> = 0.1195.
+#> • Step 1: Anticipated AUC = 0.80, precision d = 0.10, controls:cases R = 1,
+#> alpha = 0.05.
+#> • Step 2: Use the binormal variance model: V(AUC) = 0.1195.
 #> • Step 3: Calculate cases: n_cases = (Z_(1-alpha/2)/d)^2 * V(AUC) =
 #> (1.96/0.10)^2 * 0.1195 = 45.89.
-#> • Step 4: Convert using the supplied allocation: total = n_cases*(1+R) =
-#> 45.89*(1+1) = 91.78.
-#> • Step 5: Round up: Target cases needed = 46, Total subjects to screen = 92.
+#> • Step 4: Round cases up first: Target cases needed = 46; controls =
+#> ceiling(cases*R) = 46.
+#> • Step 5: Sum integer quotas: Total subjects = 46 + 46 = 92.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.2, pp. 196-199 (Eq 6.4/6.5/6.6; CTC worked example).
 #> 
@@ -2276,12 +2286,12 @@ print(res_5_9)
   continuous scores and reference disease status, handling cases and
   non-cases consistently. The primary endpoint is the overall ROC-AUC.
 - **Planning inputs**: Assume `auc = 0.80`, minimum acceptable
-  `auc0 = 0.70`, source prevalence 30%, one-sided α=0.05, and 80% power.
+  `auc0 = 0.70`, source prevalence 30%, two-sided α=0.05, and 80% power.
   Justify the minimum for the intended application.
 - **Why this design**: An AUC test does not automatically guarantee
   sensitivity, specificity at an operating threshold, or calibration.
   Plan those separately if they are also primary objectives.
-- **Formula**: \\n\_{cases} = \frac{\left(Z\_{\alpha}\sqrt{V(AUC_0)} +
+- **Formula**: \\n\_{cases} = \frac{\left(Z\_{\alpha/2}\sqrt{V(AUC_0)} +
   Z\_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}\\
 
 ``` r
@@ -2292,25 +2302,31 @@ print(res_5_10)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "AUC superiority (single)"
 #> • Cases needed: 82
-#> • Total subjects to screen: 272
-#> • Total subjects: 272
+#> • Total subjects to screen: 275
+#> • Controls needed: 192
+#> • Total subjects: 274
+#> Parameter roles
+#> 
+#> • ratio = controls per case; prevalence is an alternative clinical recruitment
+#> assumption
 #> Formula (plain text):
 #> `n_cases = (Z_alpha/2 * sqrt(V(AUC0)) + Z_beta * sqrt(V(AUC)))^2 / (AUC -
-#> AUC0)^2, binormal V`
+#> AUC0)^2`
 #> Formula (LaTeX):
 #> $$n_{cases} = \frac{\left(Z_{\alpha/2}\sqrt{V(AUC_0)} + Z_{\beta}\sqrt{V(AUC)}\right)^2}{(AUC - AUC_0)^2}$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify AUC alternative = 0.80, null AUC0 = 0.70, prevalence = 0.30
-#> (one-sided alpha = 0.05, power = 0.80).
-#> • Step 2: Determine critical values: one-sided Z_alpha = 1.6449, Z_beta =
-#> 0.8416.
-#> • Step 3: Evaluate Hanley-McNeil variance under alternative V(AUC) and null
-#> V(AUC0).
-#> • Step 4: Calculate target cases: n_cases = [Z_alpha*sqrt(V(AUC0)) +
-#> Z_beta*sqrt(V(AUC))]^2 / (AUC - AUC0)^2.
-#> • Step 5: Round up to integer: Target cases needed = 82, Total subjects to
-#> screen = 272.
+#> • Step 1: Test H0: AUC = 0.70 vs anticipated AUC = 0.80, controls:cases R =
+#> 2.3333.
+#> • Step 2: Use two-sided Z_(alpha/2) = 1.96 and Z_beta = 0.8416 with binormal
+#> variance.
+#> • Step 3: n_cases = [Z_(alpha/2)*sqrt(V0) + Z_beta*sqrt(V1)]^2 / (AUC-AUC0)^2 =
+#> 81.41.
+#> • Step 4: Round cases up first: Target cases needed = 82; controls =
+#> ceiling(cases*R) = 192.
+#> • Step 5: Sum integer quotas: Total subjects = 82 + 192 = 274.
+#> • Step 6: At prevalence = 0.30, meet both quotas in expectation: Total subjects
+#> to screen = 275. This is not an assurance probability.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.1.4, Eq 6.8, pp. 199-200 (V(AUC) from Eq 6.5; the CTC worked example on p. 200 reports n = 13 with a two-tailed 5% test).
 #> 
@@ -2322,7 +2338,7 @@ print(res_5_10)
 ```
 
 - **Result and recruitment**: 82 cases, with an average screening size
-  of 272. Non-cases also contribute to AUC estimation, so recruiting
+  of 275. Non-cases also contribute to AUC estimation, so recruiting
   cases alone does not satisfy the design.
 
 ### 5.11 Two ROC-AUC Comparison
@@ -2353,22 +2369,28 @@ print(res_5_11)
 #> • Design type: "AUC comparison (two tests)"
 #> • Cases needed: 81
 #> • Total subjects to screen: 270
+#> • Controls needed: 189
 #> • Total subjects: 270
+#> Parameter roles
+#> 
+#> • ratio = controls per case; prevalence is an alternative clinical recruitment
+#> assumption
 #> Formula (plain text):
-#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2,
-#> binormal V`
+#> `n_cases = 2 * (Z_alpha/2 + Z_beta)^2 * V(AUC) * (1 - r) / (AUC1 - AUC2)^2`
 #> Formula (LaTeX):
 #> $$n_{cases} = \frac{2(Z_{\alpha/2} + Z_{\beta})^2 \cdot V(AUC) \cdot (1-r)}{(AUC_1 - AUC_2)^2}$$
 #> Calculation process:
 #> 
-#> • Step 1: Specify AUC1 = 0.80, AUC2 = 0.70, correlation r = 0.50, prevalence =
-#> 0.30 (alpha = 0.05, power = 0.80).
-#> • Step 2: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
-#> • Step 3: Evaluate pooled Hanley-McNeil variance V(AUC_avg).
-#> • Step 4: Calculate target cases: n_cases = 2 * (Z_(alpha/2) + Z_beta)^2 *
-#> V(AUC) * (1 - r) / (AUC1 - AUC2)^2.
-#> • Step 5: Round up to integer: Target cases needed = 81, Total subjects to
-#> screen = 270.
+#> • Step 1: Compare AUC1 = 0.80 and AUC2 = 0.70, correlation r = 0.50,
+#> controls:cases R = 2.3333.
+#> • Step 2: Use Z_(alpha/2) = 1.96 and Z_beta = 0.8416 with binormal variance.
+#> • Step 3: n_cases = 2*(Z_(alpha/2)+Z_beta)^2*V(AUC)*(1-r)/(AUC1-AUC2)^2 =
+#> 80.70.
+#> • Step 4: Round cases up first: Target cases needed = 81; controls =
+#> ceiling(cases*R) = 189.
+#> • Step 5: Sum integer quotas: Total subjects = 81 + 189 = 270.
+#> • Step 6: At prevalence = 0.30, meet both quotas in expectation: Total subjects
+#> to screen = 270. This is not an assurance probability.
 #> Reference:
 #> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Eq 7.6-7.8, paired/independent two-AUC comparison; the worked example on p. 199 gives n = 211 with the binormal variance). https://doi.org/10.1016/j.jbi.2014.02.013
 #> 
@@ -2408,13 +2430,14 @@ print(res_5_12)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic non-inferiority (two ROC areas)"
 #> • Cases needed: 102
-#> • Total subjects to screen: 203
-#> • Total subjects: 203
+#> • Controls needed: 102
+#> • Total subjects: 204
 #> Parameter roles
 #> 
 #> • auc1/auc2 = anticipated ROC areas of the new/reference test
 #> • r = expected correlation between the two AUC estimates (paired designs)
 #> • margin = non-inferiority/equivalence margin on the AUC difference
+#> • equal case and control quotas are rounded before summing total_subjects
 #> Formula (plain text):
 #> `n = 2(Za+Zb)^2 * V * (1-r) / (auc1-auc2+margin)^2`
 #> Formula (LaTeX):
@@ -2423,11 +2446,12 @@ print(res_5_12)
 #> 
 #> • Step 1: Identify study design: Diagnostic non-inferiority (two ROC areas).
 #> • Step 2: Input parameters: auc1 = 0.85, auc2 = 0.82, r = 0.50, margin = 0.05,
-#> task = noninferiority, var_method = binormal, alpha = 0.05, power = 0.80.
+#> task = noninferiority, ratio_R = 1, sampling = case_control, var_method =
+#> binormal, alpha = 0.05, power = 0.80.
 #> • Step 3: Apply design formula: n = 2(Za+Zb)^2 * V * (1-r) /
 #> (auc1-auc2+margin)^2.
-#> • Step 4: Calculated sample size metrics: Cases needed: 102; Total subjects to
-#> screen: 203.
+#> • Step 4: Calculated sample size metrics: Total sample size: 204; Cases needed:
+#> 102; Controls needed: 102; Total subjects: 204.
 #> Reference:
 #> Framework: margin designs per Chow et al. (2017) Ch.4 Eq 4.8-4.9 (pp. 78-79) and Machin et al. (2018) Ch.11 Eq 11.5-11.6 (p. 174). AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
 #> 
@@ -2437,7 +2461,7 @@ print(res_5_12)
 ```
 
 - **Result and recruitment**: The case requirement is 102, and the total
-  conversion field is 203. Enforcing integer equal case and non-case
+  conversion field is 204. Enforcing integer equal case and non-case
   quotas gives 204 people, each receiving both device assessments.
 
 ### 5.13 Two ROC-AUC Equivalence
@@ -2466,13 +2490,14 @@ print(res_5_13)
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Diagnostic equivalence (two ROC areas)"
 #> • Cases needed: 537
-#> • Total subjects to screen: 1073
-#> • Total subjects: 1073
+#> • Controls needed: 537
+#> • Total subjects: 1074
 #> Parameter roles
 #> 
 #> • auc1/auc2 = anticipated ROC areas of the new/reference test
 #> • r = expected correlation between the two AUC estimates (paired designs)
 #> • margin = non-inferiority/equivalence margin on the AUC difference
+#> • equal case and control quotas are rounded before summing total_subjects
 #> Formula (plain text):
 #> `n = 2(Za+Zb/2)^2 * V * (1-r) / (margin-|auc1-auc2|)^2`
 #> Formula (LaTeX):
@@ -2481,11 +2506,12 @@ print(res_5_13)
 #> 
 #> • Step 1: Identify study design: Diagnostic equivalence (two ROC areas).
 #> • Step 2: Input parameters: auc1 = 0.85, auc2 = 0.84, r = 0.50, margin = 0.05,
-#> task = equivalence, var_method = binormal, alpha = 0.05, power = 0.80.
+#> task = equivalence, ratio_R = 1, sampling = case_control, var_method =
+#> binormal, alpha = 0.05, power = 0.80.
 #> • Step 3: Apply design formula: n = 2(Za+Zb/2)^2 * V * (1-r) /
 #> (margin-|auc1-auc2|)^2.
-#> • Step 4: Calculated sample size metrics: Cases needed: 537; Total subjects to
-#> screen: 1073.
+#> • Step 4: Calculated sample size metrics: Total sample size: 1074; Cases
+#> needed: 537; Controls needed: 537; Total subjects: 1074.
 #> Reference:
 #> Framework: margin designs per Chow et al. (2017) Ch.4 Eq 4.8-4.9 (pp. 78-79) and Machin et al. (2018) Ch.11 Eq 11.5-11.6 (p. 174). AUC variance per Zhou et al. (2011) Eq 6.4/6.5/6.6.
 #> 
@@ -2494,7 +2520,7 @@ print(res_5_13)
 #> 
 ```
 
-- **Result and recruitment**: 537 cases, with total conversion 1073.
+- **Result and recruitment**: 537 cases, with total conversion 1074.
   Equal integer case and non-case quotas require 1074 people, each
   providing scores from both systems.
 
@@ -2544,13 +2570,14 @@ print(res_5_14)
 #> $$\log(LR^-) \pm Z_{1-\alpha/2}\sqrt{\frac{Se}{n(1-Se)} + \frac{1-Sp}{n \cdot Sp}}$$
 #> Calculation process:
 #> 
-#> • Step 1: Identify study design: Likelihood ratio (negative, log-CI method).
-#> • Step 2: Input parameters: sensitivity = 0.90, specificity = 0.50, lr_type =
-#> negative, lr_observed = 0.20, target_lr = 0.40, prevalence = 1, alpha = 0.05.
-#> • Step 3: Apply design formula: log(LR-) +- Z * sqrt(Se/(n*(1-Se)) +
-#> (1-Sp)/(n*Sp)).
-#> • Step 4: Calculated sample size metrics: Total sample size: 160; Cases needed:
-#> 80; Controls needed: 80; Total subjects: 160.
+#> • Step 1: Expected negative LR = 0.200000 from sensitivity 0.9000 and
+#> specificity 0.5000.
+#> • Step 2: Target upper CI limit = 0.400000; required log-scale distance =
+#> 0.693147.
+#> • Step 3: Log-LR variance coefficient = 10.000000, critical Z = 1.959964,
+#> unrounded n per disease stratum = 79.9549.
+#> • Step 4: Round to 80 cases and 80 controls; the anticipated CI limit is
+#> 0.399922.
 #> Reference:
 #> Primary: Hajian-Tilaki, K. (2014). Sample size estimation in diagnostic test studies of biomedical informatics. Journal of Biomedical Informatics, 48, 193-204 (Section 6.4, Eqs 6.10-6.14; negative LR example n=80 per group).
 #> 
@@ -2630,6 +2657,8 @@ print(res_5_16)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "MRMC (paired-patient, paired-reader, Obuchowski-Rockette)"
+#> • Cases needed: 50
+#> • Power achieved: 0.893
 #> Parameter roles
 #> 
 #> • n = patients with the condition (paired-patient: imaged under both tests)
@@ -2664,6 +2693,8 @@ print(res_5_16)
 #> noncentrality_lambda = 14.0672.
 #> • Step 3: Apply design formula: lambda = J*delta^2/(2*[sb2(1-rho_b) + sw2/Q +
 #> sc2*((1-rho1)+(J-1)(rho2-rho3))]); power = P(F_{1,J-1}(lambda) > F_{1-alpha}).
+#> • Step 4: Calculated sample size metrics: Cases needed: 50; Power achieved:
+#> 0.893.
 #> Reference:
 #> Primary: Zhou, X.-H., Obuchowski, N. A., & McClish, D. K. (2011). Statistical Methods in Diagnostic Medicine (2nd ed.). Wiley. Section 6.5, Eq 6.32, Tables 6.3-6.5, pp. 220-226 (mammography worked example: 89% power).
 #> 
@@ -2851,7 +2882,7 @@ print(res_6_3)
 #> ────────────────────────────────────────────────────────────────────────────────
 #> ✔ Sample Size Calculation Results
 #> • Design type: "Stepped wedge cluster trial (Hussey-Hughes, mean outcome)"
-#> • Clusters per arm: 24
+#> • Total clusters: 24
 #> • Power achieved: 0.674
 #> Parameter roles
 #> 
@@ -2908,8 +2939,9 @@ print(res_6_3)
   particular category require assessment under an appropriate
   alternative distribution.
 - **Formula** (Whitehead 1993): \\N =
-  \frac{3\\(Z\_{\alpha/2}+Z\_{\beta})^2}{(\log OR)^2\\(1-\sum
-  \bar{p}\_j^3)}\\
+  \frac{3(1+\varphi)^2\\(Z\_{\alpha/2}+Z\_{\beta})^2}{\varphi\\(\log
+  OR)^2\\(1-\sum \bar{p}\_j^3)}, \quad \varphi = n\_{test}/n\_{standard}
+  = 1\\
 
 ``` r
 
@@ -2920,12 +2952,16 @@ print(res_6_4)
 #> • Design type: "Two-group ordered categorical outcome (Mann-Whitney /
 #> proportional odds)"
 #> • Sample size per group: 342
-#> • Total sample size: 683
+#> • Standard group: 342
+#> • Test group: 342
+#> • Total sample size: 684
 #> Parameter roles
 #> 
 #> • or = anticipated odds ratio (proportional odds)
 #> • prop_bar = anticipated average category proportions (sums to 1)
-#> • output: total N and per-group n (equal allocation)
+#> • allocation = test:standard sample size ratio; each arm is rounded up
+#> separately
+#> • total_n = n_standard + n_test after rounding
 #> Formula (plain text):
 #> `N = Gamma*(1+phi)^2/phi*(Za/2+Zb)^2/(log OR)^2 ; Gamma = 3/(1 - sum(p_bar^3))`
 #> Formula (LaTeX):
@@ -2936,9 +2972,10 @@ print(res_6_4)
 #> 0.50, 0.30].
 #> • Step 2: Determine critical values: Z_(alpha/2) = 1.96, Z_beta = 0.8416.
 #> • Step 3: Compute Whitehead variance factor: 1 - sum(p_bar_j^3).
-#> • Step 4: Whitehead formula: N = 3 * (Z_(alpha/2) + Z_beta)^2 / [(ln OR)^2 * (1
-#> - sum(p_bar^3))].
-#> • Step 5: Round up to integer: Total sample size N = 683, per group n = 342.
+#> • Step 4: Whitehead/Machin formula: N = 3*(1+allocation)^2/allocation *
+#> (Z_(alpha/2)+Z_beta)^2 / [(ln OR)^2*(1-sum(p_bar^3))].
+#> • Step 5: Round each arm up: Standard group = 342, Test group = 342; sum to
+#> Total sample size N = 684.
 #> Reference:
 #> Primary: Whitehead, J. (1993). Sample size calculations for ordered categorical data. Statistics in Medicine, 12(24), 2257-2271 (Eq 9-10, p. 2260; Example 1, p. 2261).
 #> 
@@ -2947,9 +2984,9 @@ print(res_6_4)
 #> 
 ```
 
-- **Result and recruitment**: The formula returns total lower bound 683
-  and rounded group size 342. Strict 1:1 allocation therefore needs 684
-  participants before any allowance for missing endpoints.
+- **Result and recruitment**: Each group is rounded up to 342; the
+  reported total 684 is the sum of the integer group sizes. Add any
+  allowance for missing endpoints separately.
 
 ### 6.5 Clinical Prediction Model Development (Riley 2020 BMJ Binary)
 
@@ -2964,15 +3001,16 @@ print(res_6_4)
   `n_parameters = 10`, anticipated Cox–Snell R²=0.10, target shrinkage
   0.90, and overall-risk precision 0.05. External performance estimates
   should be relevant and adjusted for optimism.
-- **Why this design**: This branch takes the larger of overall-risk
-  precision B1 and shrinkage B3, with auxiliary information. It does not
-  implement every Riley criterion or automatically plan machine-learning
-  tuning and external validation.
-- **Formula** (Riley 2020, criteria B1 & B3): \\n\_{B1} =
-  \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n\_{B3} =
-  \frac{P}{(S-1)\ln(1-R^2\_{CS}/S)}, \quad n = \max(n\_{B1}, n\_{B3})\\
-  Riley et al. (2020), *BMJ* 368, m441 (criteria B1 and B3 in this
-  example).
+- **Why this design**: This branch takes the maximum of overall-risk
+  precision B1, shrinkage B3, and Nagelkerke R² optimism B4. B2 MAPE is
+  informational for at most 30 parameters; machine-learning tuning and
+  external validation need separate planning.
+- **Formula** (Riley 2020, criteria B1, B3, B4): \\n\_{B1} =
+  \left(\frac{z}{\delta}\right)^2 \phi(1-\phi), \quad n(S) =
+  \frac{P}{(S-1)\ln(1-R^2\_{CS}/S)}\\ \\S_4 =
+  \frac{R^2\_{CS}}{R^2\_{CS}+0.05\max(R^2\_{CS})}, \quad n =
+  \max\\n\_{B1}, n(S), n(S_4)\\\\ Riley et al. (2020), *BMJ* 368, m441
+  (B1, B3, and B4).
 
 ``` r
 
@@ -2989,17 +3027,19 @@ print(res_6_5)
 #> • n_parameters = candidate predictor parameters (P)
 #> • r2_cs = anticipated Cox-Snell R2 (conservative, optimism-adjusted)
 #> • shrinkage = target uniform shrinkage factor S (default 0.9)
-#> • mape = target mean absolute prediction error (default 0.05)
+#> • mape = mean absolute prediction error for the informational B2 calculation
+#> only (default 0.05)
 #> ! B1 (proportion precision, delta=0.050): n = 323
 #> ! B3 (shrinkage S=0.90, R2cs=0.1000): n = 850
 #> ! B2 (MAPE=0.050, P=10 <= 30): n = 461 (informational)
-#> ! B4 (optimism in Nagelkerke R2 <= 0.05) is handled inside B3 via the
-#> ! shrinkage target in the pmsampsize implementation; see Riley 2020 Box 1.
+#> ! B4 (Nagelkerke R2 optimism <= 0.05, S=0.7393): n = 264
+#> ! Returned n is max(B1, B3, B4); B2 is informational only.
 #> 
 #> Formula (plain text):
-#> `B1: n=(z/d)^2*p(1-p); B3: n=P/((S-1)*ln(1-R2cs/S)); n = max(B1, B3)`
+#> `B1: n=(z/d)^2*p(1-p); B3/B4: n=P/((S-1)*ln(1-R2cs/S));
+#> S_B4=R2cs/(R2cs+0.05*max_R2cs); n=max(B1,B3,B4)`
 #> Formula (LaTeX):
-#> $$n_{B1} = \left(\frac{z_{1-\alpha/2}}{\delta}\right)^2 \phi(1-\phi), \quad n_{B3} = \frac{p}{(S-1)\ln(1 - R_{CS}^2/S)}, \quad n = \max(n_{B1}, n_{B3})$$
+#> $$n(S) = \frac{P}{(S-1)\ln(1-R_{CS}^2/S)}, \quad S_{B4} = \frac{R_{CS}^2}{R_{CS}^2+0.05\max(R_{CS}^2)}, \quad n = \max(n_{B1},n_{B3},n_{B4})$$
 #> Calculation process:
 #> 
 #> • Step 1: Identify study design: Prediction model development (Riley 2020,
@@ -3007,8 +3047,8 @@ print(res_6_5)
 #> • Step 2: Input parameters: prev = 0.30, n_parameters = 10, r2_cs = 0.10,
 #> max_r2cs = 0.7053, shrinkage = 0.90, mape = 0.05, precision_delta = 0.05, alpha
 #> = 0.05.
-#> • Step 3: Apply design formula: B1: n=(z/d)^2*p(1-p); B3:
-#> n=P/((S-1)*ln(1-R2cs/S)); n = max(B1, B3).
+#> • Step 3: Apply design formula: B1: n=(z/d)^2*p(1-p); B3/B4:
+#> n=P/((S-1)*ln(1-R2cs/S)); S_B4=R2cs/(R2cs+0.05*max_R2cs); n=max(B1,B3,B4).
 #> • Step 4: Calculated sample size metrics: Required sample size: 850; Total
 #> sample size: 850; Events required: 255.
 #> Reference:
@@ -3068,7 +3108,7 @@ print(res_6_6)
 #> • Step 1: Identify study design: Prediction model development (Riley 2020,
 #> time-to-event).
 #> • Step 2: Input parameters: rate = 0.10, timepoint = 10, precision_delta =
-#> 0.05, alpha = 0.05, n_parameters = , epv = .
+#> 0.05, alpha = 0.05.
 #> • Step 3: Apply design formula: F(t) = 1-exp(-rate*t); CI: 1-exp(-(rate +-
 #> z*sqrt(rate/T))*t); find T with margins <= delta.
 #> • Step 4: Calculated sample size metrics: Required person-time: 2366.
@@ -3177,15 +3217,17 @@ print(res_6_8)
 #> • kappa1 = planning value of kappa
 #> • d = desired CI half-width
 #> Formula (plain text):
-#> `n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2`
+#> `n = Q * (z/d)^2; Q is the full asymptotic variance factor from Cantor (1996),
+#> Eq 3`
 #> Formula (LaTeX):
-#> $$n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q = \frac{p_o(1-p_o)}{(1-p_e)^2}$$
+#> $$n = Q\left(\frac{z_{1-\alpha/2}}{d}\right)^2, \quad Q = n\operatorname{Var}(\widehat{\kappa})\;\text{(Cantor Eq. 3)}$$
 #> Calculation process:
 #> 
 #> • Step 1: Identify study design: Cohen's kappa estimation (CI precision).
 #> • Step 2: Input parameters: pi1 = 0.50, pi2 = 0.50, kappa = 0.70, d = 0.10,
 #> alpha = 0.05, Q = 0.51.
-#> • Step 3: Apply design formula: n = Q * (z/d)^2 ; Q = p_o(1-p_o)/(1-p_e)^2.
+#> • Step 3: Apply design formula: n = Q * (z/d)^2; Q is the full asymptotic
+#> variance factor from Cantor (1996), Eq 3.
 #> • Step 4: Calculated sample size metrics: Required sample size: 196; Total
 #> sample size: 196.
 #> Reference:

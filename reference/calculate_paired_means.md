@@ -5,7 +5,13 @@ Paired means comparison calculation
 ## Usage
 
 ``` r
-calculate_paired_means(meanDiff, sdDiff, alpha, power)
+calculate_paired_means(
+  meanDiff,
+  sdDiff,
+  alpha,
+  power,
+  pairing = "within_subject"
+)
 ```
 
 ## Arguments
@@ -25,6 +31,11 @@ calculate_paired_means(meanDiff, sdDiff, alpha, power)
 - power:
 
   Statistical power
+
+- pairing:
+
+  `"within_subject"` for two observations per person, or
+  `"matched_subjects"` for pairs of distinct people.
 
 ## Value
 

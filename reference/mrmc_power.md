@@ -89,8 +89,8 @@ mrmc_power(
 
 ## Value
 
-Numeric power (0-1), invisible. The full result object (parameters,
-formula, noncentrality) is attached as a `sample_size_result`.
+Invisibly returns a `sample_size_result` object with `power` (legacy
+alias), `power_achieved`, parameters, formula, and report fields.
 
 ## Details
 

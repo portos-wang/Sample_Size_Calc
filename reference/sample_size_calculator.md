@@ -70,7 +70,9 @@ sampleSizeCalculator(design, alpha = 0.05, power = 0.8, ...)
   [`?calculate`](https://rpackages.portos.wang/sample_size_calc/reference/calculate.md)
   for domains; e.g. `mean1`, `mean2`, `sd` for twoMeans). Parameters
   outside their validated domain abort with a structured `cli` error
-  naming the offending argument.
+  naming the offending argument. Names that only partially match the
+  control formals (`design`, `alpha`, `power`) also abort: pass the
+  design as `design = ...` and spell control arguments in full.
 
 ## Value
 

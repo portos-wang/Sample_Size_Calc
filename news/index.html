@@ -45,6 +45,38 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="samplesizecalc-development-version">SampleSizeCalc (development version)<a class="anchor" aria-label="anchor" href="#samplesizecalc-development-version"></a></h2>
+<ul><li>
+<code><a href="../reference/calculate.html">calculate()</a></code> now enforces study design and parameter invariants:
+<ul><li>
+<code>singleMean</code> precision planning searches for the smallest integer <span class="math inline">\(N \ge 2\)</span> satisfying the Student <span class="math inline">\(t\)</span> CI half-width constraint, resolving oscillation between adjacent rounded fixed-point iterates and preventing <span class="math inline">\(N = 1\)</span> returns.</li>
+<li>
+<code>diagAccuracy</code> dual-endpoint planning (<code>dual = TRUE</code>) evaluates diseased-case and non-diseased-control quotas separately. Expected screening totals convert the two rounded strata quotas by <code>prevalence</code> and <code>1 - prevalence</code> respectively.</li>
+<li>
+<code>cohort</code> person-time planning preserves the original <code>rate0</code> and <code>rate1</code> labels and allocation when <code>rate1 &lt; rate0</code> (protective exposure), maintaining the user’s intended design.</li>
+<li>
+<code>paired</code> designs default to <code>pairing = "within_subject"</code> (counting one person per pair, two measurements); specify <code>pairing = "matched_subjects"</code> for pairs of distinct people.</li>
+<li>
+<code>bioequivalence</code> integrates exact conditional TOST power over the variance distribution and aborts if target power cannot be reached within 10,000 subjects.</li>
+<li>
+<code>diagLR</code> validates target direction (upper limit &gt; expected for LR-; lower limit &lt; expected for LR+).</li>
+<li>Kappa planning validates that inputs define a valid joint probability table.</li>
+<li>Result objects now validate count positivity, integer values, and that group counts sum to reported totals. Power-curve replay retains user-specified <code>alpha</code>.</li>
+</ul></li>
+<li>
+<code><a href="../reference/calculate.html">calculate()</a></code> and <code><a href="../reference/sample_size_calculator.html">sample_size_calculator()</a></code> now reject unsupported, misspelled, duplicate, unnamed, and inactive-branch design arguments. In particular, <code>dropout</code> outside cohort proportion planning and <code>alternative</code> outside the supported diagnostic test raise an error.</li>
+<li>
+<code>diagAUC</code> and <code>diagAUCCompare</code> testing now consistently use <code>ratio</code> as controls per case, independently of <code>var_method</code> (default <code>"binormal"</code>). Supply either a fixed <code>ratio</code> or clinical <code>prevalence</code>, not both. Cases and controls are rounded before summing <code>total_subjects</code>; <code>total_subjects_to_screen</code> is returned only for clinical recruitment and meets both quotas in expectation. AUC calculation reports use the same variance model, test convention, and rounding as the calculation.</li>
+<li>
+<code>predictiveModel</code> binary planning now takes the maximum of Riley B1, B3, and B4, including the Nagelkerke R-squared optimism criterion. For prevalence 0.05, 10 parameters, Cox-Snell R-squared 0.2, and shrinkage 0.9, the corrected size is 542 rather than 398, matching <code>pmsampsize</code>. B2 MAPE remains informational, and its inputs are validated.</li>
+<li>
+<code>twoOrdinal</code> now sums the separately rounded group sizes, including unequal allocation. The normalized Machin example needs 31 per arm, 62 total; Whitehead’s example needs 94 per arm, 188 total.</li>
+<li>Numeric design inputs now require finite scalars (with category proportions as the documented vector exception). Missing and infinite values produce argument-specific errors, including in <code><a href="../reference/screen_required.html">screen_required()</a></code> and <code><a href="../reference/mrmc_power.html">mrmc_power()</a></code>.</li>
+<li>Zero-effect planning inputs (<code>mean1 == mean2</code>, <code>p1 == p2</code>, <code>meanDiff == 0</code>, and equal expected proportions in an unpaired diagnostic comparison) now abort with argument-specific errors instead of leaking base-R root-finding failures.</li>
+<li>
+<code><a href="../reference/sample_size_calculator.html">sample_size_calculator()</a></code> now rejects <code>...</code> names that R’s partial matching would silently bind to <code>design</code>, <code>alpha</code>, or <code>power</code>: a misspelled <code>p</code> used to set <code>power</code> without warning, and <code>d</code> clobbered <code>design</code> when the design keyword was passed positionally. Exact control names keep working, including named <code>design</code> calls that pass a design-specific <code>d</code>.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.1.1" id="samplesizecalc-311">SampleSizeCalc 3.1.1<a class="anchor" aria-label="anchor" href="#samplesizecalc-311"></a></h2>
 <ul><li>The package is named <code>SampleSizeCalc</code>; use <code><a href="https://rpackages.portos.wang/sample_size_calc/">library(SampleSizeCalc)</a></code> and <code><a href="../reference/calculate.html">SampleSizeCalc::calculate()</a></code> in new scripts.</li>
 </ul><div class="section level3">

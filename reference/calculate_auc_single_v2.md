@@ -1,7 +1,7 @@
-# Upgraded AUC estimation: three variance functions, user-set case:control ratio R — Zhou 2011 pp.196-199
+# AUC estimation with fixed controls:cases allocation or clinical prevalence — Zhou 2011 pp.196-199
 
-Upgraded AUC estimation: three variance functions, user-set case:control
-ratio R — Zhou 2011 pp.196-199
+AUC estimation with fixed controls:cases allocation or clinical
+prevalence — Zhou 2011 pp.196-199
 
 ## Usage
 

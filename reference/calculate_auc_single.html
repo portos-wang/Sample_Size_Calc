@@ -51,7 +51,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_auc_single</span><span class="op">(</span><span class="va">auc</span>, <span class="va">d</span>, <span class="va">prevalence</span>, <span class="va">alpha</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calculate_auc_single</span><span class="op">(</span></span>
+<span>  <span class="va">auc</span>,</span>
+<span>  <span class="va">d</span>,</span>
+<span>  <span class="va">prevalence</span>,</span>
+<span>  <span class="va">alpha</span>,</span>
+<span>  ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  var_method <span class="op">=</span> <span class="st">"binormal"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,6 +81,14 @@ omitted or 1 falls back to a 1:1 quota)</p></dd>
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Type I error</p></dd>
+
+
+<dt id="arg-ratio">ratio<a class="anchor" aria-label="anchor" href="#arg-ratio"></a></dt>
+<dd><p>Controls per case; alternative to prevalence.</p></dd>
+
+
+<dt id="arg-var-method">var_method<a class="anchor" aria-label="anchor" href="#arg-var-method"></a></dt>
+<dd><p>AUC variance model (binormal by default).</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -128,8 +128,8 @@ margins), and likelihood ratios.
 - [`calculate_diag_compare_margin_prop()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_diag_compare_margin_prop.md)
   : Two-proportion margin designs (non-inferiority / equivalence)
 - [`calculate_auc_single_v2()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_single_v2.md)
-  : Upgraded AUC estimation: three variance functions, user-set
-  case:control ratio R — Zhou 2011 pp.196-199
+  : AUC estimation with fixed controls:cases allocation or clinical
+  prevalence — Zhou 2011 pp.196-199
 - [`calculate_auc_superiority()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_superiority.md)
   : AUC superiority test calculation
 - [`calculate_auc_comparison()`](https://rpackages.portos.wang/sample_size_calc/reference/calculate_auc_comparison.md)

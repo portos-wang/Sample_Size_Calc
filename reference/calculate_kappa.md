@@ -3,7 +3,8 @@
 Two modes:
 
 - task = "estimate": precision of a single kappa —
-  `n = Q * (z_(1-a/2) / d)^2` with `Q = p_o(1-p_o)/(1-p_e)^2`. Anchor:
+  `n = Q * (z_(1-a/2) / d)^2`, with the full Cantor Eq 3 asymptotic
+  variance factor Q from the compatible joint rating table. Anchor:
   Cantor 1996 precision example (pi=0.3, kappa unspecified, Q=1.0,
   d=0.1, 80% CI -\> 165).
 

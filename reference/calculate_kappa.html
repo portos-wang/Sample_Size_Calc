@@ -7,7 +7,8 @@
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Internal calculation: Cohen's kappa sample size (Cantor 1996) — calculate_kappa"><meta name="description" content="Two modes:
 task = &quot;estimate&quot;: precision of a single kappa —
-n = Q * (z_(1-a/2) / d)^2 with Q = p_o(1-p_o)/(1-p_e)^2.
+n = Q * (z_(1-a/2) / d)^2, with the full Cantor Eq 3
+asymptotic variance factor Q from the compatible joint rating table.
 Anchor: Cantor 1996 precision example (pi=0.3, kappa unspecified,
 Q=1.0, d=0.1, 80% CI -&amp;gt; 165).
 task = &quot;test&quot;: two independent kappas H0: K1 = K2 —
@@ -17,7 +18,8 @@ K2=0.5, 95%/80% -&amp;gt; 214).
 
 "><meta property="og:description" content="Two modes:
 task = &quot;estimate&quot;: precision of a single kappa —
-n = Q * (z_(1-a/2) / d)^2 with Q = p_o(1-p_o)/(1-p_e)^2.
+n = Q * (z_(1-a/2) / d)^2, with the full Cantor Eq 3
+asymptotic variance factor Q from the compatible joint rating table.
 Anchor: Cantor 1996 precision example (pi=0.3, kappa unspecified,
 Q=1.0, d=0.1, 80% CI -&amp;gt; 165).
 task = &quot;test&quot;: two independent kappas H0: K1 = K2 —
@@ -67,7 +69,8 @@ K2=0.5, 95%/80% -&amp;gt; 214).
 
     <div class="ref-description section level2">
     <p>Two modes:</p><ul><li><p>task = "estimate": precision of a single kappa —
-<code>n = Q * (z_(1-a/2) / d)^2</code> with <code>Q = p_o(1-p_o)/(1-p_e)^2</code>.
+<code>n = Q * (z_(1-a/2) / d)^2</code>, with the full Cantor Eq 3
+asymptotic variance factor Q from the compatible joint rating table.
 Anchor: Cantor 1996 precision example (pi=0.3, kappa unspecified,
 Q=1.0, d=0.1, 80% CI -&gt; 165).</p></li>
 <li><p>task = "test": two independent kappas H0: K1 = K2 —

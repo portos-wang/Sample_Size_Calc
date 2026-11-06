@@ -5,5 +5,12 @@ Paired binary outcomes (McNemar test sample size)
 ## Usage
 
 ``` r
-calculate_paired_proportions(p1, p2, psi, alpha, power)
+calculate_paired_proportions(
+  p1,
+  p2,
+  psi,
+  alpha,
+  power,
+  pairing = "within_subject"
+)
 ```
